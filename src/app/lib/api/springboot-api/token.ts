@@ -15,10 +15,18 @@ export default class TokenService{
     }
 
     static async getRefresh(){
-        return localStorage.getItemt(this.REFRESH_TOKEN_KEY)
+        return localStorage.getItem(this.REFRESH_TOKEN_KEY)
     }
 
     static async getAccess(){
-        return localStorage.getItemt(this.ACCESS_TOKEN_KEY)
+        return localStorage.getItem(this.ACCESS_TOKEN_KEY)
+    }
+
+    static isLogin(){
+        if( localStorage.getItem(this.ACCESS_TOKEN_KEY) === null ||localStorage.getItem(this.ACCESS_TOKEN_KEY)  === ""){
+            return false;
+        }else{
+            return true;
+        }
     }
 }
