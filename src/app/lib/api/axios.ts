@@ -50,7 +50,8 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-            const { accessToken } = await AuthService.refreshToken();
+            const response= await AuthService.refreshToken();
+            TokenService.setToken(response.accessToken,response.refreshToken);
             TokenService.getAccess()
             
             // Retry các request đang chờ

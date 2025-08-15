@@ -22,7 +22,6 @@ class AuthService{
             refreshToken:refreshToken
         }
         const response=await axiosInstance.post(AuthService.apiRefreshToken,body);
-        TokenService.setToken(response.data.accessToken,response.data.refreshToken);
         return response.data;
     }
 }
