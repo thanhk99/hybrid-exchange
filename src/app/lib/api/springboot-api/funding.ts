@@ -21,6 +21,30 @@ export interface FundingHistoryItem {
   status: string;
 }
 
+export interface WalletAsset {
+    symbol: string;
+    name: string;
+    holdings: number;
+    value: number;
+    pnl: number;
+    pnlPercentage: number;
+    logo?: string;
+  }
+
+export interface WalletResponse {
+  totalValue: number;
+  currency: string;
+  pnlToday: number;
+  pnlPercentage: number;
+  assets: WalletAsset[];
+  allocation: {
+    funding: number;
+    trading: number;
+    earn: number;
+  };
+  chartData: FundingChartData[];
+}
+
 class FundingService {
   /**
    * Lấy tổng giá trị funding
@@ -95,6 +119,25 @@ class FundingService {
       return response.data;
     } catch (error) {
       console.error('Error fetching funding history:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Lấy thông tin wallet tổng quan
+   */
+  static async getWallet(): Promise<WalletResponse> {
+    try {
+      const response = await axiosInstance.get(API_CONFIG.ENDPOINTS.FUNDING.GET_WALLET);
+      
+      // Handle the API response structure
+      if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+        return response.data.data;
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching wallet data:', error);
       throw error;
     }
   }

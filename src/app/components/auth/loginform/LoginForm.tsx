@@ -19,6 +19,7 @@ import { data } from "react-router-dom";
 import { loginSuccess } from "@/app/store/authSlice";
 import './LoginForm.css'
 import { FaSpinner } from "react-icons/fa";
+import deviceService from "@/app/services/deviceService";
 
 type FormValues = {
   email: string;
@@ -60,22 +61,21 @@ export default function LoginForm() {
       const response = await AuthService.login(data.email, data.password);
 
       const payload = response.data;
-      console.log(payload);
 
       dispatch(
         loginSuccess({
-          accessToken: payload.accessToken,
-          refreshToken: payload.refreshToken,
-          userId: payload.userId,
-          email: payload.email,
-          deviceInfo: payload.deviceInfo,
+          accessToken: payload.data.accessToken,
+          refreshToken: payload.data.refreshToken,
+          userId: payload.data.userId,
+          email: payload.data.email,
+          deviceInfo: payload.data.deviceInfo,
         })
       );
+      deviceService.setDeviceId(payload.data.deviceInfo.deviceId)
+      TokenService.setToken(payload.data.accessToken, payload.data.refreshToken);
 
-      TokenService.setToken(payload.accessToken, payload.refreshToken);
-
-      router.push("/");
-      router.refresh();
+      router.push("/homepage");
+      // router.refresh();
     } catch (err: any) {
       console.error("Login error:", err);
       toast.error(err.response?.data?.message || "Đăng nhập thất bại");

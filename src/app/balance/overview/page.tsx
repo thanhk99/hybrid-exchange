@@ -1,18 +1,25 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TopMenuList from '@/app/components/shared/top-menu-list/TopMenuList';
+import BalanceChart from '@/app/components/account/BalanceChart';
+import AllocationChart from '@/app/components/balance/AllocationChart';
+import AssetsTable from '@/app/components/balance/AssetsTable';
+import EmptyFundingHistory from '@/app/components/funding/EmptyFundingHistory';
+import FundingService, { WalletResponse } from '@/app/lib/api/springboot-api/funding';
 import styles from './overview.module.css';
 
 const Overview = () => {
   const router = useRouter();
-  const [hasBalance] = useState(false);
+  const [walletData, setWalletData] = useState<WalletResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
   const menuItems = [
-    { title: 'Tổng quan', onClick: () => router.push('overview') },
-    { title: 'Ví Funding', onClick: () => router.push('funding') },
-    { title: 'Ví giao dịch', onClick: () => router.push('trading') },
+    { title: 'Tổng quan', onClick: () => router.push('/balance/overview') },
+    { title: 'Ví Funding', onClick: () => router.push('/balance/funding') },
+    { title: 'Ví giao dịch', onClick: () => router.push('/balance/trading') },
     { title: 'Tăng trưởng', onClick: () => router.push('/growth') },
     { title: 'Phân tích', onClick: () => router.push('/analysis') },
     { title: 'Trung tâm lệnh', onClick: () => router.push('/orders') },
@@ -21,12 +28,69 @@ const Overview = () => {
     { title: 'Báo cáo P&R', onClick: () => router.push('/reports') }
   ];
 
+  useEffect(() => {
+    const fetchWalletData = async () => {
+      try {
+        setLoading(true);
+        const data = await FundingService.getWallet();
+        setWalletData(data);
+      } catch (err) {
+        console.error('Error fetching wallet data:', err);
+        setError('Không thể tải dữ liệu wallet');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWalletData();
+  }, []);
+
+  const formatCurrency = (value: number | null | undefined): string => {
+    if (value == null || isNaN(value)) return '0.00'; // Xử lý undefined, null, hoặc NaN
+    if (value < 0.01) return '0.02';
+    return value.toFixed(2);
+  };
+
+  const formatPnl = (pnl: number | null | undefined, percentage: number | null | undefined): string => {
+    // Nếu pnl hoặc percentage là null, undefined, hoặc NaN, trả về giá trị mặc định
+    if (pnl == null || isNaN(pnl) || percentage == null || isNaN(percentage)) {
+      return '$0.00 (0.00%)';
+    }
+    if (pnl === 0) return '$0.00 (0.00%)';
+    const sign = pnl > 0 ? '+' : '';
+    return `${sign}$${pnl.toFixed(2)} (${sign}${percentage.toFixed(2)}%)`;
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <TopMenuList menuItems={menuItems} defaultActive={0} />
+        <div className={styles.content}>
+          <div className={styles.loading}>Đang tải...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !walletData) {
+    return (
+      <div className={styles.container}>
+        <TopMenuList menuItems={menuItems} defaultActive={0} />
+        <div className={styles.content}>
+          <div className={styles.error}>{error || 'Không thể tải dữ liệu'}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <TopMenuList menuItems={menuItems} defaultActive={0} />
       
       <div className={styles.content}>
+        {/* Left Column - Main Content */}
         <div className={styles.mainSection}>
+          {/* Balance Overview */}
           <div className={styles.balanceInfo}>
             <div className={styles.balanceHeader}>
               <h2>Tổng giá trị ước tính</h2>
@@ -34,90 +98,73 @@ const Overview = () => {
                 className={styles.visibilityToggle}
                 onClick={() => setIsBalanceHidden(!isBalanceHidden)}
               >
-                👁
+                {isBalanceHidden ? '👁️‍🗨️' : '👁️'}
               </button>
             </div>
+            
             <div className={`${styles.balanceAmount} ${isBalanceHidden ? styles.hidden : ''}`}>
-              <span>0.02</span>
-              <select className={styles.currencySelect}>
-                <option>đô la Mỹ</option>
-              </select>
+              <span>{formatCurrency(walletData.totalValue)}</span>
+              <span className={styles.currency}>USD</span>
             </div>
+            
             <div className={styles.profitInfo}>
-              PnL hôm nay 0.00 đô la (0.00%)
+              PNL hôm nay {formatPnl(walletData.pnlToday, walletData.pnlPercentage)}
             </div>
+            
+            <div className={styles.chartContainer}>
+              <BalanceChart data={walletData.chartData} height={60} />
+            </div>
+            
             <div className={styles.actionButtons}>
               <button 
                 className={`${styles.actionBtn} ${styles.primary}`}
                 onClick={() => router.push('/deposit')}
               >
-                Tiền gửi
+                Nạp tiền
               </button>
               <button 
                 className={styles.actionBtn}
                 onClick={() => router.push('/convert')}
               >
-                Chuyển thành
+                Chuyển đổi
               </button>
               <button 
                 className={styles.actionBtn}
                 onClick={() => router.push('/withdraw')}
               >
-                Rút
+                Rút tiền
               </button>
               <button 
                 className={styles.actionBtn}
                 onClick={() => router.push('/transfer')}
               >
-                Chuyển khoản
+                Chuyển tiền
               </button>
             </div>
+          </div>
 
-            <div className={styles.assetsList}>
-              <div className={styles.assetsHeader}>
-                <input 
-                  type="text" 
-                  placeholder="Tìm kiếm token"
-                  className={styles.searchInput}
-                />
-                <div className={styles.assetsActions}>
-                  <label className={styles.hideSmallAssets}>
-                    <input type="checkbox" />
-                    Ẩn tài sản nhỏ
-                  </label>
-                  <button className={styles.convertButton}>Chuyển đổi nhanh</button>
-                </div>
-              </div>
-              
-              <table className={styles.assetsTable}>
-                <thead>
-                  <tr>
-                    <th>Tên</th>
-                    <th>Có phần nắm giữ</th>
-                    <th>Giao ngay PnL</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div className={styles.tokenInfo}>
-                        <span className={styles.tokenIcon}>S</span>
-                        <div>
-                          <div>SOL</div>
-                          <div className={styles.tokenName}>Solana</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div>0.00012985</div>
-                      <div className={styles.tokenValue}>0.02 đô la</div>
-                    </td>
-                    <td className={styles.profit}>+$0.01</td>
-                  </tr>
-                  {/* Add more token rows here */}
-                </tbody>
-              </table>
-            </div>
+          {/* Assets List */}
+          <div className={styles.assetsList}>
+            <h3>Tài sản</h3>
+            <AssetsTable assets={walletData.assets} />
+          </div>
+        </div>
+
+        {/* Right Column - Sidebar */}
+        <div className={styles.sidebar}>
+          {/* Allocation */}
+          <div className={styles.allocationSection}>
+            <h3>Phân bổ</h3>
+            <AllocationChart 
+              data={walletData.allocation} 
+              totalValue={walletData.totalValue} 
+            />
+          </div>
+
+          {/* Recent Funding History */}
+          <div className={styles.historySection}>
+            <h3>Lịch sử ví funding gần đây</h3>
+            <EmptyFundingHistory />
           </div>
         </div>
       </div>

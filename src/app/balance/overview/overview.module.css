@@ -13,7 +13,20 @@
 }
 
 /* Section Styles */
-.mainSection, .balanceSection {
+.mainSection, .sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mainSection {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eaecef;
+  padding: 24px;
+}
+
+.sidebar {
   background: #fff;
   border-radius: 8px;
   border: 1px solid #eaecef;
@@ -66,6 +79,11 @@
 .profitInfo {
   color: #02c076;
   font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* Chart Container */
+.chartContainer {
   margin-bottom: 24px;
 }
 
@@ -112,6 +130,37 @@
 
 .actionBtn.primary:hover {
   background: #333333;
+}
+
+/* Assets List */
+.assetsList h3 {
+  font-size: 16px;
+  color: #1e2329;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+/* Sidebar Sections */
+.allocationSection, .historySection {
+  margin-bottom: 24px;
+}
+
+.allocationSection h3, .historySection h3 {
+  font-size: 16px;
+  color: #1e2329;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+/* Loading and Error States */
+.loading, .error {
+  text-align: center;
+  padding: 40px;
+  color: #707a8a;
+}
+
+.error {
+  color: #f6465d;
 }
 
 /* Assets List */

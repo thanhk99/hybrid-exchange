@@ -4,14 +4,14 @@ import AuthService from './springboot-api/auth';
 import TokenService from './springboot-api/token';
 import { store } from '../../store/store';
 import { logout } from '../../store/authSlice';
+import { API_CONFIG } from '../constants';
 
-const baseURL = 'http://localhost:8000';
 const access_token_key ="a_tk"; 
 let isRefreshing = false;
 // Tạo instance Axios
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL,
-  timeout: 10000,
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -48,8 +48,8 @@ axiosInstance.interceptors.request.use(
 // Thêm interceptor cho response
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    // Xử lý response thành công
-    return response.data;
+    // Xử lý response thành công - trả về response thay vì response.data
+    return response;
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };

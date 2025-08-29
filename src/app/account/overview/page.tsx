@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TopMenuList from '../../components/shared/top-menu-list/TopMenuList';
 import UserProfileHeader from '../../components/account/UserProfileHeader';
@@ -7,11 +7,57 @@ import BalanceOverviewCard from '../../components/account/BalanceOverviewCard';
 import BalanceChart from '../../components/account/BalanceChart';
 import PriceTable from '../../components/account/PriceTable';
 import NotificationsPanel from '../../components/account/NotificationsPanel';
-import { mockRootProps } from '../../accountOverviewMockData';
+import { FundingService } from '../../lib/api';
+import { VerificationStatus, UserTier, PriceTableTab } from '../../accountOverviewMockData';
 import styles from './overview.module.css';
 
 const OverviewPage = () => {
   const router = useRouter();
+  const [balanceData, setBalanceData] = useState({
+    totalValue: 0,
+    currency: "USD",
+    pnlToday: 0,
+    pnlPercentage: 0,
+    chartData: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch balance data from API
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await FundingService.getFundingTotal();
+        console.log('Balance API response:', data);
+        
+        // Cập nhật balance data với data thực từ API
+        setBalanceData({
+          totalValue: data.totalValue || 0,
+          currency: data.currency || "USD",
+          pnlToday: data.pnlToday || 0,
+          pnlPercentage: data.pnlPercentage || 0,
+          chartData: [] // chartData sẽ được lấy riêng từ API khác
+        });
+      } catch (err) {
+        console.error('Error fetching balance:', err);
+        setError('Không thể tải dữ liệu số dư');
+        // Sử dụng data mặc định khi có lỗi
+        setBalanceData({
+          totalValue: 0,
+          currency: "USD",
+          pnlToday: 0,
+          pnlPercentage: 0,
+          chartData: []
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBalance();
+  }, []);
 
   const menuItems = [
     { 
@@ -55,6 +101,19 @@ const OverviewPage = () => {
   const handleViewProfile = () => router.push('/account/profile');
   const handleViewMore = () => router.push('/account/notifications');
 
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <TopMenuList menuItems={menuItems} defaultActive={0} />
+        <div className={styles.contentWrapper}>
+          <div className="flex items-center justify-center py-12">
+            <div className="text-gray-500">Đang tải...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <TopMenuList menuItems={menuItems} defaultActive={0} />
@@ -63,18 +122,18 @@ const OverviewPage = () => {
         <div className={styles.mainContent}>
           <div className={styles.leftSection}>
             <UserProfileHeader
-              email={mockRootProps.user.email}
-              userId={mockRootProps.user.userId}
-              avatar={mockRootProps.user.avatar}
-              verificationStatus={mockRootProps.user.verificationStatus}
-              country={mockRootProps.user.country}
-              tier={mockRootProps.user.tier}
-              isGoogleLinked={mockRootProps.user.isGoogleLinked}
+              email="user@example.com"
+              userId="123456789"
+              avatar="https://i.pravatar.cc/150?img=1"
+              verificationStatus={VerificationStatus.VERIFIED}
+              country="Việt Nam"
+              tier={UserTier.REGULAR}
+              isGoogleLinked={false}
               onViewProfile={handleViewProfile}
             />
 
             <BalanceOverviewCard
-              initialBalance={mockRootProps.balance}
+              initialBalance={balanceData}
               onDeposit={handleDeposit}
               onWithdraw={handleWithdraw}
               onConvert={handleConvert}
@@ -82,18 +141,18 @@ const OverviewPage = () => {
             />
 
             <BalanceChart
-              data={mockRootProps.balance.chartData}
+              data={balanceData.chartData}
             />
 
             <PriceTable
-              tokens={mockRootProps.priceTableData.tokens}
-              activeTab={mockRootProps.priceTableData.activeTab}
+              tokens={[]}
+              activeTab={PriceTableTab.TOP}
             />
           </div>
 
           <div className={styles.rightSection}>
             <NotificationsPanel
-              notifications={mockRootProps.notifications}
+              notifications={[]}
               onViewMore={handleViewMore}
             />
           </div>

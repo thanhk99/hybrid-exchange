@@ -209,7 +209,7 @@ class AccountService {
    */
   static async removeLoginDevice(deviceId: string): Promise<{ success: boolean }> {
     try {
-      const response = await axiosInstance.delete(`${API_CONFIG.ENDPOINTS.USER.DEVICES}/${deviceId}`);
+      const response = await axiosInstance.delete(`${API_CONFIG.ENDPOINTS.DEVICE.REVOKE}/${deviceId}`);
       
       if (response.data && typeof response.data === 'object' && 'data' in response.data) {
         return response.data.data;

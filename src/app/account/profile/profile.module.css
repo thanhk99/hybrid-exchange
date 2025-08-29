@@ -9,7 +9,7 @@
 }
 
 .contentWrapper {
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -17,88 +17,210 @@
 .card {
   background: white;
   width: 100%;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 32px;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 40px;
   color: #1e2329;
+  letter-spacing: -0.5px;
 }
 
 .avatarSection {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .avatar {
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background-color: #eee;
+  background-color: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatarEditIcon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background: #007bff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  border: 2px solid #fff;
 }
 
 .section {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .sectionTitle {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   color: #1e2329;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f0f0f0;
 }
 
-.row {
+.formRow {
   display: flex;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
+  padding: 16px 0;
+  border-bottom: 1px solid #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+.formRow:hover {
+  background-color: #fafbfc;
+  margin: 0 -16px;
+  padding: 16px;
+  border-radius: 8px;
 }
 
 .label {
   flex: 1;
   color: #1e2329;
+  font-weight: 500;
+  font-size: 14px;
+  min-width: 140px;
 }
 
 .value {
   flex: 1;
   color: #474d57;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.button {
-  padding: 4px 12px;
-  border: 1px solid #eee;
-  border-radius: 4px;
+.actionButton {
+  padding: 8px 16px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
   background: white;
   color: #1e2329;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 100px;
+  justify-content: center;
 }
 
-.button:hover {
-  background-color: #f5f5f5;
+.actionButton:hover {
+  background-color: #f8f9fa;
+  border-color: #c1c7cd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .verifiedText {
-  flex: 1;
   color: #03a66d;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  font-weight: 500;
 }
 
-.verifiedText::before {
-  content: "";
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-color: #03a66d;
-  border-radius: 50%;
-  margin-right: 4px;
+.verifiedIcon {
+  color: #03a66d;
+  font-size: 16px;
+}
+
+.phoneMasked {
+  color: #6c757d;
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+.thirdPartySection {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.thirdPartyLabel {
+  flex: 1;
+  color: #1e2329;
+  font-weight: 500;
+  font-size: 14px;
+  min-width: 140px;
+}
+
+.thirdPartyValue {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.googleIcon {
+  width: 20px;
+  height: 20px;
+  color: #ea4335;
+}
+
+.manageButton {
+  padding: 8px 16px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  background: white;
+  color: #1e2329;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  text-align: center;
+}
+
+.manageButton:hover {
+  background-color: #f8f9fa;
+  border-color: #c1c7cd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusActive {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.statusInactive {
+  background-color: #f8d7da;
+  color: #721c24;
 }

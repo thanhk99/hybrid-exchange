@@ -40,7 +40,11 @@ const BalanceOverviewCard: React.FC<BalanceOverviewCardProps> = ({
     setError(null);
     
     try {
+      console.log('Fetching balance from API...');
       const data: FundingTotalResponse = await FundingService.getFundingTotal();
+      console.log('API response data:', data);
+      console.log('Initial balance from props:', initialBalance);
+      
       setBalance(data);
       setError(null);
       setRetryCount(0);
@@ -80,7 +84,14 @@ const BalanceOverviewCard: React.FC<BalanceOverviewCardProps> = ({
   };
 
   useEffect(() => {
+    // Đảm bảo luôn có dữ liệu từ props
+    if (balance.totalValue <= 0) {
+      setBalance(initialBalance);
+    }
+    
+    // Gọi API để cập nhật dữ liệu
     fetchBalance();
+    
     // Set up periodic refresh every 30 seconds, but only if no error
     const interval = setInterval(() => {
       if (!error) {
@@ -88,15 +99,18 @@ const BalanceOverviewCard: React.FC<BalanceOverviewCardProps> = ({
       }
     }, 30000);
     return () => clearInterval(interval);
-  }, [error]);
+  }, [error, initialBalance]);
 
   // Check if balance is empty (0 or very small amount)
-  const isEmpty = balance.totalValue <= 0.001;
+  const isEmpty = false; // Luôn false để không hiển thị empty state
 
   // Show empty state if balance is empty and not loading
   if (isEmpty && !isLoading && !error) {
     return <EmptyBalanceState onDeposit={onDeposit} />;
   }
+
+  // Sử dụng balance từ API nếu có, nếu không thì sử dụng initialBalance
+  const displayBalance = balance.totalValue > 0 ? balance : initialBalance;
 
   return (
     <div className="bg-white rounded-md p-6 border border-gray-200 relative">
@@ -115,16 +129,16 @@ const BalanceOverviewCard: React.FC<BalanceOverviewCardProps> = ({
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <span className={`text-3xl font-medium text-gray-900 transition-all duration-200 ${isHidden ? 'blur-sm select-none' : ''}`}>
-            {formatCurrency(balance.totalValue)}
+            {formatCurrency(displayBalance.totalValue)}
           </span>
           <button className="bg-transparent border-none cursor-pointer text-sm text-gray-500 flex items-center gap-1 px-2 py-1 rounded transition-all duration-200 hover:bg-gray-50 hover:text-gray-900">
-            {balance.currency} <CaretDownOutlined />
+            {displayBalance.currency} <CaretDownOutlined />
           </button>
         </div>
 
         <PnLDisplay 
-          pnlToday={balance.pnlToday}
-          pnlPercentage={balance.pnlPercentage}
+          pnlToday={displayBalance.pnlToday}
+          pnlPercentage={displayBalance.pnlPercentage}
         />
       </div>
 

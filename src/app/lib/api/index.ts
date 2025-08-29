@@ -3,7 +3,6 @@ export { default as AuthService } from './springboot-api/auth';
 export { default as TokenService } from './springboot-api/token';
 export { default as FundingService } from './springboot-api/funding';
 export { default as AccountService } from './springboot-api/account';
-export { default as BalanceService } from './springboot-api/balance';
 
 // TODO: Add these services when needed
 // export { default as NotificationService } from './springboot-api/notifications';
@@ -22,11 +21,6 @@ export type {
   AccountSecurity,
   AccountSettings
 } from './springboot-api/account';
-
-export type {
-  BalanceData,
-  BalanceApiResponse
-} from './springboot-api/balance';
 
 // TODO: Add these types when services are implemented
 

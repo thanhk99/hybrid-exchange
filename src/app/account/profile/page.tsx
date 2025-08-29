@@ -1,13 +1,11 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AiFillGoogleCircle } from 'react-icons/ai';
+import { AiFillGoogleCircle, AiOutlineEdit, AiOutlineCopy, AiTwotoneEye, AiFillCheckCircle } from 'react-icons/ai';
 import TopMenuList from '../../components/shared/top-menu-list/TopMenuList';
-import ProfileSection from '../../components/profile/ProfileSection';
-import ProfileField from '../../components/profile/ProfileField';
-import ProfileAvatar from '../../components/profile/ProfileAvatar';
 import { profileService } from '../../services/profileService';
 import { UserProfile } from '../../types/profile';
+import { API_CONFIG } from '../../lib/constants';
 import styles from './profile.module.css';
 
 const ProfilePage = () => {
@@ -56,34 +54,26 @@ const ProfilePage = () => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
+        setError(null);
+        console.log('Fetching profile from:', API_CONFIG.ENDPOINTS.USER.GETFULLPROFILE);
         const response = await profileService.getProfile();
-        if (response.success) {
+        console.log('Profile response:', response);
+        console.log('Response type:', typeof response);
+        console.log('Response keys:', response ? Object.keys(response) : 'No response');
+        
+        if (response && response.message === 'success' && response.data) {
           setProfile(response.data);
         } else {
-          setError(response.message || 'Failed to fetch profile');
+          console.error('Invalid response format:', response);
+          setError(response?.message || 'Invalid response format');
         }
       } catch (err) {
         console.error('Error fetching profile:', err);
-        setError('Failed to load profile data');
-        // For development, set mock data if API fails
-        setProfile({
-          id: '719618597119037951',
-          email: 'nhu***@gmail.com',
-          nickname: 'nhu***@gmail.com',
-          isEmailVerified: true,
-          isIdentityVerified: true,
-          country: 'Việt Nam',
-          phone: '****821',
-          phoneVerified: true,
-          twoFactorEnabled: false,
-          tradingTier: 'Người dùng thông thường',
-          referralRate: '0%',
-          thirdPartyLogin: {
-            google: true
-          },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        });
+        if (err instanceof Error) {
+          setError(`Failed to load profile data: ${err.message}`);
+        } else {
+          setError('Failed to load profile data');
+        }
       } finally {
         setLoading(false);
       }
@@ -95,17 +85,18 @@ const ProfilePage = () => {
   const handleAvatarChange = async (file: File) => {
     try {
       const response = await profileService.updateAvatar(file);
-      if (response.success && profile) {
-        setProfile({ ...profile, avatar: response.data.avatar });
+      if (response.message === 'success' && profile) {
+        // Cập nhật avatar nếu cần
+        console.log('Avatar updated successfully');
       }
     } catch (err) {
       console.error('Error updating avatar:', err);
     }
   };
 
-  const handleEditNickname = () => {
-    // Navigate to edit nickname page or open modal
-    console.log('Edit nickname');
+  const handleEditUsername = () => {
+    // Navigate to edit username page or open modal
+    console.log('Edit username');
   };
 
   const handleEditEmail = () => {
@@ -136,6 +127,19 @@ const ProfilePage = () => {
 
   const handleViewReferralDetails = () => {
     router.push('/account/referral');
+  };
+
+  // Hàm mask email để hiển thị
+  const maskEmail = (email: string) => {
+    const [username, domain] = email.split('@');
+    if (username.length <= 3) return email;
+    return username.substring(0, 3) + '***@' + domain;
+  };
+
+  // Hàm mask phone number
+  const maskPhone = (phone: string) => {
+    if (phone.length <= 4) return phone;
+    return '****' + phone.slice(-4);
   };
 
   if (loading) {
@@ -180,103 +184,134 @@ const ProfilePage = () => {
           <h2 className={styles.title}>Thông tin</h2>
           
           {/* Personal Information Section */}
-          <ProfileSection title="Thông tin cá nhân">
-            <ProfileAvatar 
-              avatar={profile.avatar}
-              onAvatarChange={handleAvatarChange}
-            />
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Thông tin cá nhân</h3>
             
-            <ProfileField
-              label="Biệt danh"
-              value={profile.nickname || profile.email}
-              actionType="edit"
-              actionText="Thay đổi"
-              onAction={handleEditNickname}
-            />
+            <div className={styles.avatarSection}>
+              <div className={styles.avatar}>
+                {profile.avatar ? (
+                  <img src={profile.avatar} alt="Avatar" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <div className="text-gray-400 text-2xl">👤</div>
+                )}
+                <div className={styles.avatarEditIcon}>
+                  <AiOutlineEdit size={12} />
+                </div>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">{profile.username}</h4>
+                <p className="text-sm text-gray-500">Cập nhật ảnh đại diện</p>
+              </div>
+            </div>
             
-            <ProfileField
-              label="ID người dùng"
-              value={profile.id}
-              actionType="copy"
-              actionText="Sao chép"
-            />
-          </ProfileSection>
+            <div className={styles.formRow}>
+              <span className={styles.label}>Biệt danh</span>
+              <span className={styles.value}>{profile.username}</span>
+              <button className={styles.actionButton} onClick={handleEditUsername}>
+                <AiOutlineEdit size={14} />
+                Thay đổi
+              </button>
+            </div>
+            
+            <div className={styles.formRow}>
+              <span className={styles.label}>ID người dùng</span>
+              <span className={styles.value}>{profile.uid}</span>
+              <button className={styles.actionButton} onClick={() => navigator.clipboard.writeText(profile.uid)}>
+                <AiOutlineCopy size={14} />
+                Sao chép
+              </button>
+            </div>
+          </div>
 
           {/* Verification Information Section */}
-          <ProfileSection title="Thông tin xác minh">
-            <ProfileField
-              label="Xác minh danh tính"
-              value="Đã xác minh"
-              actionType="view"
-              actionText="Xem chi tiết"
-              onAction={handleViewIdentityDetails}
-              isVerified={profile.isIdentityVerified}
-            />
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Thông tin xác minh</h3>
             
-            <ProfileField
-              label="Quốc gia/Khu vực"
-              value={profile.country}
-              actionType="view"
-              actionText="Xem chi tiết"
-              onAction={handleViewCountryDetails}
-            />
-          </ProfileSection>
-
-          {/* Account Details Section */}
-          <ProfileSection title="Chi tiết tài khoản">
-            <ProfileField
-              label="Email"
-              value={profile.email}
-              actionType="edit"
-              actionText="Thay đổi"
-              onAction={handleEditEmail}
-            />
-            
-            <ProfileField
-              label="Số điện thoại"
-              value={profile.phone || 'Chưa cập nhật'}
-              actionType="edit"
-              actionText="Thay đổi"
-              onAction={handleEditPhone}
-            />
-            
-            <div className="flex items-center py-3 border-b border-gray-100">
-              <span className="flex-1 text-gray-900 font-medium">Đăng nhập qua bên thứ ba</span>
-              <div className="flex-1 flex items-center gap-2">
-                {profile.thirdPartyLogin?.google && (
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <AiFillGoogleCircle size={16} className="text-red-500" />
-                    <span>Google</span>
-                  </div>
-                )}
-                {!profile.thirdPartyLogin?.google && (
-                  <span className="text-gray-600">Chưa liên kết</span>
+            <div className={styles.formRow}>
+              <span className={styles.label}>Xác minh danh tính</span>
+              <div className={styles.value}>
+                {profile.verified ? (
+                  <span className={styles.verifiedText}>
+                    <AiFillCheckCircle className={styles.verifiedIcon} />
+                    Đã xác minh
+                  </span>
+                ) : (
+                  <span className="text-gray-500">Chưa xác minh</span>
                 )}
               </div>
-              <button
-                onClick={handleManageThirdParty}
-                className="px-3 py-1 text-sm border border-gray-200 rounded hover:bg-gray-50 transition-colors"
-              >
+              <button className={styles.actionButton} onClick={handleViewIdentityDetails}>
+                <AiTwotoneEye size={14} />
+                Xem chi tiết
+              </button>
+            </div>
+            
+            <div className={styles.formRow}>
+              <span className={styles.label}>Quốc gia/Khu vực</span>
+              <span className={styles.value}>{profile.nation}</span>
+              <button className={styles.actionButton} onClick={handleViewCountryDetails}>
+                <AiTwotoneEye size={14} />
+                Xem chi tiết
+              </button>
+            </div>
+          </div>
+
+          {/* Account Details Section */}
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Chi tiết tài khoản</h3>
+            
+            <div className={styles.formRow}>
+              <span className={styles.label}>Email</span>
+              <span className={styles.value}>{maskEmail(profile.email)}</span>
+              <button className={styles.actionButton} onClick={handleEditEmail}>
+                <AiOutlineEdit size={14} />
+                Thay đổi
+              </button>
+            </div>
+            
+            <div className={styles.formRow}>
+              <span className={styles.label}>Số điện thoại</span>
+              <span className={styles.value}>
+                {profile.phoneNumber ? (
+                  <span className={styles.phoneMasked}>{maskPhone(profile.phoneNumber)}</span>
+                ) : (
+                  'Chưa cập nhật'
+                )}
+              </span>
+              <button className={styles.actionButton} onClick={handleEditPhone}>
+                <AiOutlineEdit size={14} />
+                Thay đổi
+              </button>
+            </div>
+            
+            <div className={styles.thirdPartySection}>
+              <span className={styles.thirdPartyLabel}>Đăng nhập qua bên thứ ba</span>
+              <div className={styles.thirdPartyValue}>
+                <AiFillGoogleCircle className={styles.googleIcon} size={20} />
+                <span className="text-gray-600">Google</span>
+              </div>
+              <button className={styles.manageButton} onClick={handleManageThirdParty}>
                 Quản lý
               </button>
             </div>
             
-            <ProfileField
-              label="Bậc phí giao dịch"
-              value={profile.tradingTier}
-              actionType="view"
-              actionText="Xem chi tiết"
-              onAction={handleViewTradingTier}
-            />
-            
-            <ProfileField
-              label="Quyền lợi khi mời"
-              value={profile.referralRate}
-              actionType="view"
-              actionText="Xem chi tiết"
-              onAction={handleViewReferralDetails}
-            />
-          </ProfileSection>
+            <div className={styles.formRow}>
+              <span className={styles.label}>Bậc phí giao dịch</span>
+              <span className={styles.value}>{profile.leveFee}</span>
+              <button className={styles.actionButton} onClick={handleViewTradingTier}>
+                <AiTwotoneEye size={14} />
+                Xem chi tiết
+              </button>
+            </div>
+
+            <div className={styles.formRow}>
+              <span className={styles.label}>Trạng thái tài khoản</span>
+              <span className={styles.value}>
+                <span className={`${styles.statusBadge} ${profile.active ? styles.statusActive : styles.statusInactive}`}>
+                  {profile.active ? 'Hoạt động' : 'Không hoạt động'}
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

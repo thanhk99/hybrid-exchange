@@ -1,26 +1,37 @@
 export interface UserProfile {
-  id: string;
+  uid: string;
   email: string;
-  nickname?: string;
+  username: string;
+  nation: string;
+  phoneNumber?: string;
+  leveFee: string;
+  active: boolean;
+  verified: boolean;
   avatar?: string;
-  isEmailVerified: boolean;
-  isIdentityVerified: boolean;
-  country: string;
-  phone?: string;
-  phoneVerified: boolean;
-  twoFactorEnabled: boolean;
-  tradingTier: string;
-  referralRate: string;
-  thirdPartyLogin?: {
-    google?: boolean;
-    facebook?: boolean;
-  };
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface ProfileApiResponse {
-  success: boolean;
+  message: string;
   data: UserProfile;
-  message?: string;
+}
+
+export interface LoginDevice {
+  deviceId: string;
+  deviceName: string;
+  deviceType: string;
+  browser: string;
+  os: string;
+  ipAddress: string;
+  location: string;
+  region: string;
+  country: string;
+  lastLoginAt: string;
+  lastActiveAt: string;
+  isCurrentDevice: boolean;
+  isTrusted: boolean;
+}
+
+export interface DevicesApiResponse {
+  message: string;
+  data: LoginDevice[];
 }

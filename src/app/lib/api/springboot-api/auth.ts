@@ -13,7 +13,8 @@ class AuthService{
             email:email,
             password:password
         }
-        return axiosInstance.post(AuthService.apiLogin,body);
+        const response =  axiosInstance.post(AuthService.apiLogin,body);
+        return response
     }
 
     static signup (email : any, username : any, password : any, nation: any){
@@ -27,12 +28,33 @@ class AuthService{
     }
 
     static async refreshToken(){
-        const refreshToken = TokenService.getRefresh()
-        const body={
-            refreshToken:refreshToken
+        const refreshToken = await TokenService.getRefresh()
+        if (!refreshToken) {
+            throw new Error('No refresh token available');
         }
-        const response=await axiosInstance.post(AuthService.apiRefreshToken,body);
-        return response.data;
+        
+        console.log('Attempting to refresh token with:', refreshToken.substring(0, 20) + '...');
+        
+        // Chỉ sử dụng JSON format vì backend chỉ support application/json
+        const body = {
+            refreshToken: refreshToken
+        };
+        
+        console.log('Refresh token request body:', body);
+        
+        try {
+            const response = await axiosInstance.post(AuthService.apiRefreshToken, body, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('Refresh token response:', response);
+            return response.data;
+        } catch (error: any) {
+            console.error('Refresh token failed:', error.response?.status, error.response?.data);
+            throw error;
+        }
     }
 }
 
