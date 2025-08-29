@@ -1,0 +1,99 @@
+header {
+  display: flex;
+  background-color: black;
+  width: 100%;
+  height: 60px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  width: 65%;
+  gap: 5px;
+}
+
+.header-left nav {
+  display: flex;
+}
+
+.header-right {
+  display: flex;
+  width: 35%;
+  justify-content: center;
+  gap: 5%;
+  height: 60%;
+}
+
+.icon-user .childrens {
+  left: auto;  
+  right: 0;     
+}
+
+.header-user{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-user .item-icon{
+  font-size: 22px;
+}
+
+.icon-user .header-item:hover .item-icon {
+  transition: none;
+  transform: none;
+}
+
+.dropdown-extra {
+  padding: 8px 12px;
+  font-size: 12px; 
+  color: #444;
+}
+
+.dropdown-extra__email {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.dropdown-extra__uid {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.dropdown-extra__role {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.dropdown-extra__switch-btn {
+  font-size: 12px;
+  background: none;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 2px 4px;
+  cursor: pointer;
+}
+
+.dropdown-extra__switch-btn:hover {
+  background-color: #dedede;
+}
+
+
+.header-btn {
+  display: flex;
+  gap: 10px;
+  color: white;
+  font-size: 14px;
+}
+
+.header-btn button {
+  /* padding: 8px 16px; */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}

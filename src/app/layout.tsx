@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./component/shared/Header";
+import Header from "./component/shared/header/Header";
 import Footer from "./component/shared/Footer";
+import { Providers } from "./provider"
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +32,11 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        <Header/>
-        <main>{children}</main>
-        <Footer/>
+        <Providers>
+          <Header/>
+          <main>{children}</main>
+          <Footer/>
+        </Providers>
       </body>
     </html>
   );

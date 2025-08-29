@@ -6,14 +6,24 @@ class AuthService{
 
     static apiLogin:string =API_CONFIG.ENDPOINTS.AUTH.LOGIN;
     static apiRefreshToken :string =API_CONFIG.ENDPOINTS.AUTH.REFRESH
+    static aoiSignUp : string = API_CONFIG.ENDPOINTS.AUTH.SIGNUP
 
-    static async login(email:any,password:any){
+    static login(email:any,password:any){
         const body={
             email:email,
             password:password
         }
-        const response=await axiosInstance.post(AuthService.apiLogin,body);
-        return response.data;
+        return axiosInstance.post(AuthService.apiLogin,body);
+    }
+
+    static signup (email : any, username : any, password : any, nation: any){
+        const body ={
+            email : email,
+            username : username,
+            password : password,
+            nation : nation
+        }
+        return axiosInstance.post(AuthService.aoiSignUp,body);
     }
 
     static async refreshToken(){
