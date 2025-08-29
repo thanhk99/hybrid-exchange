@@ -1,0 +1,223 @@
+.container {
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Section Styles */
+.mainSection, .balanceSection {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eaecef;
+  padding: 24px;
+}
+
+/* Balance Header */
+.balanceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.balanceHeader h2 {
+  font-size: 14px;
+  font-weight: normal;
+  color: #1e2329;
+}
+
+.visibilityToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+/* Balance Amount */
+.balanceAmount {
+  font-size: 32px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.balanceAmount.hidden {
+  filter: blur(4px);
+  user-select: none;
+}
+
+.currencySelect {
+  font-size: 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.profitInfo {
+  color: #02c076;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Button Styles */
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+/* Common button styles */
+.actionBtn, .convertButton {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #eaecef;
+  color: #1e2329;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.actionBtn {
+  flex: 1;
+  min-height: 32px;
+}
+
+.actionBtn:hover, .convertButton:hover {
+  background: #f5f5f5;
+}
+
+.actionBtn:active, .convertButton:active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.actionBtn.primary {
+  background: #000000;
+  color: #ffffff;
+  border: none;
+}
+
+.actionBtn.primary:hover {
+  background: #333333;
+}
+
+/* Assets List */
+.assetsList {
+  margin-top: 24px;
+  border-top: 1px solid #eaecef;
+  padding-top: 24px;
+}
+
+.assetsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  border: 1px solid #eaecef;
+  border-radius: 4px;
+  width: 200px;
+}
+
+.assetsActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hideSmallAssets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+/* Table Styles */
+.assetsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assetsTable th, .assetsTable td {
+  padding: 12px;
+  border-bottom: 1px solid #eaecef;
+}
+
+.assetsTable th {
+  font-size: 12px;
+  color: #707a8a;
+  font-weight: normal;
+  text-align: left;
+}
+
+/* Token Styles */
+.tokenInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tokenIcon {
+  width: 24px;
+  height: 24px;
+  background: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tokenName, .tokenValue {
+  font-size: 12px;
+  color: #707a8a;
+}
+
+.profit {
+  color: #02c076;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 16px;
+  }
+
+  .actionButtons {
+    flex-wrap: wrap;
+  }
+
+  .actionBtn {
+    min-width: calc(50% - 4px);
+  }
+
+  .assetsHeader {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+}

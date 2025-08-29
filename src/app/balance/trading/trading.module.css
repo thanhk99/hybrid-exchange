@@ -1,0 +1,283 @@
+.container {
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.mainSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.balanceCard {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eaecef;
+  padding: 24px;
+}
+
+.balanceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.balanceHeader h2 {
+  font-size: 14px;
+  font-weight: normal;
+  color: #1e2329;
+}
+
+.visibilityToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.balanceAmount {
+  font-size: 32px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.balanceAmount.hidden {
+  filter: blur(4px);
+  user-select: none;
+}
+
+.currencySelect {
+  font-size: 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.actionBtn {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #eaecef;
+  color: #1e2329;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.actionBtn:hover {
+  background: #f5f5f5;
+}
+
+.actionBtn:active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.actionBtn.primary {
+  background: #000000;
+  color: #ffffff;
+  border: none;
+}
+
+.actionBtn.primary:hover {
+  background: #333333;
+}
+
+/* Assets List Styles */
+.assetsList {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eaecef;
+  padding: 24px;
+}
+
+.assetsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.assetsHeader h3 {
+  font-size: 16px;
+  color: #1e2329;
+}
+
+.assetsActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  border: 1px solid #eaecef;
+  border-radius: 4px;
+  width: 200px;
+}
+
+.hideSmallAssets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.convertButton {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #eaecef;
+  color: #1e2329;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.assetsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assetsTable th {
+  padding: 12px;
+  font-size: 12px;
+  color: #707a8a;
+  font-weight: normal;
+  text-align: left;
+  border-bottom: 1px solid #eaecef;
+}
+
+.assetsTable td {
+  padding: 12px;
+  border-bottom: 1px solid #eaecef;
+}
+
+.tokenInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tokenIcon {
+  width: 24px;
+  height: 24px;
+  background: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tokenName {
+  font-size: 12px;
+  color: #707a8a;
+}
+
+.profit {
+  color: #02c076;
+}
+
+/* Side Section */
+.sideSection {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eaecef;
+  padding: 24px;
+}
+
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.activityHeader h3 {
+  font-size: 16px;
+  color: #1e2329;
+}
+
+.viewMore {
+  font-size: 14px;
+  color: #1e2329;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.transactionItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eaecef;
+}
+
+.transactionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.transactionType {
+  font-size: 14px;
+  color: #1e2329;
+}
+
+.transactionTime {
+  font-size: 12px;
+  color: #707a8a;
+}
+
+.transactionAmount {
+  font-size: 14px;
+  color: #1e2329;
+}
+
+@media (max-width: 1024px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 16px;
+  }
+
+  .assetsHeader {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .assetsActions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+}

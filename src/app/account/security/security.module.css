@@ -1,0 +1,196 @@
+.container {
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+.contentWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #1e2329;
+  margin-bottom: 24px;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 500;
+  color: #1e2329;
+  margin-bottom: 16px;
+}
+
+.securityItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #eaecef;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: #707a8a;
+}
+
+.itemContent {
+  flex: 1;
+}
+
+.itemTitle {
+  font-size: 14px;
+  color: #1e2329;
+  margin-bottom: 4px;
+}
+
+.itemDesc {
+  font-size: 12px;
+  color: #707a8a;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #03a66d;
+  font-size: 14px;
+}
+
+.button {
+  padding: 4px 12px;
+  border: 1px solid #eaecef;
+  border-radius: 4px;
+  background: white;
+  color: #1e2329;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #f5f5f5;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 20px;
+    padding: 0 16px;
+  }
+
+  .section {
+    background-color: #fff;
+    margin-bottom: 8px;
+    padding: 0 16px;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+    padding: 16px 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid #eaecef;
+  }
+
+  .securityItem {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 0;
+    gap: 12px;
+  }
+
+  .itemLeft {
+    width: 100%;
+  }
+
+  .itemTitle {
+    font-size: 14px;
+    color: #1e2329;
+  }
+
+  .itemDesc {
+    font-size: 12px;
+    color: #707a8a;
+    margin-top: 4px;
+  }
+
+  .itemRight {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .button {
+    width: 100%;
+    padding: 8px 12px;
+    text-align: center;
+    background-color: #fafafa;
+  }
+
+  .status {
+    justify-content: flex-start;
+  }
+
+  /* Style cho notification banner */
+  .warningBanner {
+    background-color: #fff7e6;
+    padding: 12px 16px;
+    margin: 0 16px 8px;
+    border-radius: 4px;
+  }
+
+  /* Style cho item có badge "Được đề xuất" */
+  .recommendedBadge {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #f0b90b;
+    color: #fff;
+    border-radius: 2px;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+
+  /* Style cho item với icon mũi tên */
+  .arrowIcon {
+    width: 16px;
+    height: 16px;
+    margin-left: auto;
+  }
+
+  /* Style cho các item dạng list */
+  .listItem {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background-color: #fafafa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+
+  .listItemText {
+    flex: 1;
+    color: #707a8a;
+    font-size: 14px;
+  }
+}
