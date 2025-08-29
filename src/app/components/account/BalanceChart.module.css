@@ -1,0 +1,133 @@
+.container {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-lg);
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.periodButtons {
+  display: flex;
+  gap: var(--spacing-sm);
+  background: #f8f9fa;
+  padding: var(--spacing-xs);
+  border-radius: 20px;
+}
+
+.periodButton {
+  background: none;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.periodButton:hover {
+  color: var(--color-text-primary);
+}
+
+.periodButton.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.chartContainer {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+
+.chart {
+  width: 100%;
+  height: 200px;
+  display: block;
+}
+
+.gridLines {
+  opacity: 0.3;
+}
+
+.chartArea {
+  opacity: 0.1;
+}
+
+.chartLine {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chartPoint {
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.chartPoint:hover {
+  opacity: 1;
+  r: 4;
+}
+
+.timeLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-sm);
+  padding: 0 40px;
+}
+
+.timeLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.footer {
+  text-align: center;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.viewAssetsButton {
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.viewAssetsButton:hover {
+  background: #f5f5f5;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-md);
+  }
+  
+  .periodButtons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .periodButton {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 11px;
+  }
+  
+  .chart {
+    height: 150px;
+  }
+  
+  .timeLabels {
+    padding: 0 var(--spacing-md);
+  }
+}

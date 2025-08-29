@@ -1,0 +1,172 @@
+.container {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-md);
+}
+
+.userSection {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.avatarContainer {
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.emailRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.email {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.badges {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.emailLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.verificationBadge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-success);
+  font-size: 12px;
+}
+
+.verifiedIcon {
+  color: var(--color-success);
+  font-size: 12px;
+}
+
+.userIdRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.userId {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-family: monospace;
+}
+
+.copyButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.copyButton:hover {
+  background: #f5f5f5;
+  color: var(--color-text-primary);
+}
+
+.googleIcon {
+  color: #4285f4;
+  font-size: 16px;
+}
+
+.additionalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-md);
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.infoLabel {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.infoValue {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.viewProfileButton {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.viewProfileButton:hover {
+  background: #f5f5f5;
+  border-color: var(--color-border-hover);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-md);
+  }
+  
+  .emailRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .badges {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .viewProfileButton {
+    width: 100%;
+    text-align: center;
+  }
+}

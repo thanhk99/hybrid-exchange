@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import TopMenuList from '@/app/component/shared/top-menu-list/TopMenuList';
+import TopMenuList from '@/app/components/shared/top-menu-list/TopMenuList';
 import BalanceCard from '@/app/components/shared/BalanceCard/BalanceCard';
 import FundingAssetsTable from '@/app/components/funding/FundingAssetsTable';
 import FundingEmptyState from '@/app/components/funding/FundingEmptyState';

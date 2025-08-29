@@ -146,7 +146,7 @@ export default function Header() {
       icon: <CreditCardOutlined />,
       label: "Tài sản của tôi",
       content: "",
-      onClick: () => {},
+      onClick: () => router.push("/balance/overview"),
     },
     {
       icon: <LoginOutlined />,
@@ -179,19 +179,19 @@ export default function Header() {
       icon: <PieChartOutlined />,
       label: "Tổng quan",
       content: "",
-      onClick: () => {},
+      onClick: () => router.push("/account/overview"),
     },
     {
       icon: <UserOutlined />,
       label: "Thông tin",
       content: "",
-      onClick: () => {},
+      onClick: () => router.push("/account/profile"),
     },
     {
       icon: <SafetyOutlined />,
       label: "Cài đặt bảo mật",
       content: "",
-      onClick: () => {},
+      onClick: () => router.push("/account/security"),
     },
     {
       icon: <SettingOutlined />,

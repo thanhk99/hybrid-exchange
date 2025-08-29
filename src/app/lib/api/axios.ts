@@ -2,6 +2,8 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import AuthService from './springboot-api/auth';
 import TokenService from './springboot-api/token';
+import { store } from '../../store/store';
+import { logout } from '../../store/authSlice';
 
 const baseURL = 'http://localhost:8000';
 const access_token_key ="a_tk"; 
@@ -15,10 +17,18 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-    const clearAuthData = () => {
-        TokenService.clearToken()
-        // thêm các xử lý khác như redirect đến trang login
-    };
+const clearAuthData = () => {
+    // Xóa tất cả token từ localStorage
+    TokenService.clearToken();
+    
+    // Dispatch logout action để clear Redux state
+    store.dispatch(logout());
+    
+    // Redirect đến trang login
+    if (typeof window !== 'undefined') {
+        window.location.href = '/';
+    }
+};
 // Thêm interceptor cho request
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -58,8 +68,8 @@ axiosInstance.interceptors.response.use(
             // originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             return axiosInstance(originalRequest);
         } catch (refreshError) {
-            localStorage.clear();
-            // window.location.href = '/login';
+            // Khi refresh token thất bại, xóa tất cả token và redirect
+            clearAuthData();
             return Promise.reject(refreshError);
         } finally {
             isRefreshing = false;

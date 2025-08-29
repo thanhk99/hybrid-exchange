@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import TopMenuList from '../../component/shared/top-menu-list/TopMenuList';
+import TopMenuList from '../../components/shared/top-menu-list/TopMenuList';
 import styles from './security.module.css';
 
 const SecurityPage = () => {

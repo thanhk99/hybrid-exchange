@@ -14,7 +14,7 @@ export default class TokenService{
         localStorage.clear()
     }
 
-    static async getRefresh(){
+    static async getRefresh() : Promise<string | null>{
         return localStorage.getItem(this.REFRESH_TOKEN_KEY)
     }
 

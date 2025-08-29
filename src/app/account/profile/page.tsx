@@ -1,11 +1,20 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import TopMenuList from '../../component/shared/top-menu-list/TopMenuList';
+import { AiFillGoogleCircle } from 'react-icons/ai';
+import TopMenuList from '../../components/shared/top-menu-list/TopMenuList';
+import ProfileSection from '../../components/profile/ProfileSection';
+import ProfileField from '../../components/profile/ProfileField';
+import ProfileAvatar from '../../components/profile/ProfileAvatar';
+import { profileService } from '../../services/profileService';
+import { UserProfile } from '../../types/profile';
 import styles from './profile.module.css';
 
 const ProfilePage = () => {
   const router = useRouter();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const menuItems = [
     { 
@@ -42,6 +51,125 @@ const ProfilePage = () => {
     },
   ];
 
+  // Fetch profile data from backend
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const response = await profileService.getProfile();
+        if (response.success) {
+          setProfile(response.data);
+        } else {
+          setError(response.message || 'Failed to fetch profile');
+        }
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+        setError('Failed to load profile data');
+        // For development, set mock data if API fails
+        setProfile({
+          id: '719618597119037951',
+          email: 'nhu***@gmail.com',
+          nickname: 'nhu***@gmail.com',
+          isEmailVerified: true,
+          isIdentityVerified: true,
+          country: 'Việt Nam',
+          phone: '****821',
+          phoneVerified: true,
+          twoFactorEnabled: false,
+          tradingTier: 'Người dùng thông thường',
+          referralRate: '0%',
+          thirdPartyLogin: {
+            google: true
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleAvatarChange = async (file: File) => {
+    try {
+      const response = await profileService.updateAvatar(file);
+      if (response.success && profile) {
+        setProfile({ ...profile, avatar: response.data.avatar });
+      }
+    } catch (err) {
+      console.error('Error updating avatar:', err);
+    }
+  };
+
+  const handleEditNickname = () => {
+    // Navigate to edit nickname page or open modal
+    console.log('Edit nickname');
+  };
+
+  const handleEditEmail = () => {
+    // Navigate to edit email page or open modal
+    console.log('Edit email');
+  };
+
+  const handleEditPhone = () => {
+    // Navigate to edit phone page or open modal
+    console.log('Edit phone');
+  };
+
+  const handleViewIdentityDetails = () => {
+    router.push('/account/verification/identity');
+  };
+
+  const handleViewCountryDetails = () => {
+    router.push('/account/verification/country');
+  };
+
+  const handleManageThirdParty = () => {
+    router.push('/account/third-party');
+  };
+
+  const handleViewTradingTier = () => {
+    router.push('/account/trading-tier');
+  };
+
+  const handleViewReferralDetails = () => {
+    router.push('/account/referral');
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.topMenu}>
+          <TopMenuList menuItems={menuItems} />
+        </div>
+        <div className={styles.contentWrapper}>
+          <div className="flex items-center justify-center py-12">
+            <div className="text-gray-500">Đang tải...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !profile) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.topMenu}>
+          <TopMenuList menuItems={menuItems} />
+        </div>
+        <div className={styles.contentWrapper}>
+          <div className="flex items-center justify-center py-12">
+            <div className="text-red-500">Lỗi: {error}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) return null;
+
   return (
     <div className={styles.container}>
       <div className={styles.topMenu}>
@@ -51,68 +179,104 @@ const ProfilePage = () => {
         <div className={styles.card}>
           <h2 className={styles.title}>Thông tin</h2>
           
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Thông tin cá nhân</h3>
-            <div className={styles.avatarSection}>
-              <div className={styles.avatar}>
-                <span>Ảnh</span>
+          {/* Personal Information Section */}
+          <ProfileSection title="Thông tin cá nhân">
+            <ProfileAvatar 
+              avatar={profile.avatar}
+              onAvatarChange={handleAvatarChange}
+            />
+            
+            <ProfileField
+              label="Biệt danh"
+              value={profile.nickname || profile.email}
+              actionType="edit"
+              actionText="Thay đổi"
+              onAction={handleEditNickname}
+            />
+            
+            <ProfileField
+              label="ID người dùng"
+              value={profile.id}
+              actionType="copy"
+              actionText="Sao chép"
+            />
+          </ProfileSection>
+
+          {/* Verification Information Section */}
+          <ProfileSection title="Thông tin xác minh">
+            <ProfileField
+              label="Xác minh danh tính"
+              value="Đã xác minh"
+              actionType="view"
+              actionText="Xem chi tiết"
+              onAction={handleViewIdentityDetails}
+              isVerified={profile.isIdentityVerified}
+            />
+            
+            <ProfileField
+              label="Quốc gia/Khu vực"
+              value={profile.country}
+              actionType="view"
+              actionText="Xem chi tiết"
+              onAction={handleViewCountryDetails}
+            />
+          </ProfileSection>
+
+          {/* Account Details Section */}
+          <ProfileSection title="Chi tiết tài khoản">
+            <ProfileField
+              label="Email"
+              value={profile.email}
+              actionType="edit"
+              actionText="Thay đổi"
+              onAction={handleEditEmail}
+            />
+            
+            <ProfileField
+              label="Số điện thoại"
+              value={profile.phone || 'Chưa cập nhật'}
+              actionType="edit"
+              actionText="Thay đổi"
+              onAction={handleEditPhone}
+            />
+            
+            <div className="flex items-center py-3 border-b border-gray-100">
+              <span className="flex-1 text-gray-900 font-medium">Đăng nhập qua bên thứ ba</span>
+              <div className="flex-1 flex items-center gap-2">
+                {profile.thirdPartyLogin?.google && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <AiFillGoogleCircle size={16} className="text-red-500" />
+                    <span>Google</span>
+                  </div>
+                )}
+                {!profile.thirdPartyLogin?.google && (
+                  <span className="text-gray-600">Chưa liên kết</span>
+                )}
               </div>
-              <button className={styles.button}>Thay đổi</button>
+              <button
+                onClick={handleManageThirdParty}
+                className="px-3 py-1 text-sm border border-gray-200 rounded hover:bg-gray-50 transition-colors"
+              >
+                Quản lý
+              </button>
             </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Biệt danh</span>
-              <span className={styles.value}>nhu***@gmail.com</span>
-              <button className={styles.button}>Thay đổi</button>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>ID người dùng</span>
-              <span className={styles.value}>719618597119037951</span>
-              <button className={styles.button}>Sao chép</button>
-            </div>
-          </div>
-
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Thông tin xác minh</h3>
-            <div className={styles.row}>
-              <span className={styles.label}>Xác minh danh tính</span>
-              <span className={styles.verifiedText}>Đã xác minh</span>
-              <button className={styles.button}>Xem chi tiết</button>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Quốc gia/Khu vực</span>
-              <span className={styles.value}>Việt Nam</span>
-              <button className={styles.button}>Xem chi tiết</button>
-            </div>
-          </div>
-
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Chi tiết tài khoản</h3>
-            <div className={styles.row}>
-              <span className={styles.label}>Email</span>
-              <span className={styles.value}>nhu***@gmail.com</span>
-              <button className={styles.button}>Thay đổi</button>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Số điện thoại</span>
-              <span className={styles.value}>****821</span>
-              <button className={styles.button}>Thay đổi</button>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Đăng nhập qua bên thứ ba</span>
-              <span className={styles.value}>Google</span>
-              <button className={styles.button}>Quản lý</button>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Bậc phí giao dịch</span>
-              <span className={styles.value}>Người dùng thông thường</span>
-              <button className={styles.button}>Xem chi tiết</button>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Quyền lợi khi mời</span>
-              <span className={styles.value}>0%</span>
-              <button className={styles.button}>Xem chi tiết</button>
-            </div>
-          </div>
+            
+            <ProfileField
+              label="Bậc phí giao dịch"
+              value={profile.tradingTier}
+              actionType="view"
+              actionText="Xem chi tiết"
+              onAction={handleViewTradingTier}
+            />
+            
+            <ProfileField
+              label="Quyền lợi khi mời"
+              value={profile.referralRate}
+              actionType="view"
+              actionText="Xem chi tiết"
+              onAction={handleViewReferralDetails}
+            />
+          </ProfileSection>
         </div>
       </div>
     </div>
