@@ -1,0 +1,111 @@
+.btn {
+  position: relative;
+  display: inline-block;
+  font-family: Arial, sans-serif;
+}
+
+.btn-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.btn-item:hover {
+  border-color: #aaa;
+}
+
+.item-icon {
+  display: flex;
+  align-items: center;
+}
+
+.item-iconright {
+  transition: transform 0.3s ease;
+}
+
+.item-iconright.rotate {
+  transform: rotate(180deg);
+}
+
+.item-label {
+  flex: 1;
+  font-size: 14px;
+  color: #111;
+}
+
+.item-iconright {
+  margin-left: auto;
+  font-size: 10px;
+  color: #666;
+}
+
+.btn-children {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  z-index: 999;
+  width: 200px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  padding: 6px 0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.search-box {
+  padding: 6px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+}
+
+.search-box input:focus {
+  border-color: #888;
+}
+
+.btnchild-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btnchild-container:hover {
+  background: #f5f5f5;
+}
+
+.child-left {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.child-right {
+  flex: 1;
+  margin-left: 8px;
+  font-size: 14px;
+  color: #222;
+}
+
+.child-check {
+  font-size: 14px;
+  color: rgb(0, 0, 0); 
+}
