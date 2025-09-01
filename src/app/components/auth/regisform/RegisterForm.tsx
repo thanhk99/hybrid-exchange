@@ -4,16 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthService from "@/app/lib/api/springboot-api/auth";
 import TokenService from "@/app/lib/api/springboot-api/token";
-import { EyeOutlined, EyeInvisibleOutlined, MailOutlined, CompassOutlined } from "@ant-design/icons";
+import { EyeOutlined, EyeInvisibleOutlined, MailOutlined, CompassOutlined, DownOutlined } from "@ant-design/icons";
 import { UserOutlined, LockOutlined, CopyOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import type { AppDispatch } from "@/app/store/store";
-import { useDispatch } from "react-redux";
+// import type { AppDispatch } from "@/app/store/store";
+// import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import { data } from "react-router-dom";
 import "./RegisterForm.css";
 import { FaSpinner } from "react-icons/fa";
-
+import ButtonDropdown, { type BtnDropdownItem } from "@/app/component/shared/dropdown-btn/Btn"
 type FormValues = {
   email: string;
   username: string;
@@ -25,10 +24,10 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
+  // const dispatch = useDispatch<AppDispatch>();
 
-  const goToRegis = () => {
-    router.push("register");
+  const goToLogin = () => {
+    router.push("/login");
   };
 
   const copied = async (text: string): Promise<boolean> => {
@@ -45,6 +44,7 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
     getValues,
     formState: { errors },
@@ -64,8 +64,8 @@ export default function RegisterForm() {
       console.log(payload);
 
       if(payload.email && payload.id && payload.username){
-        toast.success('Đăng ký thành công')
-        router.push('/login')
+        router.push('/login');
+        router.refresh(); 
       }
 
     } catch (err: any) {
@@ -76,12 +76,39 @@ export default function RegisterForm() {
     }
   };
 
+  const nation: BtnDropdownItem[] = [
+    {
+      label: "Viet Nam",
+      onClick: () => {},
+    },
+    {
+      label: "Germany",
+      onClick: () => {},
+    },
+    {
+      label: "Russia",
+      onClick: () => {},
+    },
+    {
+      label: "China",
+      onClick: () => {},
+    },
+    {
+      label: "USA",
+      onClick: () => {} 
+    },
+    {
+      label: "United Kingdom",
+      onClick: () => {},
+    },
+  ];
+
   return (
     <div className="login-page">
       <div className="left-sight">
         <div className="left-content">{/* <img src={ava} alt="ava" /> */}</div>
-        <div className="route-regis" onClick={goToRegis}>
-          Create an acount
+        <div className="route-regis" onClick={goToLogin}>
+          Have an account ?
         </div>
       </div>
 
@@ -144,23 +171,16 @@ export default function RegisterForm() {
             </span>
           </div>
 
-          <div className="input-form">
-            <CompassOutlined className="icon-left"/>
-            <input
-              type="text"
-              placeholder="Nation"
-              {...register("nation", { required: "Nation is required" })}
-            />
-            <CopyOutlined
-              onClick={() => {
-                const nationValue = getValues("nation");
-                if (nationValue?.trim() !== "") {
-                  copied(nationValue);
-                } else {
-                  toast.error("Copy failed");
-                }
-              }}
-              className="icon-right"
+          <div>
+            <ButtonDropdown
+            label="Nation"
+            onClick={() => {}}
+            iconleft={<CompassOutlined />}
+            items={nation}
+            iconright = {<DownOutlined />}
+            onSelect={(val) => {
+              setValue("nation", val);
+            }}
             />
           </div>
 

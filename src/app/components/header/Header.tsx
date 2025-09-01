@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import userService from "@/app/lib/api/springboot-api/user";
 import {
   UserOutlined,
   ApiOutlined,
@@ -25,6 +24,7 @@ import {
   PoweroffOutlined,
   PieChartOutlined,
   SettingOutlined,
+  MenuOutlined,
 } from "@ant-design/icons";
 import HeaderItem, { type IChildrenItem } from "./item/Item";
 import "./Header.css";
@@ -32,17 +32,31 @@ import { useRouter } from "next/navigation";
 import { useDispatch,useSelector } from "react-redux";
 import type { AppDispatch } from "@/app/store/store";
 import { logout } from "@/app/store/authSlice";
+import iconnobg from "../../../../../public/imgs/iconnobg.png"
 
 export default function Header() {
   const router = useRouter();
   const { email, userId, isAuthenticated } = useSelector(
     (state: any) => state.auth
   );
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+    setExpandedItem(null);
+  };
+
+
   const dispatch = useDispatch<AppDispatch>();
 
   const handleLogout = () =>{
     dispatch(logout());
     router.push("/")
+  }
+
+  const regisPage = () =>{
+    router.push('register')
   }
 
   const loginPage = () => {
@@ -211,7 +225,9 @@ export default function Header() {
   return (
     <header>
       <div className="header-left">
-        <div className="logo">logo</div>
+        <div className="logo">
+          <img src={iconnobg.src} alt="ava" className="logo-img" />
+        </div>
 
         <HeaderItem
           label="Mua tiền mã hoá"
@@ -285,7 +301,50 @@ export default function Header() {
         ) : (
           <div className="header-btn">
             <button onClick={loginPage}>Đăng nhập</button>
-            <button>Đăng ký</button>
+            <button onClick={regisPage}>Đăng ký</button>
+            <button className="hamburger" onClick={toggleMenu}>
+              <MenuOutlined />
+            </button>
+          </div>
+        )}
+        {isMenuOpen && (
+          <div className="mobile-menu">
+            <HeaderItem
+              label="Mua tiền mã hoá"
+              onClick={() => {}}
+              icon={<DownOutlined />}
+              childrens={buyCrypto}
+            />
+            <HeaderItem
+              label="Khám phá"
+              onClick={() => {}}
+              icon={<DownOutlined />}
+              childrens={explore}
+            />
+            <HeaderItem
+              label="Giao dịch"
+              onClick={() => {}}
+              icon={<DownOutlined />}
+              childrens={transfer}
+            />
+            <HeaderItem
+              label="Tăng trưởng"
+              onClick={() => {}}
+              icon={<DownOutlined />}
+              childrens={growth}
+            />
+            <HeaderItem
+              label="Tổ chức"
+              onClick={() => {}}
+              icon={<DownOutlined />}
+              childrens={organize}
+            />
+            <HeaderItem
+              label="Thêm"
+              onClick={() => {}}
+              icon={<DownOutlined />}
+              childrens={moreinfor}
+            />
           </div>
         )}
       </div>
