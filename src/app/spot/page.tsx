@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import useWebSocket from '../lib/hooks/useWebSocket';
 
 interface CryptoData {
@@ -13,6 +14,7 @@ interface CryptoData {
 }
 
 const CryptoPage = () => {
+  const router = useRouter();
   const { isConnected, error, lastMessage } = useWebSocket('/topic/spot-prices');
   const [cryptoData, setCryptoData] = useState<Record<string, CryptoData>>({});
 
@@ -49,13 +51,24 @@ const CryptoPage = () => {
     return formatNumber(volume);
   };
 
+  // Xử lý click vào coin để xem chi tiết
+  const handleCoinClick = (symbol: string) => {
+    router.push(`/spot/${symbol.toLowerCase()}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Real-time Crypto Prices</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Giá Crypto Thời Gian Thực</h1>
+          <div className="flex items-center space-x-2">
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <span className="text-sm text-gray-600">
+              {isConnected ? 'Đã kết nối' : 'Đang kết nối...'}
+            </span>
+          </div>
+        </div>
         
-        {/* Connection Status - removed per request */}
-
         {/* Crypto Table */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
@@ -63,25 +76,25 @@ const CryptoPage = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Symbol
+                    Coin
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
+                    Giá
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    24h Change
+                    Thay đổi 24h
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    24h High
+                    Cao nhất 24h
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    24h Low
+                    Thấp nhất 24h
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Volume
+                    Khối lượng
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Update
+                    Cập nhật cuối
                   </th>
                 </tr>
               </thead>
@@ -90,10 +103,21 @@ const CryptoPage = () => {
                   Object.values(cryptoData)
                     .sort((a, b) => a.symbol.localeCompare(b.symbol))
                     .map((crypto: CryptoData) => (
-                      <tr key={crypto.symbol} className="hover:bg-gray-50">
+                      <tr 
+                        key={crypto.symbol} 
+                        className="hover:bg-gray-50 cursor-pointer transition-colors"
+                        onClick={() => handleCoinClick(crypto.symbol)}
+                      >
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            {crypto.symbol}
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
+                              <span className="text-white font-bold text-xs">
+                                {crypto.symbol.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {crypto.symbol}
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -136,7 +160,7 @@ const CryptoPage = () => {
                   <tr>
                     <td colSpan={7} className="px-6 py-8 text-center">
                       <div className="text-gray-500 text-sm">
-                        {isConnected ? 'Waiting for data...' : 'Connecting to WebSocket...'}
+                        {isConnected ? 'Đang chờ dữ liệu...' : 'Đang kết nối WebSocket...'}
                       </div>
                     </td>
                   </tr>
@@ -146,7 +170,26 @@ const CryptoPage = () => {
           </div>
         </div>
 
-        {/* Debug Info removed per request */}
+        {/* Instructions */}
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-blue-800">
+                Hướng dẫn sử dụng
+              </h3>
+              <div className="mt-2 text-sm text-blue-700">
+                <p>• Nhấp vào bất kỳ coin nào để xem thông tin chi tiết và biểu đồ giá</p>
+                <p>• Dữ liệu được cập nhật theo thời gian thực từ WebSocket</p>
+                <p>• Trang chi tiết sẽ hiển thị biểu đồ kline và thông tin giao dịch</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

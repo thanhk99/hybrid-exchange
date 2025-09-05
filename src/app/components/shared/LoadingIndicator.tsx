@@ -1,5 +1,4 @@
 import React from 'react';
-import { ReloadOutlined } from '@ant-design/icons';
 
 interface LoadingIndicatorProps {
   message?: string;
@@ -7,13 +6,15 @@ interface LoadingIndicatorProps {
 }
 
 const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({ 
-  message = 'Đang cập nhật...', 
+  message = 'Đang tải...', 
   className = '' 
 }) => {
   return (
-    <div className={`absolute top-2 right-2 text-xs text-gray-500 bg-white/90 px-2 py-1 rounded border border-gray-200 flex items-center gap-1 ${className}`}>
-      <ReloadOutlined spin className="text-inherit" />
-      <span>{message}</span>
+    <div className={`flex items-center justify-center ${className}`}>
+      <div className="flex flex-col items-center space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="text-gray-600 text-sm">{message}</div>
+      </div>
     </div>
   );
 };

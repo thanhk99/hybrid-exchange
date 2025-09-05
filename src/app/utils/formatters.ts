@@ -1,5 +1,16 @@
 // Utility functions for formatting currency and percentage values
 
+export const formatNumber = (num: number, decimalPlaces: number = 2): string => {
+  if (typeof num !== 'number' || isNaN(num)) {
+    return '0.00';
+  }
+  
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimalPlaces,
+    maximumFractionDigits: decimalPlaces
+  }).format(num);
+};
+
 export const formatCurrency = (amount: number, currency: string = 'USD'): string => {
   if (typeof amount !== 'number' || isNaN(amount)) {
     return '0.00';
