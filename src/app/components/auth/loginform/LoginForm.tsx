@@ -11,7 +11,6 @@ import {
   TwitterOutlined,
   GoogleOutlined,
 } from "@ant-design/icons";
-import { toast } from "react-toastify";
 import type { AppDispatch } from "@/app/store/store";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
@@ -19,6 +18,7 @@ import { loginSuccess } from "@/app/store/authSlice";
 import './LoginForm.css'
 import { FaSpinner } from "react-icons/fa";
 import deviceService from "@/app/services/deviceService";
+import { useNotification } from "@/app/components/shared/Notification";
 
 type FormValues = {
   email: string;
@@ -30,6 +30,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
+  const { showSuccess, showError, showInfo } = useNotification();
 
   const goToRegis = () => {
     router.push("/register");
@@ -38,10 +39,10 @@ export default function LoginForm() {
   const copied = async (text: string): Promise<boolean> => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copied");
+      showSuccess("Thành công", "Đã sao chép vào clipboard");
       return true;
     } catch (err) {
-      toast.error("Copy failed");
+      showError("Lỗi", "Không thể sao chép");
       return false;
     }
   };
@@ -56,6 +57,8 @@ export default function LoginForm() {
 
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
+    showInfo("Thông tin", "Đang xử lý đăng nhập...");
+    
     try {
       const response = await AuthService.login(data.email, data.password);
 
@@ -73,11 +76,14 @@ export default function LoginForm() {
       deviceService.setDeviceId(payload.data.deviceInfo.deviceId)
       TokenService.setToken(payload.data.accessToken, payload.data.refreshToken);
 
-      router.push("/homepage");
-      // router.refresh();
+      showSuccess("Thành công", "Đăng nhập thành công! Đang chuyển hướng...");
+      
+      setTimeout(() => {
+        router.push("/homepage");
+      }, 1500);
     } catch (err: any) {
       console.error("Login error:", err);
-      toast.error(err.response?.data?.message || "Đăng nhập thất bại");
+      showError("Lỗi đăng nhập", err.response?.data?.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +137,7 @@ export default function LoginForm() {
             if (emailValue?.trim() !== "") {
               copied(emailValue);
             } else {
-              toast.error("Copy failed");
+              showError("Lỗi", "Không có nội dung để sao chép");
             }
           }}
           className="icon-right"

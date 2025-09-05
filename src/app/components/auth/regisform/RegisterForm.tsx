@@ -6,13 +6,13 @@ import AuthService from "@/app/lib/api/springboot-api/auth";
 import TokenService from "@/app/lib/api/springboot-api/token";
 import { EyeOutlined, EyeInvisibleOutlined, MailOutlined, CompassOutlined, DownOutlined } from "@ant-design/icons";
 import { UserOutlined, LockOutlined, CopyOutlined } from "@ant-design/icons";
-import { toast } from "react-toastify";
 // import type { AppDispatch } from "@/app/store/store";
 // import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import "./RegisterForm.css";
 import { FaSpinner } from "react-icons/fa";
 import ButtonDropdown, { type BtnDropdownItem } from "@/app/component/shared/dropdown-btn/Btn"
+import { useNotification } from "@/app/components/shared/Notification";
 type FormValues = {
   email: string;
   username: string;
@@ -25,6 +25,7 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   // const dispatch = useDispatch<AppDispatch>();
+  const { showSuccess, showError, showInfo, showWarning } = useNotification();
 
   const goToLogin = () => {
     router.push("/login");
@@ -33,10 +34,10 @@ export default function RegisterForm() {
   const copied = async (text: string): Promise<boolean> => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copied");
+      showSuccess("Thành công", "Đã sao chép vào clipboard");
       return true;
     } catch (err) {
-      toast.error("Copy failed");
+      showError("Lỗi", "Không thể sao chép");
       return false;
     }
   };
@@ -51,7 +52,20 @@ export default function RegisterForm() {
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {
+    // Kiểm tra validation trước khi submit
+    if (!data.nation) {
+      showWarning("Cảnh báo", "Vui lòng chọn quốc gia");
+      return;
+    }
+
+    if (data.password.length < 6) {
+      showWarning("Cảnh báo", "Mật khẩu phải có ít nhất 6 ký tự");
+      return;
+    }
+
     setIsLoading(true);
+    showInfo("Thông tin", "Đang xử lý đăng ký...");
+    
     try {
       const response = await AuthService.signup(
         data.email,
@@ -64,13 +78,17 @@ export default function RegisterForm() {
       console.log(payload);
 
       if(payload.email && payload.id && payload.username){
-        router.push('/login');
-        router.refresh(); 
+        showSuccess("Thành công", "Đăng ký thành công! Đang chuyển đến trang đăng nhập...");
+        
+        setTimeout(() => {
+          router.push('/login');
+          router.refresh();
+        }, 2000);
       }
 
     } catch (err: any) {
       console.error("Regis error:", err);
-      toast.error(err.response?.data?.message || "Đăng ký thất bại");
+      showError("Lỗi đăng ký", err.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại sau.");
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +147,7 @@ export default function RegisterForm() {
                 if (emailValue?.trim() !== "") {
                   copied(emailValue);
                 } else {
-                  toast.error("Copy failed");
+                  showError("Lỗi", "Không có nội dung để sao chép");
                 }
               }}
               className="icon-right"
@@ -149,7 +167,7 @@ export default function RegisterForm() {
                 if (usernameValue?.trim() !== "") {
                   copied(usernameValue);
                 } else {
-                  toast.error("Copy failed");
+                  showError("Lỗi", "Không có nội dung để sao chép");
                 }
               }}
               className="icon-right"
