@@ -1,0 +1,200 @@
+.tradingFormContainer {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.tradeTypeTabs {
+  display: flex;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.tradeTab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tradeTab:hover {
+  color: var(--color-text-primary);
+}
+
+.tradeTabActive {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.currencySection {
+  margin-bottom: 20px;
+}
+
+.formGroup {
+  margin-bottom: 8px;
+}
+
+.formLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.currencySelector {
+  display: flex;
+  align-items: center;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  gap: 12px;
+}
+
+.currencyFlag,
+.cryptoIcon {
+  font-size: 20px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.currencySelect {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  flex: 1;
+}
+
+.amountRange {
+  margin-top: 8px;
+}
+
+.rangeText {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.amountInput {
+  margin-top: 8px;
+}
+
+.amountField {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 16px;
+  outline: none;
+}
+
+.amountField:focus {
+  border-color: var(--color-primary);
+}
+
+.referencePrice {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+}
+
+.priceLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.priceValue {
+  font-size: 12px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.paymentSection {
+  margin-bottom: 24px;
+}
+
+.paymentMethods {
+  margin-top: 8px;
+}
+
+.paymentMethod {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.paymentMethod:hover {
+  border-color: var(--color-border-hover);
+}
+
+.actionButton {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.buyButton {
+  background: var(--color-p2p-buy);
+  color: white;
+}
+
+.buyButton:hover {
+  background: var(--color-p2p-buy-hover);
+}
+
+.sellButton {
+  background: var(--color-p2p-sell);
+  color: white;
+}
+
+.sellButton:hover {
+  background: var(--color-p2p-sell-hover);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .tradingFormContainer {
+    max-width: none;
+    margin: 0 16px;
+  }
+}

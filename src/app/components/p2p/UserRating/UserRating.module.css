@@ -1,0 +1,42 @@
+.userRating {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.username {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.ratingInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.starFilled {
+  color: var(--color-rating-gold);
+}
+
+.starEmpty {
+  color: var(--color-text-muted);
+}
+
+.ratingNumber {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-left: 4px;
+}
+
+.tradeCount {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}

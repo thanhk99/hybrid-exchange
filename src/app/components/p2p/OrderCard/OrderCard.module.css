@@ -1,0 +1,103 @@
+.orderCard {
+  @apply p2p-order-card;
+}
+
+.cardContent {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.5fr 2fr 1fr;
+  gap: 16px;
+  align-items: center;
+  min-height: 60px;
+}
+
+.traderInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.priceInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-text-primary);
+}
+
+.available {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.limitInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.limits {
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.paymentInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.actionInfo {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tradeButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+}
+
+.buyButton {
+  @apply p2p-buy-button;
+}
+
+.sellButton {
+  @apply p2p-sell-button;
+}
+
+.terms {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+  font-size: 12px;
+}
+
+.termsLabel {
+  color: var(--color-text-secondary);
+  margin-right: 8px;
+}
+
+.termsText {
+  color: var(--color-text-primary);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cardContent {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .actionInfo {
+    justify-content: stretch;
+  }
+  
+  .tradeButton {
+    width: 100%;
+  }
+}

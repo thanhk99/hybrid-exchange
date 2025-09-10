@@ -1,0 +1,29 @@
+.container {
+  min-height: calc(100vh - 200px);
+  background: var(--color-bg-primary);
+}
+
+.contentWrapper {
+  background: var(--color-bg-primary);
+  min-height: calc(100vh - 300px);
+}
+
+.orderListSection {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .orderListSection {
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+}

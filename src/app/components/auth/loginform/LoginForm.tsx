@@ -15,7 +15,6 @@ import { toast } from "react-toastify";
 import type { AppDispatch } from "@/app/store/store";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import { data } from "react-router-dom";
 import { loginSuccess } from "@/app/store/authSlice";
 import './LoginForm.css'
 import { FaSpinner } from "react-icons/fa";

@@ -10,11 +10,15 @@ interface MenuItem {
 interface TopMenuListProps {
   menuItems: MenuItem[];
   defaultActive?: number;
+  splitLayout?: boolean; // New prop to enable split layout
+  leftItemsCount?: number; // Number of items to show on left side
 }
 
 const TopMenuList: React.FC<TopMenuListProps> = ({ 
   menuItems, 
-  defaultActive = 1
+  defaultActive = 0,
+  splitLayout = false,
+  leftItemsCount = 3
 }) => {
   const [activeIndex, setActiveIndex] = useState(defaultActive);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,21 +47,57 @@ const TopMenuList: React.FC<TopMenuListProps> = ({
     onClick();
   };
 
+  const leftItems = splitLayout ? menuItems.slice(0, leftItemsCount) : menuItems;
+  const rightItems = splitLayout ? menuItems.slice(leftItemsCount) : [];
+
   return (
     <div className={styles.navContainer}>
       {/* Desktop Menu */}
-      <nav className={styles.nav}>
-        <ul className={styles.list}>
-          {menuItems.map((item, index) => (
-            <li 
-              key={index}
-              className={`${styles.item} ${activeIndex === index ? styles.active : ''}`}
-              onClick={() => handleItemClick(index, item.onClick)}
-            >
-              {item.title}
-            </li>
-          ))}
-        </ul>
+      <nav className={`${styles.nav} ${splitLayout ? styles.splitNav : ''}`}>
+        {splitLayout ? (
+          <>
+            {/* Left side items */}
+            <ul className={`${styles.list} ${styles.leftList}`}>
+              {leftItems.map((item, index) => (
+                <li 
+                  key={index}
+                  className={`${styles.item} ${activeIndex === index ? styles.active : ''}`}
+                  onClick={() => handleItemClick(index, item.onClick)}
+                >
+                  {item.title}
+                </li>
+              ))}
+            </ul>
+            
+            {/* Right side items */}
+            <ul className={`${styles.list} ${styles.rightList}`}>
+              {rightItems.map((item, index) => {
+                const actualIndex = index + leftItemsCount;
+                return (
+                  <li 
+                    key={actualIndex}
+                    className={`${styles.item} ${activeIndex === actualIndex ? styles.active : ''}`}
+                    onClick={() => handleItemClick(actualIndex, item.onClick)}
+                  >
+                    {item.title}
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        ) : (
+          <ul className={styles.list}>
+            {menuItems.map((item, index) => (
+              <li 
+                key={index}
+                className={`${styles.item} ${activeIndex === index ? styles.active : ''}`}
+                onClick={() => handleItemClick(index, item.onClick)}
+              >
+                {item.title}
+              </li>
+            ))}
+          </ul>
+        )}
 
         {/* Hamburger Button */}
         <button 

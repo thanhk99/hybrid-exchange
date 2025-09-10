@@ -41,6 +41,13 @@ export const API_CONFIG = {
         MARKET: {
             PRICES: '/api/v1/market/prices',
             TRENDING: '/api/v1/market/trending'
+        },
+        P2P: {
+            ORDERS: '/api/v1/p2p/orders',
+            MY_ORDERS: '/api/v1/p2p/my-orders',
+            TRADES: '/api/v1/p2p/trades',
+            ACTIVE_TRADES: '/api/v1/p2p/trades/active',
+            PAYMENT_METHODS: '/api/v1/p2p/payment-methods'
         }
     }
 }
