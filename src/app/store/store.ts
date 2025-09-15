@@ -2,10 +2,14 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import storage from 'redux-persist/lib/storage' 
 import { persistReducer, persistStore } from 'redux-persist'
 import authReducer from './authSlice'
+import marketReducer from "./marketSlice"
+import spotReducer from './spotSlice'
 
 // gộp reducer
 const rootReducer = combineReducers({
   auth: authReducer,
+  market: marketReducer,
+  spot: spotReducer,
 })
 
 const persistConfig = {

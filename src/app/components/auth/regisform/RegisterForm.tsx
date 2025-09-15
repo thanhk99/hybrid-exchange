@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import "./RegisterForm.css";
 import { FaSpinner } from "react-icons/fa";
-import ButtonDropdown, { type BtnDropdownItem } from "@/app/component/shared/dropdown-btn/Btn"
+import ButtonDropdown, { type BtnDropdownItem } from "@/app/components/shared/dropdown-btn/Btn"
 type FormValues = {
   email: string;
   username: string;
