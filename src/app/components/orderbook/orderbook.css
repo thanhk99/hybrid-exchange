@@ -1,0 +1,56 @@
+.orderbook {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: white;
+  background: black;
+  width: 340px;
+}
+
+.header-book,
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 2px 6px;
+  position: relative;
+}
+
+.header {
+  font-weight: bold;
+  color: gray;
+}
+
+.row {
+  height: 20px;
+  align-items: center;
+}
+
+.price.red {
+  color: #f6465d;
+}
+.price.green {
+  color: #0ecb81;
+}
+
+/* .last-price {
+  text-align: center;
+  font-size: 18px;
+  margin: 6px 0;
+  color: #f6465d; 
+} */
+
+.depth {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: -1;
+  opacity: 0.2;
+}
+
+.red-bg {
+  background: #f6465d;
+}
+
+.green-bg {
+  background: #0ecb81;
+}

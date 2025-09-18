@@ -18,7 +18,7 @@ export function useMarketSocket() {
     const client = new Client({
       webSocketFactory: () => new SockJS("http://localhost:8000/ws"),
       reconnectDelay: 5000,
-      debug: (str) => console.log("[STOMP]", str),
+      // debug: (str) => console.log("[STOMP]", str),
     });
 
     client.onConnect = () => {
@@ -65,10 +65,10 @@ export function useMarketSocket() {
           const raw = JSON.parse(message.body);
           // lọc chỉ xử lý nến của symbol/interval hiện tại
           if (raw.symbol !== symbol || raw.interval !== interval) {
-            console.log(
-              `Filtered out: ${raw.symbol}/${raw.interval}, current: ${symbol}/${interval}`
-            );
-            return; // Bỏ qua nến không phải của symbol/interval hiện tại
+            // console.log(
+            //   `Filtered out: ${raw.symbol}/${raw.interval}, current: ${symbol}/${interval}`
+            // );
+            return; // bỏ qua nến không phải của symbol/interval hiện tại
           }
           const candle = mapIncomingToCandle(raw, symbol, interval);
           if (candle) {

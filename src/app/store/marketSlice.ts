@@ -71,9 +71,9 @@ const marketSlice = createSlice({
       state.trades = [];
       state.lastPrice = null;
     },
-    setCandles(state, action: PayloadAction<Candle[]>) {
-      state.candles = action.payload;
-    },
+    // setCandles(state, action: PayloadAction<Candle[]>) {
+    //   state.candles = action.payload;
+    // },
     // upsertCandle(state, action: PayloadAction<Candle>) {
     //   const c = action.payload;
     //   const idx = state.candles.findIndex(x => x.time === c.time);
@@ -115,6 +115,6 @@ const marketSlice = createSlice({
   },
 });
 
-export const { setSymbol, setCandles, upsertCandle, clearMarket } =
+export const { setSymbol, upsertCandle, clearMarket } =
   marketSlice.actions;
 export default marketSlice.reducer;

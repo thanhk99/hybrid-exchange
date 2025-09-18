@@ -4,6 +4,7 @@ import SpotRow from "./row/spotRow";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useSpotSocket } from "../hooks/useSpotSocket";
+import './spot.css'
 
 const MarketTable: React.FC = () => {
   useSpotSocket();
