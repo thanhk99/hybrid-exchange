@@ -12,7 +12,7 @@
 .orderbook-section {
   width: 20%;
   background: #1a1a1a;
-  resize: horizontal; /* cho kéo ngang */
+  /* resize: horizontal; */
   overflow: auto;
   min-width: 200px;
   max-width: 600px;
