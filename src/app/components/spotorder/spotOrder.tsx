@@ -52,12 +52,14 @@ export function SpotOrder() {
             <div className="child-tabs">
                 <div className="coc-tabs">Giới hạn</div>
                 <div className="coc-tabs">Thị trường</div>
-                <HeaderItem
+                <div className="child-right">
+                  <HeaderItem
                     label="TP/SL"
                     onClick={() => {}}
                     icon={<DownOutlined />}
                     childrens={placeType}
                 />
+                </div>
             </div>
         </>
         )}

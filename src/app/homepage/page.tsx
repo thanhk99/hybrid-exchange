@@ -33,7 +33,10 @@ const Homepage: React.FC = () => {
           </div>
         </div>
         <div className="phone-image">
-          <img src="/imgs/phone.png" alt="phone" />
+          {/* <img src="/imgs/phone.png" alt="phone" /> */}
+          <video className="first-img" style={{ visibility: "visible" }} title="" autoPlay loop muted playsInline width={280} height={580} aria-label="Ảnh minh họa app OKX" role="img" poster="https://www.okx.com/cdn/assets/imgs/258/CD17373D221B990B.png?x-oss-process=image/format,webp/ignore-error,1">
+            <source src="https://www.okx.com/cdn/assets/files/258/EE47D9F39F18508F.mp4" type="video/mp4" />
+          </video>
         </div>
       </div>
 
@@ -59,7 +62,10 @@ const Homepage: React.FC = () => {
           small. No sleepless nights. Have confidence in your crypto.
         </p>
         <div className="evolution-image">
-          <img src="/imgs/evolution.png" alt="evolution" />
+          {/* <img src="/imgs/evolution.png" alt="evolution" /> */}
+          <video className="second-img" style={{ visibility: "visible" }} title="" autoPlay loop muted playsInline width={1080} height={260} aria-label="Ảnh minh họa app OKX" role="img" poster="https://www.okx.com/cdn/assets/imgs/2210/2763D233C494439D.jpg?x-oss-process=image/format,webp/ignore-error,1">
+            <source src="https://www.okx.com/cdn/assets/files/2210/D47D930F643E7A00.webm" type="video/webm" />
+          </video>
         </div>
       </div>
     </div>
