@@ -1,6 +1,7 @@
 import { MarketSelector } from "../components/chart/marketselector/marketSelector";
 import { CandleChart } from "../components/chart/candle/candleChart";
 import { OrderBook } from "../components/orderbook/orderbook";
+import { SpotOrder } from "../components/spotorder/spotOrder";
 import './spotpage.css'
 
 export default function ChartLayout() {
@@ -14,7 +15,7 @@ export default function ChartLayout() {
         <OrderBook />
       </div>
       <div className="trade-section">
-        <p>Place Order Form</p>
+        <SpotOrder />
       </div>
     </div>
   );
