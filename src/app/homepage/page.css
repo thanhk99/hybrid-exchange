@@ -178,11 +178,11 @@
 
 .trade-image {
   position: relative;
-  width: 100%;           
-  max-width: 1000px;      
-  height: 450px;          
+  width: 100%;
+  max-width: 1000px;
+  height: 450px;
   overflow: hidden;
-  border-radius: 10px;   
+  border-radius: 10px;
 }
 
 .trade-image iframe {
@@ -313,3 +313,59 @@
     height: auto;
   }
 }
+
+.faq-container {
+  margin: 40px auto;
+  max-width: 800px;
+  width: 80%; /* Luôn chiếm 80% chiều ngang */
+  color: white;
+}
+
+.faq-item {
+  border-bottom: 1px solid #444;
+  padding: 16px 0;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  width: 100%; /* giữ cố định chiều ngang */
+}
+
+.faq-question span {
+  flex: 1; /* để text chiếm hết phần còn lại */
+  padding-right: 12px;
+  word-wrap: break-word; /* tránh tràn chữ */
+}
+
+.toggle-btn {
+  flex-shrink: 0; /* nút không co lại */
+  background: none;
+  border: 1px solid white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faq-answer {
+  margin-top: 10px;
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: pre-line; /* giữ format xuống dòng */
+}
+
+/* .top-bar {
+  width: 50%;
+  height: 40px;
+  background-color: #000;
+} */
