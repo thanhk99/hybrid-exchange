@@ -118,14 +118,14 @@
   max-width: 190px;
   padding: 0.5rem;
   font-size: 1rem;
-  border: 1.5px solid #09d1c7;
+  border: 1.5px solid #d1cece;
   border-radius: 0.5rem;
-  box-shadow: 2.5px 3px 0 #09d1c7;
+  box-shadow: 2.5px 3px 0 #d1cece;
   outline: none;
   transition: ease 0.25s;
 }
 .form-input:focus {
-  box-shadow: 5.5px 7px 0 #09d1c7;
+  box-shadow: 5.5px 7px 0 #d1cece ;
 }
 
 .phone-image {
@@ -180,7 +180,7 @@
   position: relative;
   width: 100%;
   max-width: 1000px;
-  height: 450px;
+  height: 520px;
   overflow: hidden;
   border-radius: 10px;
 }
@@ -364,8 +364,81 @@
   white-space: pre-line; /* giữ format xuống dòng */
 }
 
-/* .top-bar {
+.description {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  gap: 30px;
+}
+
+.started-btn{
+  background-color: #d1cece;
+  padding: 10px 15px;
+  border-radius: 10px;
+  color: #000;
+  font-family: "inter", sans-serif;
+}
+
+.started-btn:hover{
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    90deg,
+    rgb(116, 119, 123) 0%,
+    rgb(179, 182, 183) 100%
+  );
+  color: #fff;
+  cursor: pointer;
+}
+
+.content5 {
+  position: relative;
   width: 50%;
-  height: 40px;
-  background-color: #000;
-} */
+  max-width: 1000px; /* tùy chỉnh */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* tạo khoảng cách giữa text-section và video */
+}
+
+.content5 .text-section {
+  text-align: center;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+}
+
+.content5 .text-section h1 {
+  font-size: 2.2rem;
+  margin: 0 0 0.5rem;
+}
+
+.content5 .text-section p {
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+.content5 video {
+  width: 100%;
+  height: 400px;
+  border-radius: 12px;
+  display: block;
+}
+
+/* overlay text đè lên video */
+.content5 .overlay-text {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: #fff;
+  text-align: right;
+}
+.content5 .overlay-text h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+.content5 .overlay-text h2 {
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 400;
+}
+

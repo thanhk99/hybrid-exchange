@@ -4,7 +4,13 @@ import "./page.css";
 
 const Homepage: React.FC = () => {
   const [email, setEmail] = useState("");
-  const [openIndex, setOpenIndex] = useState<number | null>(0); // mặc định mở câu hỏi đầu
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlay = () => {
+    setIsPlaying(true);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,16 +59,22 @@ Với SBCB, bạn có thể:
       <div className="content1">
         <div className="left-content1">
           <h1>Trải nghiệm ứng dụng crypto toàn diện tại Việt Nam</h1>
-          <form className="input-group" onSubmit={handleSubmit}>
-            <input
-              type="email"
-              className="form-input"
-              placeholder="Địa chỉ email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </form>
+          <div className="description">
+            <form className="input-group" onSubmit={handleSubmit}>
+              <input
+                type="email"
+                className="form-input"
+                placeholder="Địa chỉ email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </form>
+
+            <div>
+              <button className="started-btn">Dùng thử SBCB</button>
+            </div>
+          </div>
           {/* <div className="sponsors">
             <img src="/imgs/logo3.png" alt="logo3" />
             <img src="/imgs/logo2.png" alt="logo2" />
@@ -95,15 +107,25 @@ Với SBCB, bạn có thể:
         <h1>Trade like a pro</h1>
         <p>Get the lowest fees, fastest transations, powerful APIs, and more</p>
         <div className="trade-image">
-          <iframe
+          {/* <iframe
             src="https://www.youtube.com/embed/EEX0EHTTePE?autoplay=1&mute=1&loop=1&playlist=EEX0EHTTePE&controls=0&showinfo=0&modestbranding=1"
             title="Trade Video"
             frameBorder="0"
             allow="autoplay; encrypted-media"
             allowFullScreen={false}
-          ></iframe>
+          ></iframe> */}
+          <video autoPlay loop muted playsInline>
+            <source src="/imgs/mid.mov" type="video/mp4" />
+          </video>
         </div>
       </div>
+
+      {/* <div className="content4">
+        <h1>How to trade like a pro</h1>
+        <video autoPlay loop muted playsInline>
+            <source src="/imgs/mid.mov" type="video/mp4"/>
+        </video>  
+      </div> */}
 
       <div className="content3">
         <h1>With you every step of the way</h1>
@@ -132,6 +154,27 @@ Với SBCB, bạn có thể:
             />
           </video>
         </div>
+      </div>
+
+      <div className="content5">
+        {/* <div className="text-section">
+          <h1>SBCB là gì ?</h1>
+          <p>
+            Tìm hiểu lý do vì sao app tiền mã hóa này được đối tác toàn cầu yêu
+            thích
+          </p>
+        </div> */}
+        <video controls muted playsInline onPlay={handlePlay}>
+          <source src="/imgs/end.mov" type="video/mp4" />
+        </video>
+
+        {/* overlay text */}
+        {!isPlaying && (
+          <div className="overlay-text">
+            <h2>Tái định nghĩa hệ thống</h2>
+            <h2>Chào mừng đến Web3</h2>
+          </div>
+        )}
       </div>
 
       {/* FAQ Section */}
