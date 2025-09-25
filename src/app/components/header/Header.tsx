@@ -225,7 +225,7 @@ export default function Header() {
     <header>
       <div className="header-left">
         <div className="logo">
-          <img src="/imgs/iconnobg.png" alt="Logo" className="logo-img"/>
+          <img src="/imgs/logo.jpg" alt="Logo" className="logo-img"/>
         </div>
 
         <HeaderItem
