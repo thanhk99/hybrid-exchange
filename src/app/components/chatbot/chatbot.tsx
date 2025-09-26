@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import "./chatbot.css";
-import { OpenAIOutlined } from "@ant-design/icons";
+import { RobotOutlined } from "@ant-design/icons";
 
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +11,7 @@ const Chatbot: React.FC = () => {
       {/* Nút mở/đóng */}
       {!isOpen && (
         <button className="chatbot-toggle" onClick={() => setIsOpen(true)}>
-          <OpenAIOutlined />
+          <RobotOutlined />
         </button>
       )}
 
