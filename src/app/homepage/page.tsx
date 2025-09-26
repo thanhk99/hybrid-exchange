@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import "./page.css";
+import Chatbot from "../components/chatbot/chatbot";
 
 const Homepage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -104,8 +105,11 @@ Với SBCB, bạn có thể:
       </div>
 
       <div className="content2">
-        <h1>Trade like a pro</h1>
-        <p>Get the lowest fees, fastest transations, powerful APIs, and more</p>
+        <h1>Giao dịch như một chuyên gia</h1>
+        <p>
+          Nhận mức phí thấp nhất, giao dịch nhanh nhất, API mạnh mẽ và nhiều hơn
+          nữa
+        </p>
         <div className="trade-image">
           {/* <iframe
             src="https://www.youtube.com/embed/EEX0EHTTePE?autoplay=1&mute=1&loop=1&playlist=EEX0EHTTePE&controls=0&showinfo=0&modestbranding=1"
@@ -128,11 +132,12 @@ Với SBCB, bạn có thể:
       </div> */}
 
       <div className="content3">
-        <h1>With you every step of the way</h1>
+        <h1>Đồng hành cùng bạn trên mọi bước đường</h1>
         <p>
-          From making your first crypto trade to becoming a seasoned trader, you
-          will have us to guide you through the process. No question is too
-          small. No sleepless nights. Have confidence in your crypto.
+          Từ việc thực hiện giao dịch tiền mã hóa đầu tiên đến việc trở thành một
+          nhà giao dịch dày dạn kinh nghiệm, bạn sẽ có chúng tôi hướng dẫn bạn
+          trong suốt quá trình. Không có câu hỏi nào là quá nhỏ. Không còn những
+          đêm mất ngủ. Hãy tự tin vào tiền mã hóa của bạn.
         </p>
         <div className="evolution-image">
           <video
@@ -196,6 +201,7 @@ Với SBCB, bạn có thể:
           </div>
         ))}
       </div>
+      <Chatbot />
     </div>
   );
 };
