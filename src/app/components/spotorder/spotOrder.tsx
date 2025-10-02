@@ -43,8 +43,8 @@ export function SpotOrder() {
         </div>
 
         <div className="place-btn">
-            <Button children="Mua" size="medium" background="none" />
-            <Button children="Bán" size="medium" background="none" />
+            <Button size="medium" background="none">Mua</Button>
+            <Button size="medium" background="none">Bán</Button>
         </div>
 
         {activeTab === "trade" && (

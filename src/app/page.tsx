@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import "./(homepage)/page.css";
+import "./page.css";
 import Chatbot from "./components/chatbot/chatbot";
 
 export default function Home() {
