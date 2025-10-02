@@ -1,6 +1,6 @@
 //API Constants 
 export const API_CONFIG = {
-    BASE_URL : "http://127.0.0.1:8000",
+    BASE_URL : "https://remarkably-arriving-imp.ngrok-free.app",
     TIMEOUT: 10000,
     ENDPOINTS: { 
         AUTH: {

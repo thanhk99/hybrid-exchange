@@ -79,7 +79,7 @@ export default function LoginForm() {
       showSuccess("Thành công", "Đăng nhập thành công! Đang chuyển hướng...");
       
       setTimeout(() => {
-        router.push("/homepage");
+        router.push("/");
       }, 1500);
     } catch (err: any) {
       console.error("Login error:", err);
@@ -114,7 +114,7 @@ export default function LoginForm() {
   return (
     <div className="login-page">
       <div className="left-sight">
-        <div className="left-content"><img src="/imgs/logo.svg" alt="ava" /></div>
+        <div className="left-content"><img src="imgs/logo.jfif" alt="ava" /></div>
         <div className="route-regis" onClick={goToRegis}>
           Create an acount
         </div>

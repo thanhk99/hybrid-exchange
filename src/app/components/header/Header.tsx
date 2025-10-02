@@ -223,7 +223,7 @@ export default function Header() {
     <header>
       <div className="header-left">
         <div className="logo" onClick={() => router.push('/') }>
-          <img src="/imgs/logo.svg" alt="logo" className="logo-img" />
+          <img src="/imgs/logo.jfif" alt="logo" className="logo-img" />
         </div>
 
         {/* Desktop menus (kept as original) */}
