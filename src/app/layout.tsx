@@ -5,6 +5,7 @@ import Header from "./components/header/Header";
 import Footer from "./components/shared/Footer";
 import { Providers } from "./provider";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { NotificationProvider } from "./components/shared/Notification";
 
 
 const geistSans = Geist({
@@ -34,11 +35,13 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <ProtectedRoute>
-            <Header/>
-            <main>{children}</main>
-            <Footer/>
-          </ProtectedRoute>
+          <NotificationProvider>
+            <ProtectedRoute>
+              <Header/>
+              <main>{children}</main>
+              <Footer/>
+            </ProtectedRoute>
+          </NotificationProvider>
         </Providers>
       </body>
     </html>
