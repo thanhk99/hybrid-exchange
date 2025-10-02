@@ -1,0 +1,142 @@
+.chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-family: sans-serif;
+  z-index: 1000;
+}
+
+/* Nút mở */
+.chatbot-toggle {
+  background-color: #024b02;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.chatbot-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Khung chat */
+.chatbot-window {
+  width: 350px;
+  height: 500px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* Hiệu ứng */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  transform: translateY(100%) scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+    opacity 0.3s ease;
+}
+
+/* Khi mở */
+.chatbot-window.open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Khi đóng */
+.chatbot-window.close {
+  transform: translateY(100%) scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Header */
+.chatbot-header {
+  background: #111;
+  color: #fff;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatbot-header .close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Nội dung chat */
+.chatbot-body {
+  flex: 1;
+  padding: 10px;
+  background: #f7f7f7;
+  overflow-y: auto;
+}
+
+.chat-message.bot {
+  background: #dfdfdf;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  color: #111;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Footer */
+.chatbot-footer {
+  display: flex;
+  padding: 8px;
+  border-top: 1px solid #ddd;
+}
+
+.chatbot-footer input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.chatbot-footer button {
+  margin-left: 8px;
+  padding: 8px 12px;
+  background: #1b311b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.chatbot-footer button:hover {
+  background: #145214;
+}
+
+/* Hiệu ứng tin nhắn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,24 @@
+.chart-layout {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.chart-section {
+  background: #111;
+  width: 60%;
+}
+
+.orderbook-section {
+  width: 20%;
+  background: #1a1a1a;
+  /* resize: horizontal; */
+  overflow: auto;
+  min-width: 200px;
+  max-width: 600px;
+}
+
+.trade-section {
+  width: 20%;
+  background: #222;
+}
