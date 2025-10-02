@@ -44,4 +44,6 @@ const SpotRow: React.FC<SpotRowProps> = React.memo(({
     );
 });
 
+SpotRow.displayName = "SpotRow";
+
 export default SpotRow;
