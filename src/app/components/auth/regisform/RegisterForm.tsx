@@ -11,7 +11,7 @@ import { UserOutlined, LockOutlined, CopyOutlined } from "@ant-design/icons";
 import { useForm } from "react-hook-form";
 import "./RegisterForm.css";
 import { FaSpinner } from "react-icons/fa";
-import ButtonDropdown, { type BtnDropdownItem } from "@/app/component/shared/dropdown-btn/Btn"
+import ButtonDropdown, { type BtnDropdownItem } from "@/app/components/shared/dropdown-btn/Btn"
 import { useNotification } from "@/app/components/shared/Notification";
 type FormValues = {
   email: string;
