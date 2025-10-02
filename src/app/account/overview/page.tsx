@@ -12,10 +12,11 @@ import { FundingService } from '../../lib/api';
 import userService from '@/app/lib/api/springboot-api/user';
 import { VerificationStatus, UserTier, PriceTableTab } from '../../accountOverviewMockData';
 import styles from './overview.module.css';
+import { RootState } from '@/app/types/auth';
 
 const OverviewPage = () => {
   const router = useRouter();
-  const { email, userId, isAuthenticated } = useSelector((state: any) => state.auth);
+  const { email, userId, isAuthenticated } = useSelector((state: RootState) => state.auth);
   
   const [userData, setUserData] = useState({
     email: '',
