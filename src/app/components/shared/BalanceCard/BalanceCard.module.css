@@ -1,0 +1,139 @@
+.balanceCard {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eaecef;
+  padding: 24px;
+}
+
+.balanceHeader {
+  margin-bottom: 16px;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #707a8a;
+  font-weight: normal;
+}
+
+.visibilityToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #707a8a;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.visibilityToggle:hover {
+  background: #f5f5f5;
+  color: #1e2329;
+}
+
+.balanceWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.amountSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amount {
+  font-size: 32px;
+  font-weight: 500;
+  color: #1e2329;
+  transition: filter 0.2s ease;
+}
+
+.amount.hidden {
+  filter: blur(4px);
+  user-select: none;
+}
+
+.currencyButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #707a8a;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.currencyButton:hover {
+  background: #f5f5f5;
+  color: #1e2329;
+}
+
+.profitText {
+  font-size: 12px;
+  color: #02c076;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.actionBtn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #eaecef;
+  color: #1e2329;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.actionBtn:hover {
+  background: #f5f5f5;
+}
+
+.actionBtn:active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.actionBtn.primary {
+  background: #000000;
+  color: #ffffff;
+  border: none;
+}
+
+.actionBtn.primary:hover {
+  background: #333333;
+}
+
+@media (max-width: 768px) {
+  .balanceCard {
+    padding: 20px;
+  }
+  
+  .amount {
+    font-size: 28px;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+  }
+  
+  .actionBtn {
+    width: 100%;
+  }
+}

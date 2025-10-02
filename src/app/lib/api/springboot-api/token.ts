@@ -11,15 +11,18 @@ export default class TokenService{
     }
 
     static async clearToken(){
-        localStorage.clear()
+        localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+        localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     }
 
-    static async getRefresh(){
-        return localStorage.getItem(this.REFRESH_TOKEN_KEY)
+    static async getRefresh() : Promise<string | null>{
+        const token = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+        return token;
     }
 
     static async getAccess(){
-        return localStorage.getItem(this.ACCESS_TOKEN_KEY)
+        const token = localStorage.getItem(this.ACCESS_TOKEN_KEY);
+        return token;
     }
 
     static isLogin(){

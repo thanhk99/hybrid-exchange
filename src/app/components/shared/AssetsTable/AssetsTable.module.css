@@ -1,0 +1,102 @@
+.assetsList {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eaecef;
+  padding: 24px;
+}
+
+.assetsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.searchWrapper {
+  flex: 1;
+  max-width: 300px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #eaecef;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.assetsActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hideSmallAssets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.convertButton {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #eaecef;
+  color: #1e2329;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.convertButton:hover {
+  background: #f5f5f5;
+}
+
+.convertButton:active {
+  background: #000;
+  color: #fff;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.emptyState h3 {
+  font-size: 16px;
+  color: #1e2329;
+  margin-bottom: 8px;
+}
+
+.emptyState p {
+  font-size: 14px;
+  color: #707a8a;
+}
+
+@media (max-width: 768px) {
+  .assetsHeader {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .searchWrapper {
+    max-width: 100%;
+  }
+
+  .assetsActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

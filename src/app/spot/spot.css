@@ -1,0 +1,88 @@
+.table-spot {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #222;
+  table-layout: fixed; 
+}
+
+.table-spot thead {
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table-spot th,
+.table-spot td {
+  font-weight: 400;
+  text-align: center; 
+  padding: 12px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-spot th{
+  font-weight: 650;
+  text-align: center; 
+  padding: 12px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Symbol */
+.table-spot th:nth-child(1),
+.table-spot td:nth-child(1) {
+  width: 15%;
+}
+
+/* Price */
+.table-spot th:nth-child(2),
+.table-spot td:nth-child(2) {
+  width: 20%; 
+}
+
+/* Change */
+.table-spot th:nth-child(3),
+.table-spot td:nth-child(3) {
+  width: 15%; 
+}
+
+/* Low */
+.table-spot th:nth-child(4),
+.table-spot td:nth-child(4) {
+  width: 15%; 
+}
+
+/* High */
+.table-spot th:nth-child(5),
+.table-spot td:nth-child(5) {
+  width: 15%; 
+}
+
+/* Volume */
+.table-spot th:nth-child(6),
+.table-spot td:nth-child(6) {
+  width: 20%; 
+}
+
+.table-spot tbody tr {
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.table-spot tbody tr:hover {
+  background: #fafafa;
+}
+
+.text-red-500 {
+  color: #ef4444;
+}
+
+.text-green-500 {
+  color: #22c55e;
+}

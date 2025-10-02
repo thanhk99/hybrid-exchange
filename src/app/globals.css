@@ -1,2 +1,119 @@
 @import "tailwindcss";
 
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Primary colors */
+  --color-primary: #000000;
+  --color-primary-hover: #333333;
+  
+  /* Background colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #fafafa;
+  --color-bg-card: #ffffff;
+  
+  /* Text colors */
+  --color-text-primary: #1e2329;
+  --color-text-secondary: #707a8a;
+  --color-text-muted: #b7bcc8;
+  
+  /* Border colors */
+  --color-border: #eaecef;
+  --color-border-hover: #d1d5db;
+  
+  /* Status colors */
+  --color-success: #03a66d;
+  --color-error: #f84960;
+  --color-warning: #fcd535;
+  
+  /* Chart colors */
+  --color-chart-line: #03a66d;
+  --color-chart-fill: rgba(3, 166, 109, 0.1);
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+#root {
+  margin: auto;
+}
+
+/* Custom utilities */
+@utility scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility card-shadow {
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+@utility hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Ant Design icon color inheritance */
+.anticon {
+  color: inherit;
+}
+
+/* Profile specific utilities */
+@utility profile-field-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+@utility profile-button {
+  padding: 4px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: var(--color-bg-secondary);
+  }
+}
+
+@utility verified-status {
+  color: var(--color-success);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Responsive grid utilities */
+@media (max-width: 768px) {
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
