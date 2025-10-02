@@ -45,7 +45,17 @@ export default function Header() {
     setIsMenuOpen(!isMenuOpen);
     setExpandedItem(null);
   };
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1295) {
+        setIsMenuOpen(false);
+        setExpandedItem(null);
+      }
+    };
 
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -223,91 +233,13 @@ export default function Header() {
 
   return (
     <header>
-      <div className="header-left">
-        <div className="logo">
-          <img src="/imgs/logo.jpg" alt="Logo" className="logo-img"/>
-        </div>
+      <div className="head">
+        <div className="header-left">
+          <div className="logo" onClick={() => {router.push("/")}}>
+            <img src="/imgs/logo.svg" alt="Logo" className="logo-img"/>
+          </div>
 
-        <HeaderItem
-          label="Mua tiền mã hoá"
-          onClick={() => {}}
-          icon={<DownOutlined />}
-          childrens={buyCrypto}
-        />
-        <HeaderItem
-          label="Khám phá"
-          onClick={() => {}}
-          icon={<DownOutlined />}
-          childrens={explore}
-        />
-        <HeaderItem
-          label="Giao dịch"
-          onClick={() => {}}
-          icon={<DownOutlined />}
-          childrens={transfer}
-        />
-        <HeaderItem
-          label="Tăng trưởng"
-          onClick={() => {}}
-          icon={<DownOutlined />}
-          childrens={growth}
-        />
-        <HeaderItem
-          label="Tổ chức"
-          onClick={() => {}}
-          icon={<DownOutlined />}
-          childrens={organize}
-        />
-        <HeaderItem
-          label="Thêm"
-          onClick={() => {}}
-          icon={<DownOutlined />}
-          childrens={moreinfor}
-        />
-      </div>
-      <div className="header-right">
-        {isAuthenticated ? (
-          <div className="header-user">
-            <div className="user-asset">
-              <HeaderItem
-                label="Tài sản"
-                onClick={() => {}}
-                icon={<DownOutlined />}
-                childrens={asset}
-              />
-            </div>
-            <div className="icon-user">
-              <HeaderItem
-                label=""
-                onClick={() => {}}
-                icon={<UserOutlined />}
-                headerContent={
-                  <div className="dropdown-extra">
-                    <div className="dropdown-extra__email">{email}</div>
-                    <div className="dropdown-extra__uid">UID: {userId}</div>
-                    <span className="dropdown-extra__role">
-                      Người dùng thông thường
-                    </span>
-                    <button className="dropdown-extra__switch-btn">
-                      Chuyển đổi tài khoản phụ
-                    </button>
-                  </div>
-                }
-                childrens={user}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="header-btn">
-            <button onClick={loginPage}>Đăng nhập</button>
-            <button onClick={regisPage}>Đăng ký</button>
-            <button className="hamburger" onClick={toggleMenu}>
-              <MenuOutlined />
-            </button>
-          </div>
-        )}
-        {isMenuOpen && (
-          <div className="mobile-menu">
+        <div className="menu">
             <HeaderItem
               label="Mua tiền mã hoá"
               onClick={() => {}}
@@ -345,7 +277,89 @@ export default function Header() {
               childrens={moreinfor}
             />
           </div>
-        )}
+        </div>
+        <div className="header-right">
+          {isAuthenticated ? (
+            <div className="header-user">
+              <div className="user-asset">
+                <HeaderItem
+                  label="Tài sản"
+                  onClick={() => {}}
+                  icon={<DownOutlined />}
+                  childrens={asset}
+                />
+              </div>
+              <div className="icon-user">
+                <HeaderItem
+                  label=""
+                  onClick={() => {}}
+                  icon={<UserOutlined />}
+                  headerContent={
+                    <div className="dropdown-extra">
+                      <div className="dropdown-extra__email">{email}</div>
+                      <div className="dropdown-extra__uid">UID: {userId}</div>
+                      <span className="dropdown-extra__role">
+                        Người dùng thông thường
+                      </span>
+                      <button className="dropdown-extra__switch-btn">
+                        Chuyển đổi tài khoản phụ
+                      </button>
+                    </div>
+                  }
+                  childrens={user}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="header-btn">
+              <button onClick={loginPage}>Đăng nhập</button>
+              <button onClick={regisPage}>Đăng ký</button>
+              <button className="hamburger" onClick={toggleMenu}>
+                <MenuOutlined />
+              </button>
+            </div>
+          )}
+          {isMenuOpen && (
+            <div className="mobile-menu">
+              <HeaderItem
+                label="Mua tiền mã hoá"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={buyCrypto}
+              />
+              <HeaderItem
+                label="Khám phá"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={explore}
+              />
+              <HeaderItem
+                label="Giao dịch"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={transfer}
+              />
+              <HeaderItem
+                label="Tăng trưởng"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={growth}
+              />
+              <HeaderItem
+                label="Tổ chức"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={organize}
+              />
+              <HeaderItem
+                label="Thêm"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={moreinfor}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

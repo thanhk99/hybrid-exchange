@@ -114,7 +114,7 @@ export default function LoginForm() {
   return (
     <div className="login-page">
       <div className="left-sight">
-        <div className="left-content">{/* <img src={ava} alt="ava" /> */}</div>
+        <div className="left-content"><img src="/imgs/logo.svg" alt="ava" /></div>
         <div className="route-regis" onClick={goToRegis}>
           Create an acount
         </div>
