@@ -32,7 +32,6 @@ import { useRouter } from "next/navigation";
 import { useDispatch,useSelector } from "react-redux";
 import type { AppDispatch } from "@/app/store/store";
 import { logout } from "@/app/store/authSlice";
-// import iconnobg from "../../../public/imgs/iconnobg.png"
 
 export default function Header() {
   const router = useRouter();
@@ -226,7 +225,7 @@ export default function Header() {
     <header>
       <div className="header-left">
         <div className="logo">
-          {/* <img src={iconnobg.src} alt="ava" className="logo-img" /> */}
+          <img src="/imgs/logo.jpg" alt="Logo" className="logo-img"/>
         </div>
 
         <HeaderItem

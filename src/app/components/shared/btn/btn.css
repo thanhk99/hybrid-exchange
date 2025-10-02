@@ -1,0 +1,59 @@
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn.green {
+  background-color: #1d9a25;
+  color: white;
+}
+
+.btn.primary:hover{
+    background-color: #1f8e26;
+}
+
+.btn.red {
+  background-color: #ef5350;
+  color: #333;
+}
+
+.btn.red:hover{
+    background-color: #e84441;
+}
+
+/* .btn.none {
+  background-color: transparent;
+  color: white;
+}
+
+.btn.none:hover{
+    background-color: transparent;
+} */
+
+.btn.small {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.btn.medium {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.btn.large {
+  font-size: 1.25rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.icon.left,.icon.right {
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+}

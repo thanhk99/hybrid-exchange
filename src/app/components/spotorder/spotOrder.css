@@ -1,0 +1,28 @@
+.main-tabs{
+    display: flex;
+    justify-content: space-between;
+    color: white;
+}
+
+.main-left{
+    display: flex;
+    gap: 10px;
+}
+
+.child-tabs{
+    color: white;
+    display: flex;
+    gap: 10px;
+}
+
+.coc-tabs{
+    display: flex;
+    align-items: center;
+    padding: 5px 7px;
+    font-size: 14px;
+}
+
+.child-right .children {
+    left: auto;  
+    right: 0;
+}

@@ -1,0 +1,55 @@
+.market-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: black;
+}
+
+/* symbols */
+.symbols-list {
+  display: flex;
+  gap: 10px;             
+  flex-wrap: wrap;       
+}
+
+.symbol-item {
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #ccc;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.symbol-item:hover {
+  background: #656565;
+}
+
+.symbol-item.active {
+  background: #757575;
+  color: #ffffff;
+}
+
+/* intervals */
+.intervals-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.interval-item {
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 13px;
+}
+
+.interval-item:hover {
+  background: #3a3a3a;
+}
+
+.interval-item.active {
+  background: #757575;
+  color: #fff;
+}
