@@ -5,17 +5,22 @@ header {
   height: 50px;
   align-items: center;
   justify-content: space-between;
+  padding: 0 12px;
+  position: fixed;
+  z-index: 999;
 }
-.head{
-  width: 90%;
+
+.head {
+  width: 80%;
   display: flex;
   margin-left: 10%;
   justify-content: center;
-  
 }
-.menu{
+
+.menu {
   display: flex;
 }
+
 .logo {
   display: flex;
   align-items: center;
@@ -24,16 +29,17 @@ header {
 }
 
 .logo-img {
-  object-fit: contain; 
-  border-radius: 6px; 
+  object-fit: contain;
+  border-radius: 6px;
   height: 100%;
 }
 
 .header-left {
   display: flex;
-  gap: 5px;
-  justify-content: center;
   align-items: center;
+  gap: 8px;
+  width: auto;
+  flex-shrink: 0;
 }
 
 .header-left nav {
@@ -42,24 +48,26 @@ header {
 
 .header-right {
   display: flex;
-  width: 35%;
-  justify-content: center;
-  gap: 5%;
-  height: 60%;
+  flex: 1;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  height: 50px;
+  position: relative;
 }
 
 .icon-user .childrens {
-  left: auto;  
-  right: 0;    
+  left: auto;
+  right: 0;
 }
 
-.header-user{
+.header-user {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.icon-user .item-icon{
+.icon-user .item-icon {
   font-size: 22px;
 }
 
@@ -70,7 +78,7 @@ header {
 
 .dropdown-extra {
   padding: 8px 12px;
-  font-size: 12px; 
+  font-size: 12px;
   color: #444;
 }
 
@@ -105,7 +113,6 @@ header {
   background-color: #dedede;
 }
 
-
 .header-btn {
   display: flex;
   gap: 10px;
@@ -114,7 +121,6 @@ header {
 }
 
 .header-btn button {
-  /* padding: 8px 16px; */
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -130,6 +136,8 @@ header {
   font-size: 20px;
   background: none !important;
   color: white;
+  align-items: center;
+  cursor: pointer;
 }
 
 .mobile-menu {
@@ -137,14 +145,15 @@ header {
   position: absolute;
   top: 50px;
   right: 0;
-  background-color: #1a1a1a;
-  width: 35%;
-  height: 100%S;
+  background-color: black;
+  width: 320px;
+  height: calc(100vh - 50px);
   flex-direction: column;
   padding: 10px;
   z-index: 1000;
-  /* max-height: calc(100vh - 60px); */
   overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none
 }
 
 .mobile-menu .header-item {
@@ -155,22 +164,94 @@ header {
 
 .mobile-menu .childrens {
   display: none;
+  position: static;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  min-width: 0;
+  opacity: 1;
 }
 
 .mobile-menu .childrens.active {
   display: flex;
   flex-direction: column;
   padding-left: 20px;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .mobile-menu .childrens .header-item {
   padding: 5px 10px;
 }
 
+.right-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.pill-btn {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pill-btn:hover {
+  border-color: rgba(255,255,255,0.45);
+}
+
+.divider {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  background: rgba(255,255,255,0.15);
+}
+
+.mobile-link {
+  width: 100%;
+  text-align: left;
+  color: #fff;
+  background: transparent;
+  border: none;
+  padding: 12px 8px;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+}
+
+.mobile-section-title {
+  color: #aaa;
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 10px 8px 6px 8px;
+}
+
+/* Media queries */
 @media screen and (max-width: 1295px) {
-  .head{
+  .head {
     width: 80%;
   }
+  
   .menu {
     display: none;
   }
@@ -179,25 +260,85 @@ header {
     width: 80%;
     justify-content: flex-end;
   }
+  
   .header-left {
     justify-content: flex-start;
     width: 20%;
   }
 
+  /* Hide desktop menu items when hamburger is visible */
+  .header-left .header-item {
+    display: none;
+  }
+
+  /* Hiển thị header-user trên tablet (vẫn ẩn trên mobile) */
+  .header-user {
+    display: flex;
+  }
+
+  .header-btn {
+    display: flex;
+  }
+
   .hamburger {
     display: block;
+    margin-left: 12px; /* Thêm khoảng cách giữa user và hamburger */
   }
 
   .mobile-menu {
     display: flex;
   }
+}
+
+@media screen and (max-width: 1024px) {
+  .menu {
+    display: none;
+  }
+
+  /* Keep logo, hide desktop menu items */
+  .header-left .header-item {
+    display: none;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Hiển thị header-user và header-btn trên tablet */
+  .header-right .header-user {
+    display: flex;
+  }
 
   .header-btn {
-    margin-right: 10px;
     display: flex;
-    align-items: center;
   }
-  .header-btn button:not(.hamburger) {
+
+  .hamburger {
+    display: block;
+    margin-left: 12px;
+  }
+
+  .mobile-menu {
+    display: flex;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-left: none;
+  }
+}
+
+/* Ẩn header-user và header-btn chỉ trên mobile nhỏ */
+@media screen and (max-width: 768px) {
+  .header-right .header-user {
     display: none;
+  }
+
+  .header-btn {
+    display: none;
+  }
+
+  .hamburger {
+    margin-left: 0;
   }
 }

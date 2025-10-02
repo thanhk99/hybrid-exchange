@@ -61,17 +61,9 @@ export default function Home() {
         <div className="left-content1">
           <h1>Trải nghiệm ứng dụng crypto toàn diện tại Việt Nam</h1>
           <div className="description">
-            <form className="input-group" onSubmit={handleSubmit}>
-              <input
-                type="email"
-                className="form-input"
-                placeholder="Địa chỉ email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </form>
-
+            <div>
+              <button className="started-btn">Bắt đầu giao dịch</button>
+            </div>
             <div>
               <button className="started-btn">Dùng thử Vix</button>
             </div>
