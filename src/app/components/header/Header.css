@@ -8,6 +8,7 @@ header {
   padding: 0 12px;
   position: fixed;
   z-index: 999;
+  top: 0;
 }
 
 .head {
@@ -140,16 +141,17 @@ header {
   color: white;
   align-items: center;
   cursor: pointer;
+  z-index: 10000;
 }
 
 .mobile-menu {
   display: none;
   position: absolute;
-  top: 50px;
+  top: 0px;
   right: 0;
   background-color: black;
-  width: 320px;
-  height: calc(100vh - 50px);
+  width: 40%;
+  height: 100vh;
   flex-direction: column;
   padding: 10px;
   z-index: 1000;
@@ -157,7 +159,9 @@ header {
   -ms-overflow-style: none;
   scrollbar-width: none
 }
-
+.mobile-menu-overlay{
+  margin-top: 50px;
+}
 .mobile-menu .header-item {
   color: white;
   padding: 10px;

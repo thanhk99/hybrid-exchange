@@ -25,6 +25,7 @@ import {
   PieChartOutlined,
   SettingOutlined,
   MenuOutlined,
+  CloseOutlined, // Thêm import này
 } from "@ant-design/icons";
 import HeaderItem, { type IChildrenItem } from "./item/Item";
 import "./Header.css";
@@ -304,63 +305,76 @@ export default function Header() {
           </div>
         )}
 
-        {/* Hamburger always present for responsive, hidden on desktop by CSS */}
-        <button className="hamburger" onClick={toggleMenu} aria-label="Menu">
-          <MenuOutlined />
+        {/* Hamburger với icon thay đổi */}
+        <button 
+          className="hamburger" 
+          onClick={toggleMenu} 
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMenuOpen}
+        >
+          {isMenuOpen ? <CloseOutlined /> : <MenuOutlined />}
         </button>
 
         {isMenuOpen && (
           <div className="mobile-menu">
-            {/* Use the same menu groups as desktop */}
-            <HeaderItem
-              label="Mua tiền mã hoá"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={buyCrypto}
-              trigger="click"
-            />
-            <HeaderItem
-              label="Khám phá"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={explore}
-              trigger="click"
-            />
-            <HeaderItem
-              label="Giao dịch"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={transfer}
-              trigger="click"
-            />
-            <HeaderItem
-              label="Tăng trưởng"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={growth}
-              trigger="click"
-            />
-            <HeaderItem
-              label="Tổ chức"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={organize}
-              trigger="click"
-            />
-            <HeaderItem
-              label="Thêm"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={moreinfor}
-              trigger="click"
-            />
+            <div className="mobile-menu-overlay">
+              {/* Use the same menu groups as desktop */}
+              <HeaderItem
+                label="Mua tiền mã hoá"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={buyCrypto}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Khám phá"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={explore}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Giao dịch"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={transfer}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Tăng trưởng"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={growth}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Tổ chức"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={organize}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Thêm"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={moreinfor}
+                trigger="click"
+              />
+            </div>
 
             {!isAuthenticated ? (
               <>
                 <button className="mobile-link" onClick={loginPage}>Đăng nhập</button>
                 <button className="mobile-link" onClick={regisPage}>Đăng ký</button>
               </>
-            ) : null}
+            ) : (
+              <>
+                <button className="mobile-link" onClick={handleLogout}>
+                  Đăng xuất
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
