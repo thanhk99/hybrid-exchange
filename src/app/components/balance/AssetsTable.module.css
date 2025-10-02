@@ -1,0 +1,166 @@
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.searchContainer {
+  flex: 1;
+  max-width: 300px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #eaecef;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #000;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hideSmallAssets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #1e2329;
+  cursor: pointer;
+}
+
+.hideSmallAssets input[type="checkbox"] {
+  margin: 0;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 12px;
+  font-size: 12px;
+  color: #707a8a;
+  font-weight: normal;
+  text-align: left;
+  border-bottom: 1px solid #eaecef;
+}
+
+.tableRow {
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+  background-color: #f8f9fa;
+}
+
+.tableRow td {
+  padding: 12px;
+  border-bottom: 1px solid #eaecef;
+}
+
+.tokenInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tokenIcon {
+  width: 32px;
+  height: 32px;
+  background: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e2329;
+}
+
+.tokenIcon img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.tokenDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tokenSymbol {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e2329;
+}
+
+.tokenName {
+  font-size: 12px;
+  color: #707a8a;
+}
+
+.holdingsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.holdingsAmount {
+  font-size: 14px;
+  color: #1e2329;
+}
+
+.holdingsValue {
+  font-size: 12px;
+  color: #707a8a;
+}
+
+.pnlInfo {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pnlInfo.positive {
+  color: #02c076;
+}
+
+.pnlInfo.negative {
+  color: #f6465d;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: #707a8a;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.emptyText {
+  font-size: 14px;
+}

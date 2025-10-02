@@ -1,0 +1,227 @@
+.container {
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+.breadcrumb {
+  padding: 16px 24px;
+  border-bottom: 1px solid #eaecef;
+  color: #707a8a;
+  font-size: 14px;
+}
+
+.breadcrumbLink {
+  color: #707a8a;
+  text-decoration: none;
+}
+
+.breadcrumbSeparator {
+  margin: 0 8px;
+}
+
+.contentWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  color: #1e2329;
+  margin-bottom: 8px;
+}
+
+.description {
+  color: #707a8a;
+  font-size: 14px;
+}
+
+.warningBox {
+  background-color: #fff7e6;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.warningTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1e2329;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.deviceTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHeader {
+  background-color: #fafafa;
+  text-align: left;
+  padding: 12px 16px;
+  color: #707a8a;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.tableRow {
+  border-bottom: 1px solid #eaecef;
+}
+
+.tableCell {
+  padding: 16px;
+  color: #1e2329;
+  font-size: 14px;
+}
+
+.activeDevice {
+  color: #03a66d;
+  font-size: 12px;
+  padding: 2px 6px;
+  background-color: #e6f7f2;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.actionButton {
+  color: #707a8a;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.actionWrapper {
+  position: relative;
+}
+
+.optionsMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #eaecef;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  min-width: 160px;
+}
+
+.optionItem {
+  width: 100%;
+  text-align: left;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: #1e2329;
+  cursor: pointer;
+}
+
+.optionItem:hover {
+  background-color: #f5f5f5;
+}
+
+.optionItem + .optionItem {
+  border-top: 1px solid #eaecef;
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 16px;
+  }
+
+  .header {
+    padding: 0 16px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .description {
+    font-size: 14px;
+  }
+
+  .warningBox {
+    margin: 16px;
+    border-radius: 8px;
+  }
+
+  .deviceTable {
+    display: block;
+  }
+
+  .tableRow {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    border-bottom: 8px solid #f5f5f5;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .tableCell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border: none;
+    font-size: 14px;
+  }
+
+  .tableCell:before {
+    content: attr(data-label);
+    color: #707a8a;
+    padding-right: 16px;
+  }
+
+  .activeDevice {
+    margin-left: 8px;
+  }
+
+  .actionWrapper {
+    position: static;
+  }
+
+  .optionsMenu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    padding: 16px 0;
+    z-index: 1000;
+  }
+
+  .optionItem {
+    padding: 16px;
+    text-align: center;
+    font-size: 16px;
+    color: #1e2329;
+  }
+
+  .optionItem:last-child {
+    color: #cf304a;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+}

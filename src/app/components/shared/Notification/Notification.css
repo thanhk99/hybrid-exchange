@@ -1,0 +1,215 @@
+/* Container cho tất cả thông báo */
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  width: 100%;
+}
+
+/* Base notification styles */
+.notification {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-left: 4px solid;
+  overflow: hidden;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+.notification-show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-leave {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* Notification types */
+.notification-info {
+  border-left-color: #1890ff;
+}
+
+.notification-success {
+  border-left-color: #52c41a;
+}
+
+.notification-warning {
+  border-left-color: #faad14;
+}
+
+.notification-error {
+  border-left-color: #ff4d4f;
+}
+
+/* Content layout */
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  gap: 12px;
+}
+
+.notification-icon {
+  font-size: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-icon {
+  color: #1890ff;
+}
+
+.success-icon {
+  color: #52c41a;
+}
+
+.warning-icon {
+  color: #faad14;
+}
+
+.error-icon {
+  color: #ff4d4f;
+}
+
+.notification-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.notification-message {
+  font-size: 13px;
+  color: #595959;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #8c8c8c;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-top: -2px;
+}
+
+.notification-close:hover {
+  background: #f5f5f5;
+  color: #262626;
+}
+
+/* Progress bar */
+.notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.notification-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #1890ff, #40a9ff);
+  animation: progress-shrink linear forwards;
+  transform-origin: left;
+}
+
+.notification-success .notification-progress-bar {
+  background: linear-gradient(90deg, #52c41a, #73d13d);
+}
+
+.notification-warning .notification-progress-bar {
+  background: linear-gradient(90deg, #faad14, #ffc53d);
+}
+
+.notification-error .notification-progress-bar {
+  background: linear-gradient(90deg, #ff4d4f, #ff7875);
+}
+
+@keyframes progress-shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .notification-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .notification {
+    border-radius: 8px;
+  }
+  
+  .notification-content {
+    padding: 12px;
+  }
+  
+  .notification-title {
+    font-size: 13px;
+  }
+  
+  .notification-message {
+    font-size: 12px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .notification {
+    background: #1f1f1f;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  .notification-title {
+    color: #ffffff;
+  }
+  
+  .notification-message {
+    color: #d9d9d9;
+  }
+  
+  .notification-close {
+    color: #8c8c8c;
+  }
+  
+  .notification-close:hover {
+    background: #262626;
+    color: #ffffff;
+  }
+  
+  .notification-progress {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}

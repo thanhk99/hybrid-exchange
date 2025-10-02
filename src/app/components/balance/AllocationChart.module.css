@@ -1,0 +1,73 @@
+.container {
+  width: 100%;
+}
+
+.barContainer {
+  margin-bottom: 16px;
+}
+
+.bar {
+  height: 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  display: flex;
+  overflow: hidden;
+}
+
+.barSegment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.barSegment.funding {
+  background: #6366f1;
+}
+
+.barSegment.trading {
+  background: #f59e0b;
+}
+
+.barSegment.earn {
+  background: #6b7280;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legendDot.funding {
+  background: #6366f1;
+}
+
+.legendDot.trading {
+  background: #f59e0b;
+}
+
+.legendDot.earn {
+  background: #6b7280;
+}
+
+.legendLabel {
+  color: #1e2329;
+  min-width: 60px;
+}
+
+.legendValue {
+  color: #707a8a;
+  margin-left: auto;
+}
