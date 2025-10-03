@@ -117,3 +117,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+main{
+  margin-top: 50px;
+  width: 100%;
+}

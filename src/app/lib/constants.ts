@@ -1,6 +1,6 @@
 //API Constants 
 export const API_CONFIG = {
-    BASE_URL : "http://127.0.0.1:8000",
+    BASE_URL : "https://remarkably-arriving-imp.ngrok-free.app",
     TIMEOUT: 10000,
     ENDPOINTS: { 
         AUTH: {
@@ -38,10 +38,16 @@ export const API_CONFIG = {
             LIST: '/api/v1/notifications',
             MARK_READ: '/api/v1/notifications/read'
         },
-        MARKET: {
+       MARKET: {
             PRICES: '/api/v1/market/prices',
-            TRENDING: '/api/v1/market/trending'
-        }
+             TRENDING: '/api/v1/market/trending'
+        },
+        KLINE : {
+            SYMBOLS : `/api/v1/spotKline/symbols`,
+            INTERVALS : `/api/v1/spotKline/intervals`,
+            // CANDLES : `/api/v1/spotKline/{symbol}/{interval}/info`,
+            CANDLES : `/api/v1/spotKline/symbol`
+        },
     }
 }
 

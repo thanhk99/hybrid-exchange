@@ -14,10 +14,11 @@ interface IProps {
   childrens?: IChildrenItem[];
   className?: string;
   onClick: () => void;
-  headerContent? : React.ReactNode;
+  headerContent?: React.ReactNode;
+  trigger?: "hover" | "click";
 }
 
-const HeaderItem = ({ label, childrens, className, icon, headerContent}: IProps) => {
+const HeaderItem = ({ label, childrens, className, icon, headerContent, trigger = "hover"}: IProps) => {
   const [showMenu, setShowMenu] = useState<boolean>(false);
    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -35,10 +36,14 @@ const HeaderItem = ({ label, childrens, className, icon, headerContent}: IProps)
   return (
     <div
       className={`header-item ${className}`}
-      onMouseLeave={handleMouseLeave}
-      onMouseEnter={handleMouseEnter}
+      onMouseLeave={trigger === "hover" ? handleMouseLeave : undefined}
+      onMouseEnter={trigger === "hover" ? handleMouseEnter : undefined}
     >
-      <div className="item">
+      <div className="item" onClick={() => {
+        if (trigger === "click") {
+          setShowMenu((prev) => !prev);
+        }
+      }}>
         <div className="label">
           <p>{label}</p>
         </div>
@@ -46,7 +51,7 @@ const HeaderItem = ({ label, childrens, className, icon, headerContent}: IProps)
       </div>
 
       {showMenu && (
-        <div className="childrens">
+        <div className={`childrens${showMenu ? " active" : ""}`}>
           {headerContent && <div className="dropdown-header">{headerContent}</div>} 
           
           {childrens?.map((i, key) => (

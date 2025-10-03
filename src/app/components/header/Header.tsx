@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   UserOutlined,
   ApiOutlined,
@@ -25,6 +25,7 @@ import {
   PieChartOutlined,
   SettingOutlined,
   MenuOutlined,
+  CloseOutlined, // Thêm import này
 } from "@ant-design/icons";
 import HeaderItem, { type IChildrenItem } from "./item/Item";
 import "./Header.css";
@@ -39,13 +40,10 @@ export default function Header() {
     (state: any) => state.auth
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    setExpandedItem(null);
   };
-
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -62,6 +60,7 @@ export default function Header() {
     router.push("/login");
   };
 
+  // Original desktop menus
   const buyCrypto: IChildrenItem[] = [
     {
       icon: <SwapOutlined />,
@@ -224,10 +223,11 @@ export default function Header() {
   return (
     <header>
       <div className="header-left">
-        <div className="logo">
-          <img src="/imgs/iconnobg.png" alt="ava" className="logo-img" />
+        <div className="logo" onClick={() => router.push('/') }>
+          <img src="/imgs/logo.jfif" alt="logo" className="logo-img" />
         </div>
 
+        {/* Desktop menus (kept as original) */}
         <HeaderItem
           label="Mua tiền mã hoá"
           onClick={() => {}}
@@ -265,6 +265,7 @@ export default function Header() {
           childrens={moreinfor}
         />
       </div>
+
       <div className="header-right">
         {isAuthenticated ? (
           <div className="header-user">
@@ -301,49 +302,79 @@ export default function Header() {
           <div className="header-btn">
             <button onClick={loginPage}>Đăng nhập</button>
             <button onClick={regisPage}>Đăng ký</button>
-            <button className="hamburger" onClick={toggleMenu}>
-              <MenuOutlined />
-            </button>
           </div>
         )}
+
+        {/* Hamburger với icon thay đổi */}
+        <button 
+          className="hamburger" 
+          onClick={toggleMenu} 
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMenuOpen}
+        >
+          {isMenuOpen ? <CloseOutlined /> : <MenuOutlined />}
+        </button>
+
         {isMenuOpen && (
           <div className="mobile-menu">
-            <HeaderItem
-              label="Mua tiền mã hoá"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={buyCrypto}
-            />
-            <HeaderItem
-              label="Khám phá"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={explore}
-            />
-            <HeaderItem
-              label="Giao dịch"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={transfer}
-            />
-            <HeaderItem
-              label="Tăng trưởng"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={growth}
-            />
-            <HeaderItem
-              label="Tổ chức"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={organize}
-            />
-            <HeaderItem
-              label="Thêm"
-              onClick={() => {}}
-              icon={<DownOutlined />}
-              childrens={moreinfor}
-            />
+            <div className="mobile-menu-overlay">
+              {/* Use the same menu groups as desktop */}
+              <HeaderItem
+                label="Mua tiền mã hoá"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={buyCrypto}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Khám phá"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={explore}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Giao dịch"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={transfer}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Tăng trưởng"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={growth}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Tổ chức"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={organize}
+                trigger="click"
+              />
+              <HeaderItem
+                label="Thêm"
+                onClick={() => {}}
+                icon={<DownOutlined />}
+                childrens={moreinfor}
+                trigger="click"
+              />
+            </div>
+
+            {!isAuthenticated ? (
+              <>
+                <button className="mobile-link" onClick={loginPage}>Đăng nhập</button>
+                <button className="mobile-link" onClick={regisPage}>Đăng ký</button>
+              </>
+            ) : (
+              <>
+                <button className="mobile-link" onClick={handleLogout}>
+                  Đăng xuất
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>

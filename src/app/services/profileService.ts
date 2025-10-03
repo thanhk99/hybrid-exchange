@@ -5,17 +5,22 @@ import deviceService from './deviceService';
 
 export const profileService = {
   // Lấy thông tin profile từ backend
-  getProfile: async (): Promise<ProfileApiResponse> => {
-    try {
-      const response = await axiosInstance.get(API_CONFIG.ENDPOINTS.USER.GETFULLPROFILE);
-      console.log('Raw response:', response);
-      console.log('Response data:', response.data);
+getProfile: async (): Promise<any> => {
+  try {
+    const response = await axiosInstance.get(API_CONFIG.ENDPOINTS.USER.GETPROFILE);
+    console.log('Raw response:', response);
+    console.log('Response data:', response.data);
+    
+    // API trả về { data: {...}, message: "success" }
+    if (response.data && response.data.message === 'success' && response.data.data) {
       return response.data;
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      throw error;
     }
-  },
+    
+    throw new Error('Invalid response format');
+  } catch (error) {
+    throw error;
+  }
+},
 
   // Lấy danh sách thiết bị đăng nhập
   getLoginDevices: async (): Promise<DevicesApiResponse> => {
