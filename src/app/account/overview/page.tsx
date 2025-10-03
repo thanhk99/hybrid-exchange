@@ -53,14 +53,12 @@ const OverviewPage = () => {
         const userResponse = await userService.getUser();
         console.log('User API response:', userResponse);
         
-        // Cập nhật user data với data thực từ API
-        // Điều chỉnh mapping này dựa trên cấu trúc response thực tế từ API
         setUserData({
           email: userResponse.email || email || '',
           userId: userResponse.userId || userId || '',
           avatar: userResponse.avatar || userResponse.profilePicture || `https://i.pravatar.cc/150?u=${email}`,
           verificationStatus: userResponse.verificationStatus || VerificationStatus.VERIFIED,
-          country: userResponse.country || 'Việt Nam',
+          country: userResponse.country || 'Không xác định',
           tier: userResponse.tier || UserTier.REGULAR,
           isGoogleLinked: userResponse.isGoogleLinked || false,
           firstName: userResponse.firstName || userResponse.fullName?.split(' ')[0] || '',

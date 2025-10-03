@@ -130,7 +130,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s;
-  width: 30%;
+  width: 50%;
+  min-width: 150px;
 }
 
 .login button:hover {
@@ -160,5 +161,12 @@
   }
   .login{
     width: 90%;
+  }
+}
+
+@media (min-width : 426px) {
+  .login-page{
+    width: 100vw;
+    height: 100vh;
   }
 }

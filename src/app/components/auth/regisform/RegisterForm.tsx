@@ -76,9 +76,6 @@ export default function RegisterForm() {
         data.nation
       );
 
-      console.log("Full response:", response);
-      console.log("Response data:", response.data);
-
       const responseData = response.data;
       
       // Kiểm tra response theo đúng format API trả về
@@ -103,13 +100,6 @@ export default function RegisterForm() {
     } catch (err: any) {
       console.error("Registration error:", err);
       
-      // Log chi tiết để debug
-      console.log("Error details:", {
-        message: err.message,
-        response: err.response,
-        status: err.response?.status,
-        data: err.response?.data
-      });
 
       // Xử lý các loại lỗi khác nhau
       if (err.response?.status === 409) {
@@ -167,10 +157,7 @@ export default function RegisterForm() {
     <div className="login-page">
       <div className="left-sight">
         <div className="left-content">
-          <img src="imgs/logo.jfij" alt="ava" />
-        </div>
-        <div className="route-regis" onClick={goToLogin}>
-          Have an account ?
+          <img src="imgs/logo.jfif" alt="ava" />
         </div>
       </div>
 
@@ -276,6 +263,9 @@ export default function RegisterForm() {
               "Đăng ký"
             )}
           </button>
+          <div className="route-regis" onClick={goToLogin}>
+            Have an account ?
+          </div>
         </form>
       </div>
     </div>

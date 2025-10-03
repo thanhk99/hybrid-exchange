@@ -115,9 +115,6 @@ export default function LoginForm() {
     <div className="login-page">
       <div className="left-sight">
         <div className="left-content"><img src="imgs/logo.jfif" alt="ava" /></div>
-        <div className="route-regis" onClick={goToRegis}>
-          Create an acount
-        </div>
       </div>
 
       <div className="login">
@@ -168,6 +165,9 @@ export default function LoginForm() {
           "Đăng nhập"
         )}
       </button>
+        <div className="route-regis" onClick={goToRegis}>
+          Create an acount
+        </div>
     </form>
 
         <div className="bottom-icon">

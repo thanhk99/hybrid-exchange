@@ -7,6 +7,7 @@ import { profileService } from '../../services/profileService';
 import { UserProfile } from '../../types/profile';
 import { API_CONFIG } from '../../lib/constants';
 import styles from './profile.module.css';
+import userService from '@/app/lib/api/springboot-api/user';
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -50,38 +51,48 @@ const ProfilePage = () => {
   ];
 
   // Fetch profile data from backend
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        console.log('Fetching profile from:', API_CONFIG.ENDPOINTS.USER.GETFULLPROFILE);
-        const response = await profileService.getProfile();
-        console.log('Profile response:', response);
-        console.log('Response type:', typeof response);
-        console.log('Response keys:', response ? Object.keys(response) : 'No response');
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Fetching profile from:', API_CONFIG.ENDPOINTS.USER.GETPROFILE);
+      const response = await userService.getUser();
+      console.log('Profile response:', response);
+      
+      if (response && response.message === 'success' && response.data) {
+        // Tạo đối tượng profile đầy đủ với các trường mặc định cho các trường không có trong API
+        const fullProfile: UserProfile = {
+          uid: response.data.uid,
+          username: response.data.username,
+          email: response.data.email,
+          nation: response.data.nation,
+          // Các trường không có trong API, đặt giá trị mặc định
+          phoneNumber: response.data.phoneNumber || '', // Nếu API không trả về
+          verified: response.data.verified || false,    // Mặc định chưa xác minh
+          active: response.data.active !== undefined ? response.data.active : true, // Mặc định active
+          leveFee: response.data.leveFee || 'Standard', // Mặc định level
+        };
         
-        if (response && response.message === 'success' && response.data) {
-          setProfile(response.data);
-        } else {
-          console.error('Invalid response format:', response);
-          setError(response?.message || 'Invalid response format');
-        }
-      } catch (err) {
-        console.error('Error fetching profile:', err);
-        if (err instanceof Error) {
-          setError(`Failed to load profile data: ${err.message}`);
-        } else {
-          setError('Failed to load profile data');
-        }
-      } finally {
-        setLoading(false);
+        setProfile(fullProfile);
+      } else {
+        console.error('Invalid response format:', response);
+        setError(response?.message || 'Invalid response format');
       }
-    };
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      if (err instanceof Error) {
+        setError(`Failed to load profile data: ${err.message}`);
+      } else {
+        setError('Failed to load profile data');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProfile();
-  }, []);
-
+  fetchProfile();
+}, []);
   const handleAvatarChange = async (file: File) => {
     try {
       const response = await profileService.updateAvatar(file);
