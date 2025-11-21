@@ -4,9 +4,11 @@ import TokenService from './token';
 
 export default class AuthService {
 
+  static api_login:string = process.env.NEXT_PUBLIC_API_BASE_URL +"/api/v1/auth/login"
+
   static async login(loginData: LoginData){
     try {
-      const response = await axiosInstance.post('/auth/login', loginData);
+      const response = await axiosInstance.post(this.api_login, loginData);
       
       if (response.data.accessToken) {
         TokenService.setToken(

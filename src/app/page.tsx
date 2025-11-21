@@ -1,10 +1,18 @@
-export default function HomePage() {
+"use client";
+
+import CompanyServices from "../components/Home/AboutService/AboutService";
+import AccountPromotion from "../components/Home/AccountPromotion/AccountPromotion";
+import Slider from "../components/Home/Slider/Slider";
+import TradingFeatures from "../components/Home/TrandingFeature/TrandingFeature";
+
+export default function Home() {
+  
   return (
     <div>
-      <div style={{ padding: '50px 20px', textAlign: 'center' }}>
-        <h1>Chào mừng đến với Hybrid Exchange</h1>
-        <p>Trang chủ - Header đang hiển thị phía trên</p>
-      </div>
+        <Slider />
+        <TradingFeatures/>
+        <AccountPromotion/>
+        <CompanyServices/>
     </div>
   );
 }

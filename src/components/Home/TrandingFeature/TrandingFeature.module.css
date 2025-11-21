@@ -1,0 +1,299 @@
+/* TradingQuickActions.module.css */
+.container {
+  padding: 30px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 24px;
+  margin: 20px auto;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.actionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #374151;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  border: 1px solid #e5e7eb;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  min-height: 160px;
+}
+
+.actionButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.actionButton:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  border-color: transparent;
+  color: white;
+}
+
+.actionButton:hover::before {
+  opacity: 1;
+}
+
+.actionButton:hover .actionIcon {
+  transform: scale(1.3) translateY(-4px);
+  color: white;
+}
+
+.actionButton:hover .actionLabel {
+  transform: translateY(-4px);
+  font-weight: 700;
+}
+
+.actionButton:hover .actionDescription {
+  opacity: 1;
+  transform: translateY(0);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.actionButton:hover .arrow {
+  opacity: 1;
+  transform: translateX(6px);
+}
+
+.iconContainer {
+  position: relative;
+  margin-bottom: 16px;
+  z-index: 2;
+}
+
+.actionIcon {
+  font-size: 32px;
+  color: var(--accent-color);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.iconGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  opacity: 0.1;
+  transition: all 0.4s ease;
+}
+
+.actionButton:hover .iconGlow {
+  opacity: 0.3;
+  transform: translate(-50%, -50%) scale(1.8);
+}
+
+.textContainer {
+  text-align: center;
+  z-index: 2;
+  position: relative;
+  width: 100%;
+}
+
+.actionLabel {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  color: inherit;
+}
+
+.actionDescription {
+  display: block;
+  font-size: 16px;
+  opacity: 0.8;
+  transition: all 0.4s ease;
+  color: #6b7280;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Mô tả luôn hiển thị (đã xóa transform và opacity mặc định) */
+
+.arrow {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+}
+
+.hoverEffect {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.7s ease;
+  z-index: 2;
+}
+
+.actionButton:hover .hoverEffect {
+  left: 100%;
+}
+
+/* Pulse animation on hover */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+.actionButton:hover {
+  animation: pulseGlow 2s infinite;
+}
+
+/* Floating animation for icons */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.actionIcon {
+  animation: float 3s ease-in-out infinite;
+}
+
+.actionButton:hover .actionIcon {
+  animation: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 800px;
+    padding: 25px;
+  }
+  
+  .quickActions {
+    gap: 16px;
+  }
+  
+  .actionButton {
+    padding: 25px 16px;
+    min-height: 140px;
+  }
+  
+  .actionIcon {
+    font-size: 28px;
+  }
+  
+  .actionLabel {
+    font-size: 16px;
+  }
+  
+  .actionDescription {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+    margin: 16px;
+    border-radius: 20px;
+  }
+  
+  .quickActions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .actionButton {
+    padding: 24px 16px;
+    min-height: 140px;
+    border-radius: 16px;
+  }
+  
+  .actionIcon {
+    font-size: 26px;
+  }
+  
+  .actionLabel {
+    font-size: 16px;
+  }
+  
+  .actionDescription {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .quickActions {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .actionButton {
+    padding: 20px 16px;
+    min-height: 120px;
+    flex-direction: row;
+    text-align: left;
+    justify-content: flex-start;
+  }
+  
+  .iconContainer {
+    margin-bottom: 0;
+    margin-right: 16px;
+  }
+  
+  .textContainer {
+    text-align: left;
+    flex: 1;
+  }
+  
+  .actionIcon {
+    font-size: 24px;
+  }
+  
+  .actionLabel {
+    font-size: 16px;
+  }
+  
+  .actionDescription {
+    font-size: 12px;
+  }
+}

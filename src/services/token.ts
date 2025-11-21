@@ -1,5 +1,5 @@
 export default class TokenService {
-
+  static ACCESS_TOKEN_KEY:string =process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY || "accessToken"; 
   // Lấy access token
     static getAccessToken (key: string = 'accessToken'){
         if (typeof window === 'undefined') return null;
@@ -24,11 +24,13 @@ export default class TokenService {
         }
     }
 
-    // // Lấy cả access token (alias cho getAccessToken)
-    // getAccess(key: string = 'accessToken'): string | null {
-    //     return TokenService.getAccessToken(key);
-    // }
-
+    static isLogin(){
+      if( localStorage.getItem(this.ACCESS_TOKEN_KEY) === null ||localStorage.getItem(this.ACCESS_TOKEN_KEY)  === ""){
+          return false;
+      }else{
+          return true;
+      }
+    }
     // Set access token
     static setAccessToken(token: string, key: string = 'accessToken'){
         if (typeof window === 'undefined') return;

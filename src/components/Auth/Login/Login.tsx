@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import AuthService from "@/src/services/auth";
 import TokenService from "@/src/services/token";
-// import deviceService from "@/app/services/deviceService";
 import { Notification } from "../../common/Notification/Notification";
 import { 
   EyeOutlined, 
@@ -18,7 +17,7 @@ import {
   GoogleOutlined
 } from "@ant-design/icons";
 import { FaSpinner } from "react-icons/fa";
-import './LoginForm.css'
+import styles from './Login.module.css';
 
 type NotificationState = {
   isVisible: boolean;
@@ -90,8 +89,8 @@ export default function LoginForm() {
       const payload = response.data;
 
       // Lưu thông tin device và token
-    //   deviceService.setDeviceId(payload.data.deviceInfo.deviceId);
-    //   TokenService.setToken(payload.data.accessToken, payload.data.refreshToken);
+      // deviceService.setDeviceId(payload.data.deviceInfo.deviceId);
+      TokenService.setToken(payload.data.accessToken, payload.data.refreshToken);
 
       showSuccess("Thành công", "Đăng nhập thành công! Đang chuyển hướng...");
       
@@ -108,7 +107,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="login-page">
+    <div className={styles.loginPage}>
       {/* Notification Component */}
       <Notification
         type={notification.type}
@@ -119,19 +118,19 @@ export default function LoginForm() {
         duration={3000}
       />
 
-      <div className="left-sight">
-        <div className="left-content">
+      <div className={styles.leftSight}>
+        <div className={styles.leftContent}>
           <img src="imgs/logo.jfif" alt="Logo" />
         </div>
       </div>
 
-      <div className="login">
+      <div className={styles.login}>
         <h2>Đăng nhập</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Email Field */}
-          <div className="input-form">
-            <UserOutlined className="icon-left" />
+          <div className={styles.inputForm}>
+            <UserOutlined className={styles.iconLeft} />
             <input
               type="text"
               placeholder="Email"
@@ -145,14 +144,14 @@ export default function LoginForm() {
             />
             <CopyOutlined
               onClick={handleCopyEmail}
-              className="icon-right"
+              className={styles.iconRight}
             />
           </div>
-          {errors.email && <span className="error-message">{errors.email.message}</span>}
+          {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
 
           {/* Password Field */}
-          <div className="input-form">
-            <LockOutlined className="icon-left" />
+          <div className={styles.inputForm}>
+            <LockOutlined className={styles.iconLeft} />
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Mật khẩu"
@@ -165,20 +164,20 @@ export default function LoginForm() {
               })}
             />
             <span
-              className="icon-right"
+              className={styles.iconRight}
               onClick={() => setShowPassword(!showPassword)}
               style={{ cursor: 'pointer' }}
             >
               {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
             </span>
           </div>
-          {errors.password && <span className="error-message">{errors.password.message}</span>}
+          {errors.password && <span className={styles.errorMessage}>{errors.password.message}</span>}
 
           {/* Submit Button */}
           <button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>
-                <FaSpinner className="animate-spin mr-2" />
+                <FaSpinner className={styles.spin} />
                 Đang đăng nhập...
               </>
             ) : (
@@ -187,15 +186,15 @@ export default function LoginForm() {
           </button>
 
           {/* Register Link */}
-          <div className="route-regis" onClick={goToRegister}>
+          <div className={styles.routeRegis} onClick={goToRegister}>
             Tạo tài khoản mới
           </div>
         </form>
 
         {/* Social Login */}
-        <div className="bottom-icon">
+        <div className={styles.bottomIcon}>
           <p>Hoặc đăng nhập với</p>
-          <div className="icons">
+          <div className={styles.icons}>
             <FacebookOutlined />
             <TwitterOutlined />
             <GoogleOutlined />

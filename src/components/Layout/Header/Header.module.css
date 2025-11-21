@@ -1,5 +1,5 @@
 /* Header Main Styles */
-.header {
+.headerMain {
   max-height: 70px;
   display: flex;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
@@ -18,6 +18,7 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 0;
 }
 
 .head {
@@ -35,20 +36,7 @@
   height: 60px;
 }
 
-/* Header Sections */
-.headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-/* Logo */
+/* Logo Styles */
 .logo {
   display: flex;
   align-items: center;
@@ -64,6 +52,14 @@
 .logoImg {
   object-fit: contain;
   height: 100%;
+  filter: none;
+}
+
+/* Header Left */
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Desktop Menu */
@@ -73,6 +69,14 @@
   gap: 8px;
 }
 
+/* Header Right */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Desktop User Section */
 .desktopUserSection {
   display: flex;
   align-items: center;
@@ -85,22 +89,22 @@
   gap: 8px;
 }
 
-.userAsset,
-.iconUser {
+.userAsset .headerItem,
+.iconUser .headerItem {
   color: #2c3e50;
   padding: 8px 12px;
   border-radius: 6px;
   transition: all 0.3s ease;
 }
 
-.userAsset:hover,
-.iconUser:hover {
+.userAsset .headerItem:hover,
+.iconUser .headerItem:hover {
   background: rgba(102, 126, 234, 0.08);
   color: #667eea;
 }
 
 /* Icon */
-.itemIcon {
+.iconUser .itemIcon {
   font-size: 20px !important;
   width: 32px;
   height: 32px;
@@ -113,12 +117,12 @@
   transition: all 0.3s ease;
 }
 
-.iconUser:hover .itemIcon {
+.iconUser .headerItem:hover .itemIcon {
   background: rgba(102, 126, 234, 0.2);
   transform: scale(1.1);
 }
 
-/* Dropdown */
+/* Dropdown Styles */
 .dropdownExtra {
   padding: 16px;
   font-size: 13px;
@@ -153,7 +157,7 @@
   text-align: center;
 }
 
-/* Childrens */
+/* Childrens Container */
 .childrens {
   position: absolute;
   top: 100%;
@@ -229,7 +233,7 @@
   line-height: 1.3;
 }
 
-/* Buttons */
+/* Button Styles */
 .headerBtn {
   display: flex;
   gap: 12px;
@@ -272,7 +276,7 @@
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
-/* Hamburger */
+/* Hamburger Menu */
 .hamburger {
   display: none;
   background: rgba(102, 126, 234, 0.1) !important;
@@ -361,6 +365,7 @@
 
 .mobileLogo img {
   height: 32px;
+  filter: none;
 }
 
 .mobileClose {
@@ -445,8 +450,8 @@
   border-bottom: 1px solid #e8ecef;
 }
 
-/* Mobile HeaderItem */
-.mobileHeaderItem {
+/* Mobile HeaderItem Styles */
+.mobileMenu .headerItem {
   color: #2c3e50;
   padding: 12px 20px;
   border: none;
@@ -460,30 +465,31 @@
   font-size: 14px;
 }
 
-.mobileHeaderItem:hover {
+.mobileMenu .headerItem:hover {
   background: rgba(102, 126, 234, 0.1);
   color: #667eea;
 }
 
-.mobileChildrens {
+.mobileMenu .childrens {
   background: rgba(102, 126, 234, 0.05);
   border-radius: 0;
   box-shadow: none;
   position: static;
   display: none;
+  animation: none;
 }
 
-.mobileChildrensActive {
+.mobileMenu .childrens.active {
   display: block;
 }
 
-.mobileChildrensItem {
+.mobileMenu .childrens .headerItem {
   padding: 10px 20px 10px 52px;
   font-size: 13px;
   color: #666;
 }
 
-.mobileChildrensItem:hover {
+.mobileMenu .childrens .headerItem:hover {
   background: rgba(102, 126, 234, 0.15);
   color: #667eea;
 }
@@ -547,11 +553,35 @@
 
 /* ==================== MEDIA QUERIES ==================== */
 
-/* Tablet lớn: 1025px - 1200px */
+/* MỐC 1: 1025px - 1200px (Tablet lớn) */
 @media screen and (max-width: 1200px) {
   .head {
     width: 95%;
     padding: 0 16px;
+  }
+  
+  .desktopMenu {
+    display: flex;
+  }
+  
+  .desktopUserSection {
+    display: flex;
+  }
+  
+  .hamburger {
+    display: none;
+  }
+  
+  .mobileMenu {
+    display: none;
+  }
+  
+  .mobileOverlay {
+    display: none;
+  }
+  
+  .headerLeft .headerItem .label p {
+    font-size: 14px;
   }
   
   .headerBtn button {
@@ -560,7 +590,7 @@
   }
 }
 
-/* Tablet nhỏ: 769px - 1024px */
+/* MỐC 2: 769px - 1024px (Tablet nhỏ) */
 @media screen and (max-width: 1024px) {
   .head {
     width: 98%;
@@ -571,9 +601,29 @@
     display: none !important;
   }
   
+  .desktopUserSection {
+    display: flex !important;
+  }
+  
+  .headerUser {
+    display: flex !important;
+  }
+  
+  .headerBtn {
+    display: flex !important;
+  }
+  
   .hamburger {
     display: block !important;
     margin-left: 12px;
+  }
+  
+  .mobileMenu {
+    display: flex;
+  }
+  
+  .mobileOverlay {
+    display: block;
   }
   
   .headerBtn button {
@@ -586,7 +636,7 @@
   }
 }
 
-/* Mobile: 0px - 768px */
+/* MỐC 3: 0px - 768px (Mobile) */
 @media screen and (max-width: 768px) {
   .head {
     width: 100%;
@@ -594,11 +644,19 @@
     height: 60px;
   }
   
-  .header {
+  .headerMain {
     height: 60px;
   }
   
+  .desktopMenu {
+    display: none !important;
+  }
+  
   .desktopUserSection {
+    display: none !important;
+  }
+  
+  .headerUser {
     display: none !important;
   }
   
@@ -612,7 +670,12 @@
   }
   
   .mobileMenu {
+    display: flex;
     width: 280px;
+  }
+  
+  .mobileOverlay {
+    display: block;
   }
   
   .logo {
@@ -658,7 +721,7 @@
   }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar for mobile menu */
 .mobileContent::-webkit-scrollbar {
   width: 4px;
 }

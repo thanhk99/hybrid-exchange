@@ -12,7 +12,6 @@ interface IProps {
   label: string;
   icon?: React.ReactNode;
   childrens?: IChildrenItem[];
-  className?: string;
   onClick: () => void;
   headerContent?: React.ReactNode;
   trigger?: "hover" | "click";
@@ -22,7 +21,6 @@ interface IProps {
 const HeaderItem = ({ 
   label, 
   childrens, 
-  className, 
   icon, 
   headerContent, 
   trigger = "hover",
