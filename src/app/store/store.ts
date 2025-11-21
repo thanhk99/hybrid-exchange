@@ -1,0 +1,32 @@
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { persistReducer, persistStore } from 'redux-persist'
+import authReducer from './authSlice'
+import storage from 'redux-persist/lib/storage' 
+
+// gộp reducer
+const rootReducer = combineReducers({
+  auth: authReducer
+//   market: marketReducer,
+//   spot: spotReducer,
+//   orderBook : orderBookReducer,
+})
+
+const persistConfig = {
+  key: 'root',        // tên key lưu trong localStorage
+  storage,            // loại storage : localStorage
+  whitelist: ['auth'] // slice cần lưu : auth
+}
+// persist reducer
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // tránh warning khi redux-persist lưu non-serializable
+    }),
+})
+
+export const persistor = persistStore(store)
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
