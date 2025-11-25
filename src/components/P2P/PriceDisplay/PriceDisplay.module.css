@@ -1,0 +1,52 @@
+.price {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.small {
+    font-size: 14px;
+}
+
+.small .currency {
+    font-size: 12px;
+}
+
+.medium {
+    font-size: 18px;
+}
+
+.medium .currency {
+    font-size: 14px;
+}
+
+.large {
+    font-size: 24px;
+}
+
+.large .currency {
+    font-size: 18px;
+}
+
+.amount {
+    font-weight: 700;
+}
+
+.currency {
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.highlight {
+    color: #059669;
+}
+
+.highlight .amount {
+    color: #059669;
+}
+
+.highlight .currency {
+    color: #10b981;
+}

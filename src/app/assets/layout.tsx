@@ -1,4 +1,5 @@
 import AssetsSidebar from '@/src/components/Assets/AssetsSidebar/AssetsSidebar';
+import ProtectedRoute from '@/src/components/common/ProtectedRoute/ProtectedRoute';
 import styles from './layout.module.css';
 
 export default function AssetsLayout({
@@ -7,11 +8,13 @@ export default function AssetsLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className={styles.assetsLayout}>
-            <AssetsSidebar />
-            <div className={styles.assetsContent}>
-                {children}
+        <ProtectedRoute>
+            <div className={styles.assetsLayout}>
+                <AssetsSidebar />
+                <div className={styles.assetsContent}>
+                    {children}
+                </div>
             </div>
-        </div>
+        </ProtectedRoute>
     );
 }

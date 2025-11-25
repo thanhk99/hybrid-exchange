@@ -1,0 +1,67 @@
+.assetsSection {
+    margin-top: 2rem;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+}
+
+.sectionHeader h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.filterButtons {
+    display: flex;
+    gap: 0.5rem;
+    background: #f9fafb;
+    padding: 0.25rem;
+    border-radius: 8px;
+}
+
+.filterButton {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.filterButton:hover {
+    color: #111827;
+    background: white;
+}
+
+.filterButton.active {
+    background: white;
+    color: #3b82f6;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.assetsList {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.emptyState {
+    padding: 3rem;
+    text-align: center;
+    color: #9ca3af;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 0.9375rem;
+}

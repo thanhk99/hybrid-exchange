@@ -14,6 +14,7 @@ import {
     NumberOutlined
 } from "@ant-design/icons";
 import { FaSpinner } from "react-icons/fa";
+import { getAssetsOverview } from "@/src/services/balance";
 import WalletService, { Currency, Network, Transaction } from "@/src/services/wallet";
 import { Notification } from "../../common/Notification/Notification";
 import TransactionHistory from "../../common/TransactionHistory/TransactionHistory";
@@ -26,6 +27,7 @@ export default function Withdraw() {
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
     const [selectedNetwork, setSelectedNetwork] = useState<Network | null>(null);
+    const [assetsData, setAssetsData] = useState<any>(null);
 
     // Form inputs
     const [address, setAddress] = useState("");
@@ -53,7 +55,7 @@ export default function Withdraw() {
     const [historyFilter, setHistoryFilter] = useState<'all' | 'withdraw'>('all');
 
     useEffect(() => {
-        fetchCurrencies();
+        fetchAssets();
     }, []);
 
     useEffect(() => {
@@ -83,13 +85,18 @@ export default function Withdraw() {
         }
     };
 
-    const fetchCurrencies = async () => {
+    const fetchAssets = async () => {
         setIsLoading(true);
         try {
-            const data = await WalletService.getCurrencies();
-            setCurrencies(data);
+            const [currencyData, assetsData] = await Promise.all([
+                WalletService.getCurrencies(),
+                getAssetsOverview()
+            ]);
+
+            setAssetsData(assetsData);
+            setCurrencies(currencyData);
         } catch (error) {
-            console.error("Failed to fetch currencies", error);
+            console.error("Failed to fetch data", error);
         } finally {
             setIsLoading(false);
         }
@@ -97,8 +104,20 @@ export default function Withdraw() {
 
     const fetchBalance = async (currencyId: string) => {
         try {
-            // Mock balance - replace with actual API call
-            setBalance(100);
+            if (!assetsData) return;
+            // Find the currency symbol from the selected currency object or ID
+            const currency = currencies.find(c => c.id === currencyId);
+            if (!currency) return;
+
+            const spotAssets = assetsData.spot?.assets || [];
+            // Match by currency symbol (e.g. "USDT")
+            const asset = spotAssets.find((a: any) => a.currency === currency.symbol);
+
+            if (asset) {
+                setBalance(asset.balance ?? 0);
+            } else {
+                setBalance(0);
+            }
         } catch (error) {
             console.error("Failed to fetch balance", error);
         }
@@ -238,7 +257,13 @@ export default function Withdraw() {
                             >
                                 {selectedCurrency ? (
                                     <div className={styles.selectedItem}>
-                                        <img src={selectedCurrency.icon} alt={selectedCurrency.symbol} className={styles.selectedIcon} />
+                                        {selectedCurrency.icon ? (
+                                            <img src={selectedCurrency.icon} alt={selectedCurrency.symbol} className={styles.selectedIcon} />
+                                        ) : (
+                                            <div className={styles.selectedIcon} style={{ background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+                                                {selectedCurrency.symbol[0]}
+                                            </div>
+                                        )}
                                         <span className={styles.selectedText}>{selectedCurrency.symbol}</span>
                                     </div>
                                 ) : (
@@ -258,7 +283,13 @@ export default function Withdraw() {
                                                 className={styles.dropdownItem}
                                                 onClick={() => handleCurrencySelect(currency)}
                                             >
-                                                <img src={currency.icon} alt={currency.symbol} className={styles.currencyIcon} />
+                                                {currency.icon ? (
+                                                    <img src={currency.icon} alt={currency.symbol} className={styles.currencyIcon} />
+                                                ) : (
+                                                    <div className={styles.currencyIcon} style={{ background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+                                                        {currency.symbol[0]}
+                                                    </div>
+                                                )}
                                                 <span>{currency.symbol} - {currency.name}</span>
                                             </div>
                                         ))
@@ -278,9 +309,9 @@ export default function Withdraw() {
                 {selectedCurrency && (
                     <div className={styles.stepContainer}>
                         <div className={`${styles.stepHeader} ${(withdrawMethod === 'onchain' && selectedNetwork && address) ||
-                                (withdrawMethod === 'okx' && recipientValue)
-                                ? styles.stepCompleted
-                                : styles.stepActive
+                            (withdrawMethod === 'okx' && recipientValue)
+                            ? styles.stepCompleted
+                            : styles.stepActive
                             }`}>
                             <div className={styles.stepBadge}>
                                 {(withdrawMethod === 'onchain' && selectedNetwork && address) ||

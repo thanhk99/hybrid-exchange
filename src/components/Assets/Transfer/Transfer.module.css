@@ -1,83 +1,127 @@
 .transferContainer {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 24px 16px 60px;
-    min-height: calc(100vh - 60px);
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: calc(100vh - 80px);
 }
 
 .header {
-    margin-bottom: 24px;
+    margin-bottom: 32px;
     text-align: center;
 }
 
 .title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    color: #1f2937;
+    color: #111827;
     margin-bottom: 8px;
+    letter-spacing: -0.5px;
 }
 
 .subtitle {
-    font-size: 14px;
+    font-size: 15px;
     color: #6b7280;
     font-weight: 400;
 }
 
 .content {
     background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f3f4f6;
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
 }
 
 .formSection {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
 }
 
 .formGroup {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #374151;
-    margin-bottom: 4px;
+    margin-left: 4px;
+}
+
+/* Wallet Select Dropdown */
+.walletSelectContainer {
+    position: relative;
+}
+
+.walletSelect {
+    width: 100%;
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.walletSelect:hover {
+    border-color: #9ca3af;
+    background-color: #f9fafb;
+}
+
+.walletSelect:focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05);
 }
 
 /* Wallet Selector */
 .walletSelector {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     position: relative;
+    background: #f9fafb;
+    padding: 6px;
+    border-radius: 16px;
+    border: 1px solid #f3f4f6;
 }
 
 .walletBox {
     flex: 1;
-    background: #f9fafb;
+    background: white;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    transition: all 0.2s;
+    gap: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .walletBox:hover {
     border-color: #d1d5db;
-    background: #f3f4f6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .walletLabel {
     font-size: 11px;
-    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #9ca3af;
+    font-weight: 600;
 }
 
 .walletName {
@@ -87,8 +131,8 @@
 }
 
 .swapButton {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: white;
     border: 1px solid #e5e7eb;
@@ -97,17 +141,20 @@
     justify-content: center;
     cursor: pointer;
     color: #6b7280;
-    transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     z-index: 2;
-    font-size: 12px;
+    font-size: 16px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .swapButton:hover {
-    transform: scale(1.1);
+    transform: translateX(-50%) rotate(180deg);
     color: #1f2937;
     border-color: #d1d5db;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Dropdown */
@@ -117,60 +164,65 @@
 
 .dropdownButton {
     width: 100%;
-    padding: 10px 14px;
+    padding: 14px 16px;
     background: white;
     border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .dropdownButton:hover {
-    border-color: #1f2937;
+    border-color: #9ca3af;
+    background: #f9fafb;
 }
 
 .selectedItem {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .selectedIcon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .selectedText {
-    color: #1f2937;
-    font-weight: 500;
+    color: #111827;
+    font-weight: 600;
+    font-size: 16px;
 }
 
 .dropdownMenu {
     position: absolute;
-    top: calc(100% + 4px);
+    top: calc(100% + 8px);
     left: 0;
     right: 0;
     background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f3f4f6;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     z-index: 100;
-    max-height: 300px;
+    max-height: 320px;
     overflow-y: auto;
+    padding: 8px;
 }
 
 .dropdownItem {
-    padding: 10px 14px;
+    padding: 12px 16px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: background 0.2s;
+    gap: 12px;
+    transition: all 0.2s;
+    border-radius: 10px;
 }
 
 .dropdownItem:hover {
@@ -178,16 +230,22 @@
 }
 
 .currencyIcon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .balanceInfo {
-    font-size: 12px;
+    font-size: 13px;
     color: #6b7280;
-    margin-top: 6px;
+    margin-top: 8px;
     text-align: right;
+    font-weight: 500;
+}
+
+.balanceInfo strong {
+    color: #111827;
 }
 
 .inputWrapper {
@@ -196,26 +254,34 @@
 
 .input {
     width: 100%;
-    padding: 10px 14px 10px 40px;
+    padding: 16px 16px 16px 48px;
     border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    font-size: 14px;
-    color: #1f2937;
-    transition: border-color 0.2s;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    transition: all 0.2s;
+    background: #fff;
 }
 
 .input:focus {
     outline: none;
-    border-color: #1f2937;
+    border-color: #111827;
+    box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05);
+}
+
+.input::placeholder {
+    color: #d1d5db;
+    font-weight: 500;
 }
 
 .inputIcon {
     position: absolute;
-    left: 14px;
+    left: 18px;
     top: 50%;
     transform: translateY(-50%);
     color: #9ca3af;
-    font-size: 16px;
+    font-size: 20px;
 }
 
 .maxButton {
@@ -225,40 +291,78 @@
     transform: translateY(-50%);
     background: #f3f4f6;
     border: none;
-    padding: 4px 10px;
-    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
     font-size: 12px;
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: 700;
+    color: #374151;
     cursor: pointer;
     transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .maxButton:hover {
     background: #e5e7eb;
+    color: #111827;
+}
+
+.infoBox {
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+}
+
+.infoIcon {
+    color: #6b7280;
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.infoText {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.infoText p {
+    margin: 0 0 4px 0;
+}
+
+.infoText ul {
+    margin: 0;
+    padding-left: 16px;
+    color: #6b7280;
 }
 
 .transferButton {
     width: 100%;
-    padding: 12px;
-    background: #1f2937;
+    padding: 16px;
+    background: #111827;
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 15px;
+    border-radius: 14px;
+    font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
     margin-top: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .transferButton:hover:not(:disabled) {
-    background: #111827;
+    background: #000;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .transferButton:disabled {
-    opacity: 0.6;
+    opacity: 0.7;
     cursor: not-allowed;
+    transform: none;
 }
 
 /* Modal */
@@ -268,71 +372,105 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
 }
 
 .modal {
     background: white;
-    border-radius: 16px;
-    padding: 24px;
+    border-radius: 24px;
+    padding: 32px;
     width: 100%;
-    max-width: 360px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modalTitle {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 20px;
-    color: #1f2937;
+    margin-bottom: 24px;
+    color: #111827;
+    text-align: center;
+}
+
+.modalContent {
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
 }
 
 .confirmRow {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #f3f4f6;
-    font-size: 13px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+.confirmRow:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.confirmRow:first-child {
+    padding-top: 0;
 }
 
 .confirmLabel {
     color: #6b7280;
+    font-weight: 500;
 }
 
 .confirmValue {
     font-weight: 600;
-    color: #1f2937;
+    color: #111827;
 }
 
 .modalActions {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
 }
 
 .cancelButton,
 .confirmButton {
     flex: 1;
-    padding: 10px;
-    border-radius: 8px;
+    padding: 14px;
+    border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
     border: none;
-    font-size: 14px;
+    font-size: 15px;
+    transition: all 0.2s;
 }
 
 .cancelButton {
-    background: #f3f4f6;
+    background: white;
     color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.cancelButton:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
 }
 
 .confirmButton {
-    background: #1f2937;
+    background: #111827;
     color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.confirmButton:hover {
+    background: #000;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .spin {
@@ -349,29 +487,65 @@
     }
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 @media (max-width: 768px) {
     .transferContainer {
-        padding: 16px 12px 60px;
+        padding: 20px 16px;
+        margin: 0;
     }
 
     .content {
-        padding: 16px;
-        border-radius: 12px;
+        padding: 24px 20px;
+        border-radius: 20px;
     }
 
     .title {
-        font-size: 20px;
+        font-size: 24px;
     }
 
     .walletSelector {
-        gap: 8px;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
     }
 
     .walletBox {
-        padding: 10px;
+        width: 100%;
+        border-radius: 16px;
     }
 
-    .walletName {
-        font-size: 13px;
+    .swapButton {
+        position: relative;
+        left: auto;
+        transform: none;
+        margin: -12px auto;
+        z-index: 5;
+    }
+
+    .swapButton:hover {
+        transform: rotate(180deg);
     }
 }

@@ -5,7 +5,7 @@ import TokenService from "../services/token";
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT) || 30000;
 const ACCESS_TOKEN_KEY = process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY || "accessToken";
-const REFRESH_ENDPOINT = process.env.NEXT_PUBLIC_REFRESH_ENDPOINT || "/auth/refresh-token";
+const REFRESH_ENDPOINT = process.env.NEXT_PUBLIC_REFRESH_ENDPOINT || "/api/v1/auth/refresh";
 
 let isRefreshing = false;
 

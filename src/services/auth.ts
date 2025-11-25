@@ -32,7 +32,7 @@ export default class AuthService {
   // Đăng ký
   async register(registerData: RegisterData): Promise<any> {
     try {
-      const response = await axiosInstance.post('/auth/register', registerData, {
+      const response = await axiosInstance.post('api/v1/auth/signup', registerData, {
         headers: {
           'x-no-auth': 'true'
         }

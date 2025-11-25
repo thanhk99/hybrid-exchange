@@ -1,19 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getAssetsOverview } from '@/src/services/assets';
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
-import CoinIcon from '@/src/components/common/CoinIcon/CoinIcon';
+import { getAssetsOverview } from '@/src/services/balance';
+import { Asset, ActionButton } from '@/src/types/balance';
+import BalanceHeader from '@/src/components/Balance/BalanceHeader/BalanceHeader';
+import TotalBalanceCard from '@/src/components/Balance/TotalBalanceCard/TotalBalanceCard';
+import WalletCard from '@/src/components/Balance/WalletCard/WalletCard';
+import AssetsList from '@/src/components/Balance/AssetsList/AssetsList';
 import styles from './page.module.css';
-
-interface Asset {
-    symbol: string;
-    name: string;
-    balance: number;
-    usdValue: number;
-    change24h: number;
-}
 
 export default function BalanceOverviewPage() {
     const router = useRouter();
@@ -23,123 +18,156 @@ export default function BalanceOverviewPage() {
     const [fundingTotal, setFundingTotal] = useState(0);
     const [spotTotal, setSpotTotal] = useState(0);
     const [earnTotal, setEarnTotal] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        fetchBalanceData();
+    }, []);
 
-    const formatBalance = (value: number) => {
-        return hideBalance ? '****' : value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fetchBalanceData = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const data = await getAssetsOverview();
+
+            // Check if data structure is valid
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid response format');
+            }
+
+            // Transform API response to Asset format
+            const allAssets: Asset[] = [];
+
+            // Add funding assets with null checks
+            if (data.funding?.assets && Array.isArray(data.funding.assets)) {
+                data.funding.assets.forEach(asset => {
+                    if (asset && asset.currency) {
+                        allAssets.push({
+                            symbol: asset.currency,
+                            name: asset.currency,
+                            balance: asset.balance || 0,
+                            usdValue: asset.valueUsd || 0,
+                            available: (asset.balance || 0) - (asset.locked || 0),
+                            locked: asset.locked || 0,
+                        });
+                    }
+                });
+            }
+
+            // Add spot assets with null checks
+            if (data.spot?.assets && Array.isArray(data.spot.assets)) {
+                data.spot.assets.forEach(asset => {
+                    if (asset && asset.currency) {
+                        const existingAsset = allAssets.find(a => a.symbol === asset.currency);
+                        if (existingAsset) {
+                            existingAsset.balance += asset.balance || 0;
+                            existingAsset.usdValue += asset.valueUsd || 0;
+                        } else {
+                            allAssets.push({
+                                symbol: asset.currency,
+                                name: asset.currency,
+                                balance: asset.balance || 0,
+                                usdValue: asset.valueUsd || 0,
+                                available: (asset.balance || 0) - (asset.locked || 0),
+                                locked: asset.locked || 0,
+                            });
+                        }
+                    }
+                });
+            }
+
+            setAssets(allAssets);
+            setTotalBalance(data.totalAssetUsd || 0);
+            setFundingTotal(data.funding?.totalUsd || 0);
+            setSpotTotal(data.spot?.totalUsd || 0);
+            setEarnTotal(data.earn?.totalUsd || 0);
+        } catch (err) {
+            console.error('Error fetching balance data:', err);
+            const errorMessage = err instanceof Error
+                ? err.message
+                : 'Không thể tải dữ liệu số dư';
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const formatCrypto = (value: number) => {
-        return hideBalance ? '****' : value.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 8 });
-    };
+    const balanceActions: ActionButton[] = [
+        { label: 'Nạp tiền', onClick: () => router.push('/assets/deposit') },
+        { label: 'Rút tiền', onClick: () => router.push('/assets/withdraw') },
+        { label: 'Chuyển đổi', onClick: () => router.push('/assets/convert') },
+        { label: 'Chuyển tiền', onClick: () => router.push('/assets/transfer') },
+    ];
+
+    if (loading) {
+        return (
+            <div className={styles.balancePage}>
+                <div className={styles.loadingState}>
+                    <div className={styles.spinner}></div>
+                    <p>Đang tải dữ liệu...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.balancePage}>
+                <div className={styles.errorState}>
+                    <p className={styles.errorMessage}>{error}</p>
+                    <button className={styles.retryButton} onClick={fetchBalanceData}>
+                        Thử lại
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.balancePage}>
-            {/* Header */}
-            <div className={styles.header}>
-                <h1 className={styles.pageTitle}>Tổng quan số dư</h1>
-                <button className={styles.hideButton} onClick={() => setHideBalance(!hideBalance)}>
-                    {hideBalance ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                </button>
-            </div>
+            <BalanceHeader
+                title="Tổng quan số dư"
+                hideBalance={hideBalance}
+                onToggleHide={() => setHideBalance(!hideBalance)}
+            />
 
-            {/* Total Balance Card */}
-            <div className={styles.balanceCard}>
-                <div className={styles.balanceHeader}>
-                    <span className={styles.balanceLabel}>Tổng số dư ước tính</span>
-                </div>
-                <div className={styles.balanceAmount}>
-                    <span className={styles.currency}>$</span>
-                    <span className={styles.amount}>{formatBalance(totalBalance)}</span>
-                </div>
-                <div className={styles.balanceActions}>
-                    <button className={styles.actionButton} onClick={() => router.push('/assets/deposit')}>
-                        Nạp tiền
-                    </button>
-                    <button className={styles.actionButton} onClick={() => router.push('/assets/withdraw')}>
-                        Rút tiền
-                    </button>
-                    <button className={styles.actionButton} onClick={() => router.push('/assets/convert')}>
-                        Chuyển đổi
-                    </button>
-                    <button className={styles.actionButton} onClick={() => router.push('/assets/transfer')}>
-                        Chuyển tiền
-                    </button>
-                </div>
-            </div>
+            <TotalBalanceCard
+                totalBalance={totalBalance}
+                hideBalance={hideBalance}
+                actions={balanceActions}
+            />
 
             {/* Wallet Cards */}
             <div className={styles.walletsGrid}>
-                <div className={styles.walletCard} onClick={() => router.push('/balance/funding')}>
-                    <div className={styles.walletHeader}>
-                        <h3>Ví Funding</h3>
-                        <span className={styles.arrow}>→</span>
-                    </div>
-                    <div className={styles.walletBalance}>${formatBalance(fundingTotal)}</div>
-                    <div className={styles.walletDescription}>Ví chính để nạp, rút và chuyển tiền</div>
-                </div>
-
-                <div className={styles.walletCard} onClick={() => router.push('/balance/spot')}>
-                    <div className={styles.walletHeader}>
-                        <h3>Ví Spot</h3>
-                        <span className={styles.arrow}>→</span>
-                    </div>
-                    <div className={styles.walletBalance}>${formatBalance(spotTotal)}</div>
-                    <div className={styles.walletDescription}>Giao dịch spot và chuyển đổi crypto</div>
-                </div>
-
-                <div className={styles.walletCard} onClick={() => router.push('/balance/earn')}>
-                    <div className={styles.walletHeader}>
-                        <h3>Ví Earn</h3>
-                        <span className={styles.arrow}>→</span>
-                    </div>
-                    <div className={styles.walletBalance}>${formatBalance(earnTotal)}</div>
-                    <div className={styles.walletDescription}>Kiếm lợi nhuận từ tiền gửi và staking</div>
-                </div>
+                <WalletCard
+                    title="Ví Funding"
+                    balance={fundingTotal}
+                    description="Ví chính để nạp, rút và chuyển tiền"
+                    hideBalance={hideBalance}
+                    onClick={() => router.push('/balance/funding')}
+                />
+                <WalletCard
+                    title="Ví Spot"
+                    balance={spotTotal}
+                    description="Giao dịch spot và chuyển đổi crypto"
+                    hideBalance={hideBalance}
+                    onClick={() => router.push('/balance/spot')}
+                />
+                <WalletCard
+                    title="Ví Earn"
+                    balance={earnTotal}
+                    description="Kiếm lợi nhuận từ tiền gửi và staking"
+                    hideBalance={hideBalance}
+                    onClick={() => router.push('/balance/earn')}
+                />
             </div>
 
-            {/* Assets List */}
-            <div className={styles.assetsSection}>
-                <div className={styles.sectionHeader}>
-                    <h2>Danh sách tài sản</h2>
-                    <div className={styles.filterButtons}>
-                        <button className={styles.filterButton}>Tất cả</button>
-                        <button className={styles.filterButton}>Funding</button>
-                        <button className={styles.filterButton}>Spot</button>
-                        <button className={styles.filterButton}>Earn</button>
-                    </div>
-                </div>
-
-                <div className={styles.assetsList}>
-                    {assets.map((asset) => (
-                        <div key={asset.symbol} className={styles.assetRow}>
-                            <div className={styles.assetInfo}>
-                                <CoinIcon symbol={asset.symbol} name={asset.name} />
-                            </div>
-                            <div className={styles.assetBalance}>
-                                <div className={styles.cryptoBalance}>{formatCrypto(asset.balance)}</div>
-                                <div className={styles.usdBalance}>${formatBalance(asset.usdValue)}</div>
-                            </div>
-                            <div className={styles.assetChange}>
-                                <span className={asset.change24h >= 0 ? styles.positive : styles.negative}>
-                                    {asset.change24h >= 0 ? '+' : ''}{asset.change24h}%
-                                </span>
-                            </div>
-                            <div className={styles.assetActions}>
-                                <button className={styles.actionLink} onClick={() => router.push('/assets/deposit')}>
-                                    Nạp
-                                </button>
-                                <button className={styles.actionLink} onClick={() => router.push('/assets/withdraw')}>
-                                    Rút
-                                </button>
-                                <button className={styles.actionLink} onClick={() => router.push('/balance/transfer')}>
-                                    Chuyển
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <AssetsList
+                assets={assets}
+                hideBalance={hideBalance}
+                showFilters={true}
+            />
         </div>
     );
 }

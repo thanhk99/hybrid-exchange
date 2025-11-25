@@ -2,97 +2,112 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { EyeOutlined, EyeInvisibleOutlined, LeftOutlined } from '@ant-design/icons';
-import CoinIcon from '@/src/components/common/CoinIcon/CoinIcon';
+import { Asset, ActionButton } from '@/src/types/balance';
+import { getAssetsOverview } from '@/src/services/balance';
+import BalanceHeader from '@/src/components/Balance/BalanceHeader/BalanceHeader';
+import TotalBalanceCard from '@/src/components/Balance/TotalBalanceCard/TotalBalanceCard';
+import AssetsList from '@/src/components/Balance/AssetsList/AssetsList';
 import styles from './page.module.css';
 
-interface Asset {
-    symbol: string;
-    name: string;
-    balance: number;
-    usdValue: number;
-    available: number;
-    locked: number;
-}
-
-export default function FundingWalletPage() {
+export default function SpotWalletPage() {
     const router = useRouter();
     const [hideBalance, setHideBalance] = useState(false);
     const [assets, setAssets] = useState<Asset[]>([]);
     const [totalBalance, setTotalBalance] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const mockAssets: Asset[] = [
-            { symbol: 'BTC', name: 'Bitcoin', balance: 0.5234, usdValue: 23456.78, available: 0.5234, locked: 0 },
-            { symbol: 'ETH', name: 'Ethereum', balance: 5.234, usdValue: 12345.67, available: 5.234, locked: 0 },
-            { symbol: 'USDT', name: 'Tether', balance: 10000, usdValue: 10000, available: 9500, locked: 500 },
-        ];
-        setAssets(mockAssets);
-        setTotalBalance(mockAssets.reduce((sum, asset) => sum + asset.usdValue, 0));
+        fetchSpotData();
     }, []);
 
-    const formatBalance = (value: number) => {
-        return hideBalance ? '****' : value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
+    const fetchSpotData = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const data = await getAssetsOverview();
+
+            // Transform spot assets
+            const spotAssets: Asset[] = [];
+            if (data.spot?.assets && Array.isArray(data.spot.assets)) {
+                data.spot.assets.forEach(asset => {
+                    if (asset && asset.currency) {
+                        spotAssets.push({
+                            symbol: asset.currency,
+                            name: asset.currency,
+                            balance: asset.balance || 0,
+                            usdValue: asset.valueUsd || 0,
+                            available: (asset.balance || 0) - (asset.locked || 0),
+                            locked: asset.locked || 0,
+                        });
+                    }
+                });
+            }
+
+            setAssets(spotAssets);
+            setTotalBalance(data.spot?.totalUsd || 0);
+        } catch (err) {
+            console.error('Error fetching spot data:', err);
+            const errorMessage = err instanceof Error
+                ? err.message
+                : 'Không thể tải dữ liệu ví Spot';
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const balanceActions: ActionButton[] = [
+        { label: 'Giao dịch', onClick: () => router.push('/trade') },
+        { label: 'Chuyển đổi', onClick: () => router.push('/assets/convert') },
+        { label: 'Chuyển ví', onClick: () => router.push('/balance/transfer') },
+    ];
+
+    if (loading) {
+        return (
+            <div className={styles.walletPage}>
+                <div className={styles.loadingState}>
+                    <div className={styles.spinner}></div>
+                    <p>Đang tải dữ liệu...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.walletPage}>
+                <div className={styles.errorState}>
+                    <p className={styles.errorMessage}>{error}</p>
+                    <button className={styles.retryButton} onClick={fetchSpotData}>
+                        Thử lại
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.walletPage}>
-            <button className={styles.backButton} onClick={() => router.back()}>
-                <LeftOutlined /> Quay lại
-            </button>
+            <BalanceHeader
+                title="Ví Spot"
+                hideBalance={hideBalance}
+                onToggleHide={() => setHideBalance(!hideBalance)}
+                showBackButton={true}
+            />
 
-            <div className={styles.header}>
-                <h1 className={styles.pageTitle}>Ví Spot</h1>
-                <button className={styles.hideButton} onClick={() => setHideBalance(!hideBalance)}>
-                    {hideBalance ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                </button>
-            </div>
+            <TotalBalanceCard
+                totalBalance={totalBalance}
+                hideBalance={hideBalance}
+                label="Tổng số dư Spot"
+                actions={balanceActions}
+            />
 
-            <div className={styles.balanceCard}>
-                <div className={styles.balanceLabel}>Tổng số dư Spot</div>
-                <div className={styles.balanceAmount}>${formatBalance(totalBalance)}</div>
-                <div className={styles.balanceActions}>
-                    <button className={styles.actionButton} onClick={() => router.push('/assets/deposit')}>
-                        Nạp tiền
-                    </button>
-                    <button className={styles.actionButton} onClick={() => router.push('/assets/withdraw')}>
-                        Rút tiền
-                    </button>
-                    <button className={styles.actionButton} onClick={() => router.push('/balance/transfer')}>
-                        Chuyển ví
-                    </button>
-                </div>
-            </div>
-
-            <div className={styles.assetsSection}>
-                <h2>Danh sách tài sản</h2>
-                <div className={styles.assetsList}>
-                    {assets.map((asset) => (
-                        <div key={asset.symbol} className={styles.assetRow}>
-                            <CoinIcon symbol={asset.symbol} name={asset.name} />
-                            <div className={styles.assetBalances}>
-                                <div className={styles.balanceItem}>
-                                    <span className={styles.label}>Khả dụng:</span>
-                                    <span className={styles.value}>{formatBalance(asset.available)}</span>
-                                </div>
-                                <div className={styles.balanceItem}>
-                                    <span className={styles.label}>Đóng băng:</span>
-                                    <span className={styles.value}>{formatBalance(asset.locked)}</span>
-                                </div>
-                                <div className={styles.balanceItem}>
-                                    <span className={styles.label}>Tổng:</span>
-                                    <span className={styles.value}>{formatBalance(asset.balance)}</span>
-                                </div>
-                            </div>
-                            <div className={styles.assetActions}>
-                                <button className={styles.actionLink}>Nạp</button>
-                                <button className={styles.actionLink}>Rút</button>
-                                <button className={styles.actionLink}>Chuyển</button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <AssetsList
+                assets={assets}
+                hideBalance={hideBalance}
+                showDetailed={true}
+            />
         </div>
     );
 }

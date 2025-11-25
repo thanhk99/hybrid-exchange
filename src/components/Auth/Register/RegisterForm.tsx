@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { GlobalOutlined } from "@ant-design/icons";
 import AuthService from "@/src/services/auth";
 import { Notification } from "../../common/Notification/Notification";
 import {
@@ -43,7 +44,8 @@ export default function RegisterForm() {
         register,
         handleSubmit,
         formState: { errors },
-        watch
+        watch,
+        setValue
     } = useForm<RegisterData>();
 
     const showNotification = (type: NotificationState['type'], title: string, message: string) => {
@@ -82,6 +84,8 @@ export default function RegisterForm() {
             console.error("Register error:", err);
             const errorMessage = err.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.";
             showError("Lỗi đăng ký", errorMessage);
+            // Clear only password field on error
+            setValue("password", "");
         } finally {
             setIsLoading(false);
         }
@@ -101,7 +105,7 @@ export default function RegisterForm() {
 
             <div className={styles.leftSight}>
                 <div className={styles.leftContent}>
-                    <img src="/imgs/logo.jfif" alt="Logo" />
+                    <img src="/imgs/LOGO-VIX.svg" alt="Logo" />
                 </div>
             </div>
 
@@ -115,7 +119,7 @@ export default function RegisterForm() {
                         <input
                             type="text"
                             placeholder="Họ và tên"
-                            {...register("name", {
+                            {...register("username", {
                                 required: "Họ và tên là bắt buộc",
                                 minLength: {
                                     value: 2,
@@ -124,7 +128,7 @@ export default function RegisterForm() {
                             })}
                         />
                     </div>
-                    {errors.name && <span className={styles.errorMessage}>{errors.name.message}</span>}
+                    {errors.username && <span className={styles.errorMessage}>{errors.username.message}</span>}
 
                     {/* Email Field */}
                     <div className={styles.inputForm}>
@@ -142,6 +146,40 @@ export default function RegisterForm() {
                         />
                     </div>
                     {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
+
+                    {/* Country Field */}
+                    <div className={styles.inputForm}>
+                        <GlobalOutlined className={styles.iconLeft} />
+                        <select
+                            {...register("nation", {
+                                required: "Quốc gia là bắt buộc"
+                            })}
+                            defaultValue=""
+                        >
+                            <option value="" disabled>Chọn quốc gia</option>
+                            <option value="VN">Việt Nam</option>
+                            <option value="US">United States</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="JP">Japan</option>
+                            <option value="KR">South Korea</option>
+                            <option value="CN">China</option>
+                            <option value="TH">Thailand</option>
+                            <option value="SG">Singapore</option>
+                            <option value="MY">Malaysia</option>
+                            <option value="ID">Indonesia</option>
+                            <option value="PH">Philippines</option>
+                            <option value="AU">Australia</option>
+                            <option value="CA">Canada</option>
+                            <option value="DE">Germany</option>
+                            <option value="FR">France</option>
+                            <option value="IT">Italy</option>
+                            <option value="ES">Spain</option>
+                            <option value="BR">Brazil</option>
+                            <option value="MX">Mexico</option>
+                            <option value="IN">India</option>
+                        </select>
+                    </div>
+                    {errors.nation && <span className={styles.errorMessage}>{errors.nation.message}</span>}
 
                     {/* Password Field */}
                     <div className={styles.inputForm}>

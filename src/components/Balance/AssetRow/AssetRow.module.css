@@ -1,0 +1,105 @@
+.assetRow {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background-color 0.15s ease;
+}
+
+.assetRow:last-child {
+    border-bottom: none;
+}
+
+.assetRow:hover {
+    background-color: #f9fafb;
+}
+
+.assetInfo {
+    flex: 1.5;
+    min-width: 150px;
+}
+
+.assetBalance {
+    flex: 1.5;
+    text-align: right;
+    padding-right: 1rem;
+}
+
+.cryptoBalance {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
+.usdBalance {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.assetBalances {
+    flex: 3;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.balanceItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.balanceItem .label {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.balanceItem .value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.assetChange {
+    flex: 0.75;
+    text-align: center;
+}
+
+.positive {
+    color: #10b981;
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.negative {
+    color: #ef4444;
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.assetActions {
+    display: flex;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+.actionLink {
+    background: none;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #3b82f6;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.actionLink:hover {
+    background: #eff6ff;
+    border-color: #3b82f6;
+}

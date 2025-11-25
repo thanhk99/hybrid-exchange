@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import AuthService from "@/src/services/auth";
@@ -42,6 +42,16 @@ export default function LoginForm() {
 
   const dispatch = useDispatch();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [redirectUrl, setRedirectUrl] = useState<string>('/');
+
+  useEffect(() => {
+    // Get redirect URL from query params
+    const redirect = searchParams.get('redirect');
+    if (redirect) {
+      setRedirectUrl(redirect);
+    }
+  }, [searchParams]);
 
   const {
     register,
@@ -94,8 +104,6 @@ export default function LoginForm() {
       const response = await AuthService.login(data);
       const payload = response.data;
 
-      // Handle different response structures
-      // If payload has a 'data' property, the token might be inside it
       const accessToken = payload.data?.accessToken || payload.accessToken;
       const refreshToken = payload.data?.refreshToken || payload.refreshToken;
 
@@ -105,12 +113,8 @@ export default function LoginForm() {
         throw new Error("Không nhận được token xác thực");
       }
 
-      // Fetch user profile
       const userProfile = await UserService.getProfile();
 
-      // Access data based on ApiResponse<UserInfo> structure
-      // userProfile.data is ApiResponse<UserInfo>
-      // userProfile.data.data is UserInfo
       if (userProfile && userProfile.data && userProfile.data.data) {
         const userData = userProfile.data.data;
         dispatch(loginSuccess({
@@ -125,12 +129,11 @@ export default function LoginForm() {
       showSuccess("Thành công", "Đăng nhập thành công! Đang chuyển hướng...");
 
       setTimeout(() => {
-        router.push("/");
+        router.push(redirectUrl);
       }, 1500);
     } catch (err: any) {
       console.error("Login error:", err);
 
-      // Clear password field on error
       setValue("password", "");
 
       const errorMessage = err.response?.data?.message || err.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.";
@@ -154,7 +157,7 @@ export default function LoginForm() {
 
       <div className={styles.leftSight}>
         <div className={styles.leftContent}>
-          <img src="imgs/logo.jfif" alt="Logo" />
+          <img src="imgs/LOGO-VIX.svg" alt="Logo" />
         </div>
       </div>
 

@@ -1,83 +1,103 @@
 export default class TokenService {
-  static ACCESS_TOKEN_KEY:string =process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY || "accessToken"; 
+  static ACCESS_TOKEN_KEY: string = process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY || "accessToken";
+
+  // Cookie helper methods
+  private static setCookie(name: string, value: string, days: number = 7) {
+    if (typeof window === 'undefined') return;
+
+    const expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+  }
+
+  private static deleteCookie(name: string) {
+    if (typeof window === 'undefined') return;
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+  }
   // Lấy access token
-    static getAccessToken (key: string = 'accessToken'){
-        if (typeof window === 'undefined') return null;
-        
-        try {
-        return localStorage.getItem(key);
-        } catch (error) {
-        console.error('Error getting access token:', error);
-        return null;
-        }
-    }
+  static getAccessToken(key: string = 'accessToken') {
+    if (typeof window === 'undefined') return null;
 
-    // Lấy refresh token
-    static getRefreshToken(key: string = 'refreshToken'){
-        if (typeof window === 'undefined') return null;
-        
-        try {
-        return localStorage.getItem(key);
-        } catch (error) {
-        console.error('Error getting refresh token:', error);
-        return null;
-        }
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error('Error getting access token:', error);
+      return null;
     }
+  }
 
-    static isLogin(){
-      if( localStorage.getItem(this.ACCESS_TOKEN_KEY) === null ||localStorage.getItem(this.ACCESS_TOKEN_KEY)  === ""){
-          return false;
-      }else{
-          return true;
-      }
+  // Lấy refresh token
+  static getRefreshToken(key: string = 'refreshToken') {
+    if (typeof window === 'undefined') return null;
+
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error('Error getting refresh token:', error);
+      return null;
     }
-    // Set access token
-    static setAccessToken(token: string, key: string = 'accessToken'){
-        if (typeof window === 'undefined') return;
-        
-        try {
-        localStorage.setItem(key, token);
-        } catch (error) {
-        console.error('Error setting access token:', error);
-        }
+  }
+
+  static isLogin() {
+    if (localStorage.getItem(this.ACCESS_TOKEN_KEY) === null || localStorage.getItem(this.ACCESS_TOKEN_KEY) === "") {
+      return false;
+    } else {
+      return true;
     }
+  }
+  // Set access token
+  static setAccessToken(token: string, key: string = 'accessToken') {
+    if (typeof window === 'undefined') return;
+
+    try {
+      localStorage.setItem(key, token);
+      // Also set in cookie for middleware access
+      this.setCookie(key, token);
+    } catch (error) {
+      console.error('Error setting access token:', error);
+    }
+  }
 
   // Set refresh token
-    static setRefreshToken(token: string, key: string = 'refreshToken'){
-        if (typeof window === 'undefined') return;
-        
-        try {
-        localStorage.setItem(key, token);
-        } catch (error) {
-        console.error('Error setting refresh token:', error);
-        }
-    }
+  static setRefreshToken(token: string, key: string = 'refreshToken') {
+    if (typeof window === 'undefined') return;
 
-    // Set cả hai token
-    static setToken(accessToken: string, refreshToken?: string){
-        TokenService.setAccessToken(accessToken);
-        if (refreshToken) {
-        TokenService.setRefreshToken(refreshToken);
-        }
+    try {
+      localStorage.setItem(key, token);
+      // Also set in cookie for middleware access
+      this.setCookie(key, token);
+    } catch (error) {
+      console.error('Error setting refresh token:', error);
     }
+  }
+
+  // Set cả hai token
+  static setToken(accessToken: string, refreshToken?: string) {
+    TokenService.setAccessToken(accessToken);
+    if (refreshToken) {
+      TokenService.setRefreshToken(refreshToken);
+    }
+  }
 
   // Xóa token
-    static clearToken(key?: string){
-        if (typeof window === 'undefined') return;
-        
-        try {
-        if (key) {
-            localStorage.removeItem(key);
-        } else {
-            // Xóa tất cả token liên quan
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            // Có thể thêm các key khác nếu cần
-        }
-        } catch (error) {
-        console.error('Error clearing token:', error);
-        }
+  static clearToken(key?: string) {
+    if (typeof window === 'undefined') return;
+
+    try {
+      if (key) {
+        localStorage.removeItem(key);
+        this.deleteCookie(key);
+      } else {
+        // Xóa tất cả token liên quan
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        this.deleteCookie('accessToken');
+        this.deleteCookie('refreshToken');
+      }
+    } catch (error) {
+      console.error('Error clearing token:', error);
     }
+  }
 
   // Kiểm tra đăng nhập
   isLogin(): boolean {
@@ -93,7 +113,7 @@ export default class TokenService {
       // Giải mã JWT token để kiểm tra expiry
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Date.now() / 1000;
-      
+
       return payload.exp < currentTime;
     } catch (error) {
       console.error('Error checking token expiry:', error);

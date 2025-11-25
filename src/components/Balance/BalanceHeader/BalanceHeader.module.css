@@ -1,0 +1,52 @@
+.headerContainer {
+    margin-bottom: 1.5rem;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    margin-bottom: 1rem;
+    transition: color 0.15s ease;
+}
+
+.backButton:hover {
+    color: #111827;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pageTitle {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.hideButton {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.625rem 1rem;
+    font-size: 1.125rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.hideButton:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #111827;
+}

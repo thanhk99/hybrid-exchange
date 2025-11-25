@@ -1,0 +1,30 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-weight: 500;
+    color: #374151;
+    white-space: nowrap;
+}
+
+.small {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.medium {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.large {
+    padding: 8px 14px;
+    font-size: 14px;
+}
+
+.name {
+    font-weight: 500;
+}

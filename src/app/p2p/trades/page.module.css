@@ -1,0 +1,220 @@
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.filterButton {
+    padding: 8px 20px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterButton:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.filterButtonActive {
+    background: #111827;
+    color: white;
+    border-color: #111827;
+}
+
+.content {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tableContainer {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead {
+    background: #f9fafb;
+}
+
+.table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 16px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+}
+
+.row {
+    transition: background 0.2s;
+}
+
+.row:hover {
+    background: #f9fafb;
+}
+
+.tdId {
+    font-family: monospace;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.tdType {
+    min-width: 80px;
+}
+
+.typeBadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.typeBuy {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.typeSell {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.tdCrypto {
+    font-weight: 700;
+    color: #111827;
+}
+
+.tdAmount,
+.tdTotal {
+    font-weight: 600;
+    color: #111827;
+}
+
+.tdPayment {
+    min-width: 150px;
+}
+
+.tdCounterparty {
+    font-weight: 500;
+    color: #374151;
+}
+
+.tdStatus {
+    min-width: 120px;
+}
+
+.tdTime {
+    color: #6b7280;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.tdAction {
+    text-align: right;
+}
+
+.viewButton {
+    padding: 6px 16px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.viewButton:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.loading,
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    gap: 16px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f4f6;
+    border-top-color: #111827;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.empty p {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 16px;
+    }
+
+    .filters {
+        gap: 8px;
+    }
+
+    .filterButton {
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+
+    .table {
+        min-width: 1000px;
+    }
+}

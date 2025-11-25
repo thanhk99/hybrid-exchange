@@ -105,6 +105,27 @@
   color: #aaa;
 }
 
+.register select {
+  padding: 0.8rem;
+  border: none;
+  font-size: 1rem;
+  width: 80%;
+  margin-left: 2rem;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.register select:focus {
+  outline: none;
+  border: none;
+}
+
+.register select option {
+  background-color: white;
+  color: #333;
+}
+
+
 .bottomIcon {
   display: flex;
   margin-top: auto;

@@ -1,0 +1,59 @@
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.small {
+    gap: 8px;
+    font-size: 12px;
+}
+
+.medium {
+    font-size: 13px;
+}
+
+.stars {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.star {
+    color: #f59e0b;
+    font-size: 14px;
+}
+
+.small .star {
+    font-size: 12px;
+}
+
+.ratingValue {
+    font-weight: 600;
+    color: #111827;
+}
+
+.stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.small .stats {
+    font-size: 11px;
+}
+
+.trades {
+    font-weight: 500;
+}
+
+.separator {
+    color: #d1d5db;
+}
+
+.completion {
+    font-weight: 500;
+    color: #059669;
+}

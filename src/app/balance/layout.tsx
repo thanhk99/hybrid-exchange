@@ -1,4 +1,5 @@
 import BalanceSidebar from '@/src/components/Balance/BalanceSidebar/BalanceSidebar';
+import ProtectedRoute from '@/src/components/common/ProtectedRoute/ProtectedRoute';
 import styles from './layout.module.css';
 
 export default function BalanceLayout({
@@ -7,11 +8,13 @@ export default function BalanceLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className={styles.balanceLayout}>
-            <BalanceSidebar />
-            <div className={styles.balanceContent}>
-                {children}
+        <ProtectedRoute>
+            <div className={styles.balanceLayout}>
+                <BalanceSidebar />
+                <div className={styles.balanceContent}>
+                    {children}
+                </div>
             </div>
-        </div>
+        </ProtectedRoute>
     );
 }

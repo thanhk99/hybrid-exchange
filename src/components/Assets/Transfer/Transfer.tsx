@@ -9,21 +9,23 @@ import {
     ArrowRightOutlined
 } from "@ant-design/icons";
 import { FaSpinner } from "react-icons/fa";
+import { getAssetsOverview } from "@/src/services/balance";
 import WalletService, { Currency, Transaction } from "@/src/services/wallet";
 import { Notification } from "../../common/Notification/Notification";
 import TransactionHistory from "../../common/TransactionHistory/TransactionHistory";
 import styles from "./Transfer.module.css";
 
-type WalletType = 'funding' | 'trading';
+type WalletType = 'funding' | 'spot' | 'earn';
 
 export default function Transfer() {
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
+    const [assetsData, setAssetsData] = useState<any>(null);
     const [isCurrencyDropdownOpen, setIsCurrencyDropdownOpen] = useState(false);
 
     // Wallet selection state
     const [fromWallet, setFromWallet] = useState<WalletType>('funding');
-    const [toWallet, setToWallet] = useState<WalletType>('trading');
+    const [toWallet, setToWallet] = useState<WalletType>('spot');
 
     const [amount, setAmount] = useState("");
     const [balance, setBalance] = useState(0);
@@ -43,14 +45,14 @@ export default function Transfer() {
     const [historyFilter, setHistoryFilter] = useState<'all' | 'transfer'>('all');
 
     useEffect(() => {
-        fetchCurrencies();
+        fetchAssets();
     }, []);
 
     useEffect(() => {
         if (selectedCurrency) {
             fetchBalance(selectedCurrency.id);
         }
-    }, [selectedCurrency, fromWallet]); // Refetch balance when currency or source wallet changes
+    }, [selectedCurrency, fromWallet, assetsData]); // Refetch balance when currency or source wallet changes
 
     useEffect(() => {
         fetchTransactionHistory();
@@ -69,13 +71,18 @@ export default function Transfer() {
         }
     };
 
-    const fetchCurrencies = async () => {
+    const fetchAssets = async () => {
         setIsLoading(true);
         try {
-            const data = await WalletService.getCurrencies();
-            setCurrencies(data);
+            const [currencyData, assetsData] = await Promise.all([
+                WalletService.getCurrencies(),
+                getAssetsOverview()
+            ]);
+
+            setAssetsData(assetsData);
+            setCurrencies(currencyData);
         } catch (error) {
-            console.error("Failed to fetch currencies", error);
+            console.error("Failed to fetch data", error);
         } finally {
             setIsLoading(false);
         }
@@ -83,10 +90,35 @@ export default function Transfer() {
 
     const fetchBalance = async (currencyId: string) => {
         try {
-            // In a real app, we would fetch balance specific to the 'fromWallet'
-            // const balance = await WalletService.getBalance(currencyId, fromWallet);
-            const balance = await WalletService.getBalance(currencyId);
-            setBalance(balance);
+            if (!assetsData) {
+                console.log("Transfer: No assetsData available");
+                return;
+            }
+
+            const currency = currencies.find(c => c.id === currencyId);
+            if (!currency) {
+                console.log("Transfer: Currency not found", currencyId);
+                return;
+            }
+
+            // Map wallet type to API response key
+            const walletKey = fromWallet; // Now using same naming: 'funding', 'spot', 'earn'
+            const walletAssets = assetsData[walletKey]?.assets || [];
+
+            console.log(`Transfer: Fetching balance for ${currency.symbol} from ${walletKey}`);
+
+            // Case-insensitive match
+            const asset = walletAssets.find((a: any) =>
+                a.currency?.toUpperCase() === currency.symbol.toUpperCase()
+            );
+
+            if (asset) {
+                console.log("Transfer: Asset found", asset);
+                setBalance(asset.balance ?? 0);
+            } else {
+                console.log("Transfer: Asset not found in wallet");
+                setBalance(0);
+            }
         } catch (error) {
             console.error("Failed to fetch balance", error);
         }
@@ -109,7 +141,16 @@ export default function Transfer() {
     };
 
     const getWalletName = (type: WalletType) => {
-        return type === 'funding' ? 'Tài khoản Funding' : 'Tài khoản Giao dịch';
+        switch (type) {
+            case 'funding':
+                return 'Ví Funding';
+            case 'spot':
+                return 'Ví Spot';
+            case 'earn':
+                return 'Ví Earn';
+            default:
+                return 'Ví';
+        }
     };
 
     const handleTransferClick = () => {
@@ -183,7 +224,13 @@ export default function Transfer() {
                             >
                                 {selectedCurrency ? (
                                     <div className={styles.selectedItem}>
-                                        <img src={selectedCurrency.icon} alt={selectedCurrency.symbol} className={styles.selectedIcon} />
+                                        {selectedCurrency.icon ? (
+                                            <img src={selectedCurrency.icon} alt={selectedCurrency.symbol} className={styles.selectedIcon} />
+                                        ) : (
+                                            <div className={styles.selectedIcon} style={{ background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+                                                {selectedCurrency.symbol[0]}
+                                            </div>
+                                        )}
                                         <span className={styles.selectedText}>{selectedCurrency.symbol}</span>
                                     </div>
                                 ) : (
@@ -205,7 +252,13 @@ export default function Transfer() {
                                                 className={styles.dropdownItem}
                                                 onClick={() => handleCurrencySelect(currency)}
                                             >
-                                                <img src={currency.icon} alt={currency.symbol} className={styles.currencyIcon} />
+                                                {currency.icon ? (
+                                                    <img src={currency.icon} alt={currency.symbol} className={styles.currencyIcon} />
+                                                ) : (
+                                                    <div className={styles.currencyIcon} style={{ background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+                                                        {currency.symbol[0]}
+                                                    </div>
+                                                )}
                                                 <span>{currency.symbol} - {currency.name}</span>
                                             </div>
                                         ))
@@ -217,20 +270,46 @@ export default function Transfer() {
 
                     {/* Wallet Selection (From -> To) */}
                     <div className={styles.formGroup}>
-                        <div className={styles.walletSelector}>
-                            <div className={styles.walletBox}>
-                                <span className={styles.walletLabel}>Từ</span>
-                                <span className={styles.walletName}>{getWalletName(fromWallet)}</span>
-                            </div>
+                        <label className={styles.label}>Từ ví</label>
+                        <div className={styles.walletSelectContainer}>
+                            <select
+                                className={styles.walletSelect}
+                                value={fromWallet}
+                                onChange={(e) => {
+                                    const newWallet = e.target.value as WalletType;
+                                    setFromWallet(newWallet);
+                                    // If same as toWallet, swap them
+                                    if (newWallet === toWallet) {
+                                        setToWallet(fromWallet);
+                                    }
+                                }}
+                            >
+                                <option value="funding">Ví Funding</option>
+                                <option value="spot">Ví Spot</option>
+                                <option value="earn">Ví Earn</option>
+                            </select>
+                        </div>
+                    </div>
 
-                            <button className={styles.swapButton} onClick={handleSwapWallets}>
-                                <SwapOutlined />
-                            </button>
-
-                            <div className={styles.walletBox}>
-                                <span className={styles.walletLabel}>Đến</span>
-                                <span className={styles.walletName}>{getWalletName(toWallet)}</span>
-                            </div>
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Đến ví</label>
+                        <div className={styles.walletSelectContainer}>
+                            <select
+                                className={styles.walletSelect}
+                                value={toWallet}
+                                onChange={(e) => {
+                                    const newWallet = e.target.value as WalletType;
+                                    setToWallet(newWallet);
+                                    // If same as fromWallet, swap them
+                                    if (newWallet === fromWallet) {
+                                        setFromWallet(toWallet);
+                                    }
+                                }}
+                            >
+                                <option value="funding">Ví Funding</option>
+                                <option value="spot">Ví Spot</option>
+                                <option value="earn">Ví Earn</option>
+                            </select>
                         </div>
                         {selectedCurrency && (
                             <div className={styles.balanceInfo}>
