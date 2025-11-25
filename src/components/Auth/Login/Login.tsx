@@ -3,14 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import AuthService from "@/src/services/auth";
 import TokenService from "@/src/services/token";
+import UserService from "@/src/services/user";
+import { loginSuccess } from "@/src/app/store/authSlice";
 import { Notification } from "../../common/Notification/Notification";
-import { 
-  EyeOutlined, 
+import { LoginData } from "@/src/types/auth";
+import {
+  EyeOutlined,
   EyeInvisibleOutlined,
-  UserOutlined, 
-  LockOutlined, 
+  UserOutlined,
+  LockOutlined,
   CopyOutlined,
   FacebookOutlined,
   TwitterOutlined,
@@ -35,13 +39,15 @@ export default function LoginForm() {
     title: '',
     message: ''
   });
-  
+
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm<LoginData>();
 
@@ -83,23 +89,51 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginData) => {
     setIsLoading(true);
     showInfo("Thông tin", "Đang xử lý đăng nhập...");
-    
+
     try {
       const response = await AuthService.login(data);
       const payload = response.data;
 
-      // Lưu thông tin device và token
-      // deviceService.setDeviceId(payload.data.deviceInfo.deviceId);
-      TokenService.setToken(payload.data.accessToken, payload.data.refreshToken);
+      // Handle different response structures
+      // If payload has a 'data' property, the token might be inside it
+      const accessToken = payload.data?.accessToken || payload.accessToken;
+      const refreshToken = payload.data?.refreshToken || payload.refreshToken;
+
+      if (accessToken) {
+        TokenService.setToken(accessToken, refreshToken);
+      } else {
+        throw new Error("Không nhận được token xác thực");
+      }
+
+      // Fetch user profile
+      const userProfile = await UserService.getProfile();
+
+      // Access data based on ApiResponse<UserInfo> structure
+      // userProfile.data is ApiResponse<UserInfo>
+      // userProfile.data.data is UserInfo
+      if (userProfile && userProfile.data && userProfile.data.data) {
+        const userData = userProfile.data.data;
+        dispatch(loginSuccess({
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          userId: userData.uid,
+          email: userData.email,
+          deviceInfo: "browser"
+        }));
+      }
 
       showSuccess("Thành công", "Đăng nhập thành công! Đang chuyển hướng...");
-      
+
       setTimeout(() => {
         router.push("/");
       }, 1500);
     } catch (err: any) {
       console.error("Login error:", err);
-      const errorMessage = err.response?.data?.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.";
+
+      // Clear password field on error
+      setValue("password", "");
+
+      const errorMessage = err.response?.data?.message || err.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.";
       showError("Lỗi đăng nhập", errorMessage);
     } finally {
       setIsLoading(false);
@@ -134,7 +168,7 @@ export default function LoginForm() {
             <input
               type="text"
               placeholder="Email"
-              {...register("email", { 
+              {...register("email", {
                 required: "Email là bắt buộc",
                 pattern: {
                   value: /^\S+@\S+$/i,
@@ -155,7 +189,7 @@ export default function LoginForm() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Mật khẩu"
-              {...register("password", { 
+              {...register("password", {
                 required: "Mật khẩu là bắt buộc",
                 minLength: {
                   value: 6,

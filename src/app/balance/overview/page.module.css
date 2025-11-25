@@ -1,0 +1,320 @@
+.balancePage {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 16px 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pageTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.hideButton {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 6px;
+    transition: all 0.2s;
+}
+
+.hideButton:hover {
+    color: #1f2937;
+}
+
+.balanceCard {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.balanceHeader {
+    margin-bottom: 8px;
+}
+
+.balanceLabel {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.balanceAmount {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.currency {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.amount {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.balanceActions {
+    display: flex;
+    gap: 10px;
+}
+
+.actionButton {
+    flex: 1;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.actionButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.walletsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.walletCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.walletCard:hover {
+    border-color: #1f2937;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.walletHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.walletHeader h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.arrow {
+    font-size: 16px;
+    color: #9ca3af;
+    transition: all 0.2s;
+}
+
+.walletCard:hover .arrow {
+    color: #1f2937;
+    transform: translateX(4px);
+}
+
+.walletBalance {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 6px;
+}
+
+.walletDescription {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.assetsSection {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.sectionHeader h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.filterButtons {
+    display: flex;
+    gap: 6px;
+}
+
+.filterButton {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterButton:hover,
+.filterButton:first-child {
+    background: #1f2937;
+    color: white;
+    border-color: #1f2937;
+}
+
+.assetsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.assetRow {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr 2fr;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: white;
+    transition: all 0.2s;
+}
+
+.assetRow:hover {
+    background: #f9fafb;
+}
+
+.assetBalance {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cryptoBalance {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.usdBalance {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.assetChange {
+    text-align: center;
+    font-size: 13px;
+}
+
+.positive {
+    color: #059669;
+    font-weight: 600;
+}
+
+.negative {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.assetActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.actionLink {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.actionLink:hover {
+    background: #eff6ff;
+}
+
+@media (max-width: 1024px) {
+    .walletsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .assetRow {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .assetChange,
+    .assetActions {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .balancePage {
+        padding: 0;
+    }
+
+    .amount {
+        font-size: 32px;
+    }
+
+    .walletsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .balanceActions {
+        flex-direction: column;
+    }
+
+    .assetRow {
+        grid-template-columns: 1fr;
+        padding: 14px;
+    }
+
+    .assetChange,
+    .assetActions {
+        grid-column: 1;
+    }
+
+    .assetActions {
+        justify-content: flex-start;
+        margin-top: 8px;
+    }
+}

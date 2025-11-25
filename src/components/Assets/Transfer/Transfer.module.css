@@ -1,0 +1,377 @@
+.transferContainer {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    min-height: calc(100vh - 60px);
+}
+
+.header {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.content {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.formSection {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+/* Wallet Selector */
+.walletSelector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.walletBox {
+    flex: 1;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.walletBox:hover {
+    border-color: #d1d5db;
+    background: #f3f4f6;
+}
+
+.walletLabel {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.walletName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.swapButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+    font-size: 12px;
+}
+
+.swapButton:hover {
+    transform: scale(1.1);
+    color: #1f2937;
+    border-color: #d1d5db;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown */
+.dropdownContainer {
+    position: relative;
+}
+
+.dropdownButton {
+    width: 100%;
+    padding: 10px 14px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.dropdownButton:hover {
+    border-color: #1f2937;
+}
+
+.selectedItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.selectedIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.selectedText {
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.dropdownItem {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.dropdownItem:hover {
+    background: #f3f4f6;
+}
+
+.currencyIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.balanceInfo {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 6px;
+    text-align: right;
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1f2937;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #1f2937;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 16px;
+}
+
+.maxButton {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #f3f4f6;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f2937;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.maxButton:hover {
+    background: #e5e7eb;
+}
+
+.transferButton {
+    width: 100%;
+    padding: 12px;
+    background: #1f2937;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 12px;
+}
+
+.transferButton:hover:not(:disabled) {
+    background: #111827;
+}
+
+.transferButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modalTitle {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #1f2937;
+}
+
+.confirmRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 13px;
+}
+
+.confirmLabel {
+    color: #6b7280;
+}
+
+.confirmValue {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.modalActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.cancelButton,
+.confirmButton {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+}
+
+.cancelButton {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.confirmButton {
+    background: #1f2937;
+    color: white;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .transferContainer {
+        padding: 16px 12px 60px;
+    }
+
+    .content {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .walletSelector {
+        gap: 8px;
+    }
+
+    .walletBox {
+        padding: 10px;
+    }
+
+    .walletName {
+        font-size: 13px;
+    }
+}

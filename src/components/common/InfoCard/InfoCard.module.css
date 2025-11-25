@@ -1,0 +1,63 @@
+.card {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin-bottom: 24px;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.cardTitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cardTitle h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.cardIcon {
+    font-size: 20px;
+    color: #6b7280;
+}
+
+.editButton {
+    padding: 8px 16px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.editButton:hover {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    color: white;
+    border-color: #1f2937;
+    transform: translateY(-1px);
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}

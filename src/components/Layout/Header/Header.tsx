@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   UserOutlined,
   ApiOutlined,
@@ -37,22 +37,10 @@ export default function Header() {
     (state: any) => state.auth
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 50);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
@@ -61,14 +49,14 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logout());
-    router.push("/")
+    router.push("/");
     closeMenu();
-  }
+  };
 
   const regisPage = () => {
-    router.push('register')
+    router.push("register");
     closeMenu();
-  }
+  };
 
   const loginPage = () => {
     router.push("/login");
@@ -153,37 +141,43 @@ export default function Header() {
 
   const asset: IChildrenItem[] = [
     {
-      icon: <CreditCardOutlined />,
-      label: "Tài sản của tôi",
-      content: "",
+      icon: <WalletOutlined />,
+      label: "Tổng quan tài sản",
+      content: "Xem tất cả tài sản của bạn",
       onClick: () => { router.push("/balance/overview"); closeMenu(); },
-    },
-    {
-      icon: <LoginOutlined />,
-      label: "Nạp tiền",
-      content: "",
-      onClick: () => { closeMenu(); },
-    },
-    {
-      icon: <LogoutOutlined />,
-      label: "Rút tiền",
-      content: "",
-      onClick: () => { closeMenu(); },
     },
     {
       icon: <SwapOutlined />,
       label: "Chuyển tiền",
-      content: "",
-      onClick: () => { closeMenu(); },
+      content: "Chuyển tiền nội bộ miễn phí",
+      onClick: () => { router.push("/assets/transfer"); closeMenu(); },
+    },
+    {
+      icon: <CreditCardOutlined />,
+      label: "Nạp tiền",
+      content: "Nạp tiền vào tài khoản",
+      onClick: () => { router.push("/assets/deposit"); closeMenu(); },
+    },
+    {
+      icon: <TransactionOutlined />,
+      label: "Rút tiền",
+      content: "Rút tiền từ tài khoản",
+      onClick: () => { router.push("/assets/withdraw"); closeMenu(); },
+    },
+    {
+      icon: <PieChartOutlined />,
+      label: "Lịch sử giao dịch",
+      content: "Xem lịch sử giao dịch của bạn",
+      onClick: () => { router.push("/assets/history"); closeMenu(); },
     },
   ];
 
   const user: IChildrenItem[] = [
     {
-      icon: <PieChartOutlined />,
+      icon: <ApiOutlined />,
       label: "Tổng quan",
       content: "",
-      onClick: () => { router.push("/account/overview"); closeMenu(); },
+      onClick: () => { router.push("/account/profile"); closeMenu(); },
     },
     {
       icon: <UserOutlined />,
@@ -207,45 +201,45 @@ export default function Header() {
 
   return (
     <>
-      <header className={isScrolled ? styles.headerScrolled : styles.headerMain}>
+      <header className={styles.headerMain}>
         <div className={styles.head}>
           <div className={styles.headerLeft}>
-            <div className={styles.logo} onClick={() => router.push('/')}>
+            <div className={styles.logo} onClick={() => router.push("/")}>
               <img src="/imgs/Logo-VIX.svg" alt="logo" className={styles.logoImg} />
             </div>
 
             <div className={styles.desktopMenu}>
               <HeaderItem
                 label="Mua Crypto"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<DownOutlined />}
                 childrens={buyCrypto}
                 mobile={false}
               />
               <HeaderItem
                 label="Khám phá"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<DownOutlined />}
                 childrens={explore}
                 mobile={false}
               />
               <HeaderItem
                 label="Giao dịch"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<DownOutlined />}
                 childrens={transfer}
                 mobile={false}
               />
               <HeaderItem
                 label="Tăng trưởng"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<DownOutlined />}
                 childrens={growth}
                 mobile={false}
               />
               <HeaderItem
                 label="Tổ chức"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<DownOutlined />}
                 childrens={organize}
                 mobile={false}
@@ -259,7 +253,7 @@ export default function Header() {
                   <div className={styles.userAsset}>
                     <HeaderItem
                       label="Tài sản"
-                      onClick={() => {}}
+                      onClick={() => { }}
                       icon={<WalletOutlined />}
                       childrens={asset}
                       mobile={false}
@@ -268,15 +262,13 @@ export default function Header() {
                   <div className={styles.iconUser}>
                     <HeaderItem
                       label=""
-                      onClick={() => {}}
+                      onClick={() => { }}
                       icon={<UserOutlined />}
                       headerContent={
                         <div className={styles.dropdownExtra}>
                           <div className={styles.dropdownExtraEmail}>{email}</div>
                           <div className={styles.dropdownExtraUid}>UID: {userId}</div>
-                          <span className={styles.dropdownExtraRole}>
-                            Người dùng thông thường
-                          </span>
+                          <span className={styles.dropdownExtraRole}>Người dùng thông thường</span>
                         </div>
                       }
                       childrens={user}
@@ -296,7 +288,7 @@ export default function Header() {
               )}
             </div>
 
-            <button 
+            <button
               className={isMenuOpen ? styles.hamburgerOpen : styles.hamburger}
               onClick={toggleMenu}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -340,7 +332,7 @@ export default function Header() {
             <div className={styles.navSection}>
               <HeaderItem
                 label="Mua Crypto"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<SwapOutlined />}
                 childrens={buyCrypto}
                 trigger="click"
@@ -348,7 +340,7 @@ export default function Header() {
               />
               <HeaderItem
                 label="Khám phá"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<FundOutlined />}
                 childrens={explore}
                 trigger="click"
@@ -356,7 +348,7 @@ export default function Header() {
               />
               <HeaderItem
                 label="Giao dịch"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<TransactionOutlined />}
                 childrens={transfer}
                 trigger="click"
@@ -364,7 +356,7 @@ export default function Header() {
               />
               <HeaderItem
                 label="Tăng trưởng"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<EuroCircleOutlined />}
                 childrens={growth}
                 trigger="click"
@@ -372,7 +364,7 @@ export default function Header() {
               />
               <HeaderItem
                 label="Tổ chức"
-                onClick={() => {}}
+                onClick={() => { }}
                 icon={<HomeOutlined />}
                 childrens={organize}
                 trigger="click"
@@ -385,7 +377,7 @@ export default function Header() {
                 <div className={styles.navTitle}>Tài khoản</div>
                 <HeaderItem
                   label="Tài sản"
-                  onClick={() => {}}
+                  onClick={() => { }}
                   icon={<WalletOutlined />}
                   childrens={asset}
                   trigger="click"
@@ -393,7 +385,7 @@ export default function Header() {
                 />
                 <HeaderItem
                   label="Tài khoản"
-                  onClick={() => {}}
+                  onClick={() => { }}
                   icon={<UserOutlined />}
                   childrens={user}
                   trigger="click"

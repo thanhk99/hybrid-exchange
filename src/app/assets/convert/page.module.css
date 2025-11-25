@@ -1,0 +1,327 @@
+.convertPage {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 32px 0;
+}
+
+.header {
+    margin-bottom: 32px;
+}
+
+.pageTitle {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.pageSubtitle {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.convertCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+}
+
+.currencySection {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.balance {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.inputRow {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 12px;
+}
+
+.currencyButton {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.currencyButton:hover {
+    border-color: #1f2937;
+    background: white;
+}
+
+.currencyIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.currencyInfo {
+    flex: 1;
+    text-align: left;
+}
+
+.currencySymbol {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.currencyName {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.arrow {
+    font-size: 10px;
+    color: #9ca3af;
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.amountInput {
+    width: 100%;
+    padding: 16px;
+    padding-right: 60px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    background: #f9fafb;
+    transition: all 0.3s;
+}
+
+.amountInput:focus {
+    outline: none;
+    border-color: #1f2937;
+    background: white;
+}
+
+.amountInput:read-only {
+    cursor: default;
+}
+
+.maxButton {
+    position: absolute;
+    right: 12px;
+    padding: 6px 12px;
+    background: #1f2937;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.maxButton:hover {
+    background: #111827;
+}
+
+.currencyDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.currencyOption {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.currencyOption:hover {
+    background: #f9fafb;
+}
+
+.optionIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.optionInfo {
+    flex: 1;
+}
+
+.optionSymbol {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.optionName {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.optionBalance {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.swapButtonWrapper {
+    display: flex;
+    justify-content: center;
+    margin: -8px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.swapButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.swapButton:hover {
+    background: #1f2937;
+    color: white;
+    border-color: #1f2937;
+    transform: rotate(180deg);
+}
+
+.rateInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    background: #eff6ff;
+    border-radius: 10px;
+    margin: 24px 0;
+    font-size: 14px;
+    color: #1e40af;
+}
+
+.convertButton {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.convertButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(31, 41, 55, 0.3);
+}
+
+.convertButton:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.infoCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.infoCard h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 16px 0;
+}
+
+.infoCard ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.infoCard li {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+    .convertPage {
+        padding: 20px 16px;
+    }
+
+    .convertCard {
+        padding: 24px 20px;
+    }
+
+    .inputRow {
+        grid-template-columns: 1fr;
+    }
+
+    .currencyButton {
+        width: 100%;
+    }
+}

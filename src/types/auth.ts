@@ -1,21 +1,21 @@
-interface LoginData {
+export interface LoginData {
   email: string;
   password: string;
 }
 
-interface RegisterData {
+export interface RegisterData {
   email: string;
   password: string;
   name: string;
 }
 
-interface AuthResponse {
+export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-//   user: any;
+  //   user: any;
 }
 
-interface RefreshTokenResponse {
+export interface RefreshTokenResponse {
   accessToken: string;
   refreshToken?: string;
 }

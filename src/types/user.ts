@@ -1,14 +1,19 @@
 export interface UserInfo {
-  id: string;
-  name: string;
+  uid: string;
   email: string;
+  username: string;
+  nation: string;
+  kycStatus: 'NONE' | 'PENDING' | 'VERIFIED' | 'REJECTED';
+  phone: string | null;
+  userLevel: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
+  userStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   avatar?: string;
   balance?: number;
   totalAssets?: number;
-  level?: string;
   createdAt?: string;
   updatedAt?: string;
 }
+
 export interface UserContextType {
   user: UserInfo | null;
   loading: boolean;

@@ -1,0 +1,80 @@
+.preferencesPage {
+    max-width: 900px;
+}
+
+.pageHeader {
+    margin-bottom: 32px;
+}
+
+.pageTitle {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.pageSubtitle {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.settingGroup {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.settingItem {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.select {
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #1f2937;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.select:focus {
+    outline: none;
+    border-color: #1f2937;
+    box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
+}
+
+.saveButton {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 24px;
+}
+
+.saveButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
+}
+
+@media (max-width: 768px) {
+    .settingGroup {
+        grid-template-columns: 1fr;
+    }
+}

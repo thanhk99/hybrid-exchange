@@ -1,22 +1,27 @@
 import axiosInstance from '../libs/axios';
+import { LoginData, RegisterData } from '../types/auth';
 import TokenService from './token';
 
 
 export default class AuthService {
 
-  static api_login:string = process.env.NEXT_PUBLIC_API_BASE_URL +"/api/v1/auth/login"
+  static api_login: string = process.env.NEXT_PUBLIC_API_BASE_URL + "/api/v1/auth/login"
 
-  static async login(loginData: LoginData){
+  static async login(loginData: LoginData) {
     try {
-      const response = await axiosInstance.post(this.api_login, loginData);
-      
+      const response = await axiosInstance.post(this.api_login, loginData, {
+        headers: {
+          'x-no-auth': 'true'
+        }
+      });
+
       if (response.data.accessToken) {
         TokenService.setToken(
           response.data.accessToken,
           response.data.refreshToken
         );
       }
-      
+
       return response;
     } catch (error) {
       console.error('Login error:', error);
@@ -27,7 +32,11 @@ export default class AuthService {
   // Đăng ký
   async register(registerData: RegisterData): Promise<any> {
     try {
-      const response = await axiosInstance.post('/auth/register', registerData);
+      const response = await axiosInstance.post('/auth/register', registerData, {
+        headers: {
+          'x-no-auth': 'true'
+        }
+      });
       return response;
     } catch (error) {
       console.error('Register error:', error);
@@ -36,8 +45,8 @@ export default class AuthService {
   }
 
   // Refresh token
-  static refreshToken = async(endpoint: string = '/auth/refresh-token')=>{
-    try{
+  static refreshToken = async (endpoint: string = '/api/v1/auth/refresh') => {
+    try {
       const refreshToken = TokenService.getRefreshToken();
       if (!refreshToken) {
         throw new Error('No refresh token available');
@@ -49,7 +58,7 @@ export default class AuthService {
 
       if (response.data.accessToken) {
         TokenService.setAccessToken(response.data.accessToken);
-        
+
         if (response.data.refreshToken) {
           TokenService.setRefreshToken(response.data.refreshToken);
         }
@@ -59,7 +68,7 @@ export default class AuthService {
     }
     catch (error) {
       console.error('Refresh token error:', error);
-      
+
       // Clear token nếu refresh thất bại
       TokenService.clearToken();
       throw error;
@@ -81,7 +90,11 @@ export default class AuthService {
   // Quên mật khẩu
   async forgotPassword(email: string): Promise<any> {
     try {
-      const response = await axiosInstance.post('/auth/forgot-password', { email });
+      const response = await axiosInstance.post('/auth/forgot-password', { email }, {
+        headers: {
+          'x-no-auth': 'true'
+        }
+      });
       return response;
     } catch (error) {
       console.error('Forgot password error:', error);
@@ -95,6 +108,10 @@ export default class AuthService {
       const response = await axiosInstance.post('/auth/reset-password', {
         token,
         newPassword
+      }, {
+        headers: {
+          'x-no-auth': 'true'
+        }
       });
       return response;
     } catch (error) {
@@ -120,7 +137,11 @@ export default class AuthService {
   // Verify email
   async verifyEmail(token: string): Promise<any> {
     try {
-      const response = await axiosInstance.post('/auth/verify-email', { token });
+      const response = await axiosInstance.post('/auth/verify-email', { token }, {
+        headers: {
+          'x-no-auth': 'true'
+        }
+      });
       return response;
     } catch (error) {
       console.error('Verify email error:', error);
@@ -131,7 +152,11 @@ export default class AuthService {
   // Resend verification email
   async resendVerificationEmail(email: string): Promise<any> {
     try {
-      const response = await axiosInstance.post('/auth/resend-verification', { email });
+      const response = await axiosInstance.post('/auth/resend-verification', { email }, {
+        headers: {
+          'x-no-auth': 'true'
+        }
+      });
       return response;
     } catch (error) {
       console.error('Resend verification error:', error);

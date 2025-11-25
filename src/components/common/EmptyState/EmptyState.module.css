@@ -1,0 +1,24 @@
+.emptyState {
+    text-align: center;
+    padding: 48px 24px;
+    color: #9ca3af;
+}
+
+.emptyIcon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #d1d5db;
+}
+
+.emptyTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+}
+
+.emptyMessage {
+    margin: 0;
+    font-size: 15px;
+    color: #9ca3af;
+}

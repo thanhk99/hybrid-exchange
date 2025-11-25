@@ -1,0 +1,183 @@
+.registerPage {
+  display: flex;
+  width: 70vw;
+  height: 80vh;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  background-color: #fff;
+}
+
+.leftSight {
+  display: flex;
+  width: 50%;
+  height: 80%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.leftContent {
+  display: flex;
+}
+
+.leftContent img {
+  max-width: 300px;
+  max-height: 500px;
+}
+
+.routeLogin {
+  color: black;
+  margin-top: 2.5rem;
+  text-decoration: underline;
+}
+
+.routeLogin:hover {
+  cursor: pointer;
+}
+
+.register {
+  height: 80%;
+  width: 50%;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.register h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.register form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputForm {
+  display: flex;
+  width: 100%;
+  position: relative;
+  align-items: center;
+  border-bottom: 1px solid #333;
+}
+
+.inputForm span {
+  display: flex;
+  align-items: center;
+}
+
+.iconLeft {
+  position: absolute;
+  left: 3px;
+}
+
+.iconRight {
+  position: absolute;
+  right: 3px;
+  cursor: pointer;
+}
+
+.iconRight:hover {
+  cursor: pointer;
+}
+
+.register input {
+  padding: 0.8rem;
+  border: none;
+  font-size: 1rem;
+  width: 80%;
+  margin-left: 2rem;
+}
+
+.register input:focus {
+  outline: none;
+  border: none;
+}
+
+.register input::placeholder {
+  color: #aaa;
+}
+
+.bottomIcon {
+  display: flex;
+  margin-top: auto;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.icons {
+  display: flex;
+  gap: 10px;
+}
+
+.icons:hover {
+  cursor: pointer;
+}
+
+.register button {
+  padding: 0.8rem;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 50%;
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.register button:hover {
+  background-color: #3367d6;
+}
+
+.register button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  color: #e53e3e;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 750px) {
+  .leftSight {
+    display: none;
+  }
+  .register {
+    width: 90%;
+  }
+}
+
+@media (max-width: 1025px) {
+  .registerPage {
+    width: 100vw;
+    height: 100vh;
+  }
+}

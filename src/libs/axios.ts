@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResp
 import AuthService from "../services/auth";
 import TokenService from "../services/token";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT) || 30000;
 const ACCESS_TOKEN_KEY = process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY || "accessToken";
 const REFRESH_ENDPOINT = process.env.NEXT_PUBLIC_REFRESH_ENDPOINT || "/auth/refresh-token";
@@ -40,7 +40,15 @@ axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = TokenService.getAccessToken(ACCESS_TOKEN_KEY);
 
-    if (token) {
+    // Check for custom header to skip auth
+    const isPublicEndpoint = config.headers && config.headers['x-no-auth'] === 'true';
+
+    if (isPublicEndpoint) {
+      // Remove the custom header before sending request
+      if (config.headers) {
+        delete config.headers['x-no-auth'];
+      }
+    } else if (token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }
