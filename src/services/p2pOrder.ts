@@ -7,81 +7,36 @@ import {
 } from '@/src/types/p2p';
 import axiosInstance from '@/src/libs/axios';
 
-// Mock payment methods for mapping
-const PAYMENT_METHODS: PaymentMethod[] = [
-    {
-        id: 'bank_1',
-        uid: 'user123',
-        type: 'bank_transfer',
-        name: 'Chuyển khoản ngân hàng',
-        accountName: 'Nguyen Van A',
-        accountNumber: '1234567890',
-        bankName: 'Vietcombank',
-        isDefault: true,
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: 'momo_1',
-        uid: 'user123',
-        type: 'momo',
-        name: 'Momo',
-        accountName: 'Nguyen Van A',
-        accountNumber: '0901234567',
-        isDefault: false,
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: 'zalopay_1',
-        uid: 'user123',
-        type: 'zalopay',
-        name: 'ZaloPay',
-        accountName: 'Nguyen Van A',
-        accountNumber: '0901234567',
-        isDefault: false,
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: 'viettel_1',
-        uid: 'user123',
-        type: 'viettel_pay',
-        name: 'ViettelPay',
-        accountName: 'Nguyen Van A',
-        accountNumber: '0901234567',
-        isDefault: false,
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    }
-];
+// Helper function to get payment method by type
+const getPaymentMethodByType = (type: string): PaymentMethod => {
+    const typeMap: Record<string, string> = {
+        'BANK_TRANSFER': 'BANK_TRANSFER',
+        'BankTransfer': 'BANK_TRANSFER',
+        'Momo': 'MOMO',
+        'MOMO': 'MOMO',
+        'ZaloPay': 'ZALOPAY',
+        'ZALOPAY': 'ZALOPAY',
+        'ViettelPay': 'VIETTEL_PAY',
+        'VIETTEL_PAY': 'VIETTEL_PAY',
+        'VNPay': 'VNPAY',
+        'VNPAY': 'VNPAY',
+        'ShopeePay': 'SHOPEEPAY',
+        'SHOPEEPAY': 'SHOPEEPAY'
+    };
 
-// Mock orders for fallback
-const MOCK_ORDERS: P2POrder[] = [
-    {
-        id: 'order_1',
-        type: 'sell',
-        merchantId: 'user_1',
-        merchantName: 'CryptoTrader99',
-        merchantRating: 4.8,
-        merchantCompletedTrades: 1234,
-        merchantCompletionRate: 98.5,
-        currency: 'USDT',
-        fiatCurrency: 'VND',
-        price: 25350,
-        minLimit: 500000,
-        maxLimit: 50000000,
-        availableAmount: 10000,
-        paymentMethods: [PAYMENT_METHODS[0], PAYMENT_METHODS[1]],
-        terms: 'Vui lòng thanh toán trong vòng 15 phút',
-        status: 'active',
-        createdAt: new Date().toISOString()
-    }
-];
+    const mappedType = typeMap[type] || type.toUpperCase();
+
+    return {
+        id: `${mappedType}_temp`,
+        uid: 'user',
+        type: mappedType as any,
+        name: type,
+        isDefault: false,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+};
 
 class P2POrderService {
     /**
@@ -116,24 +71,14 @@ class P2POrderService {
                 minLimit: item.minAmount,
                 maxLimit: item.maxAmount,
                 availableAmount: item.availableAmount,
-                paymentMethods: (item.paymentMethods || []).map((pm: string) => {
-                    const typeMap: Record<string, string> = {
-                        'BankTransfer': 'bank_transfer',
-                        'Momo': 'momo',
-                        'ZaloPay': 'zalopay',
-                        'ViettelPay': 'viettel_pay'
-                    };
-                    const type = typeMap[pm] || pm.toLowerCase();
-                    return PAYMENT_METHODS.find(m => m.type === type) || {
-                        id: `${type}_${item.id}`,
-                        uid: 'unknown',
-                        type: type as any,
-                        name: pm,
-                        isDefault: false,
-                        isActive: true,
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
+                paymentMethods: (item.paymentMethods || []).map((pm: any) => {
+                    let rawType = '';
+                    if (typeof pm === 'string') {
+                        rawType = pm;
+                    } else if (pm && typeof pm === 'object') {
+                        rawType = pm.type || pm.code || '';
+                    }
+                    return getPaymentMethodByType(rawType);
                 }),
                 terms: item.terms || '',
                 status: 'active',
@@ -171,27 +116,30 @@ class P2POrderService {
     /**
      * Create a new P2P order
      */
-    async createOrder(orderData: Partial<P2POrder>): Promise<P2POrder> {
+    async createOrder(orderData: any): Promise<P2POrder> {
         try {
-            const requestBody = {
-                tradeType: orderData.type?.toUpperCase(),
+            const tradeType = orderData.type?.toUpperCase();
+
+            const requestBody: any = {
+                tradeType: tradeType,
                 asset: orderData.currency,
                 fiatCurrency: orderData.fiatCurrency,
                 price: orderData.price,
+                priceType: 'FIXED',
                 minAmount: orderData.minLimit,
                 maxAmount: orderData.maxLimit,
                 availableAmount: orderData.availableAmount,
-                paymentMethods: orderData.paymentMethods?.map(pm => {
-                    const typeMap: Record<string, string> = {
-                        'bank_transfer': 'BankTransfer',
-                        'momo': 'Momo',
-                        'zalopay': 'ZaloPay',
-                        'viettel_pay': 'ViettelPay'
-                    };
-                    return typeMap[pm.type] || pm.type;
-                }),
-                terms: orderData.terms
+                termsConditions: orderData.terms,
+                isActive: true
             };
+
+            if (tradeType === 'SELL') {
+                requestBody.paymentMethodId = orderData.paymentMethodId;
+            } else {
+                // For BUY orders, paymentMethods is an array of strings (types)
+                // Backend expects UPPERCASE format which is now provided by the frontend
+                requestBody.paymentMethods = orderData.paymentMethods;
+            }
 
             console.log('Creating P2P order with data:', requestBody);
 
@@ -201,6 +149,7 @@ class P2POrderService {
 
             const data = response.data;
 
+            // Construct return object (mocking missing fields if necessary)
             const newOrder: P2POrder = {
                 id: data.id || `order_${Date.now()}`,
                 type: (data.tradeType?.toLowerCase() || orderData.type) as OrderType,
@@ -215,8 +164,8 @@ class P2POrderService {
                 minLimit: data.minAmount || orderData.minLimit!,
                 maxLimit: data.maxAmount || orderData.maxLimit!,
                 availableAmount: data.availableAmount || orderData.availableAmount!,
-                paymentMethods: orderData.paymentMethods!,
-                terms: data.terms || orderData.terms,
+                paymentMethods: [], // This will be populated by getOrders usually
+                terms: data.termsConditions || orderData.terms,
                 status: 'active',
                 createdAt: data.createdAt || new Date().toISOString()
             };
@@ -230,33 +179,154 @@ class P2POrderService {
     }
 
     /**
-     * Get user's orders
+     * Get user's orders (ads)
      */
     async getUserOrders(): Promise<P2POrder[]> {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(MOCK_ORDERS.slice(0, 2));
-            }, 500);
-        });
+        try {
+            const response = await axiosInstance.get('/api/v1/p2pads/myads');
+
+            console.log('My ads response:', response.data);
+
+            const apiData = response.data.data || response.data;
+
+            if (!Array.isArray(apiData)) {
+                console.error('API response is not an array:', apiData);
+                return [];
+            }
+
+            // Map API response to frontend format
+            const orders: P2POrder[] = apiData.map((item: any) => ({
+                id: item.id?.toString() || `order_${Date.now()}`,
+                type: item.tradeType?.toLowerCase() as OrderType,
+                merchantId: item.userId || 'unknown',
+                merchantName: 'You', // This is user's own ad
+                merchantRating: 0, // Not applicable for own ads
+                merchantCompletedTrades: 0,
+                merchantCompletionRate: 0,
+                currency: item.asset,
+                fiatCurrency: item.fiatCurrency,
+                price: item.price,
+                minLimit: item.minAmount,
+                maxLimit: item.maxAmount,
+                availableAmount: item.availableAmount,
+                paymentMethods: (item.paymentMethods || []).map((pm: any) => {
+                    const typeMap: Record<string, string> = {
+                        'BANK_TRANSFER': 'BANK_TRANSFER',
+                        'BankTransfer': 'BANK_TRANSFER',
+                        'Momo': 'MOMO',
+                        'MOMO': 'MOMO',
+                        'ZaloPay': 'ZALOPAY',
+                        'ZALOPAY': 'ZALOPAY',
+                        'ViettelPay': 'VIETTEL_PAY',
+                        'VIETTEL_PAY': 'VIETTEL_PAY',
+                        'VNPay': 'VNPAY',
+                        'VNPAY': 'VNPAY',
+                        'ShopeePay': 'SHOPEEPAY',
+                        'SHOPEEPAY': 'SHOPEEPAY'
+                    };
+
+                    // Handle both string and object formats
+                    let rawType = '';
+                    if (typeof pm === 'string') {
+                        rawType = pm;
+                    } else if (pm && typeof pm === 'object') {
+                        rawType = pm.type || pm.code || '';
+                    }
+
+                    const type = typeMap[rawType] || (rawType ? rawType.toUpperCase() : 'BANK_TRANSFER');
+
+                    return {
+                        id: item.paymentMethodId?.toString() || `${type}_${item.id}`,
+                        uid: item.userId || 'unknown',
+                        type: type as any,
+                        name: rawType || 'Unknown Method',
+                        isDefault: false,
+                        isActive: true,
+                        createdAt: item.createdAt || new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                }),
+                terms: item.termsConditions || '',
+                status: item.isActive ? 'active' : 'cancelled',
+                createdAt: item.createdAt || new Date().toISOString()
+            }));
+
+            return orders;
+        } catch (error: any) {
+            console.error('Error fetching user ads:', error);
+            return [];
+        }
     }
 
     /**
-     * Get user's P2P stats
+     * Get user's P2P profile
+     */
+    async getUserProfile(): Promise<UserP2PStats> {
+        try {
+            const response = await axiosInstance.get('/api/v1/p2pads/user/profile');
+
+            console.log('User profile response:', response.data);
+
+            const data = response.data.data || response.data;
+
+            // Map API response to UserP2PStats
+            return {
+                totalTrades: data.totalTransactions || 0,
+                completedTrades: data.completedTransactions || 0,
+                completionRate: parseFloat(data.completionRate) || 0,
+                avgReleaseTime: 0, // Not provided by API
+                rating: data.rating || 0,
+                positiveReviews: 0, // Not provided by API
+                negativeReviews: 0  // Not provided by API
+            };
+        } catch (error: any) {
+            console.error('Error fetching user profile:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get user's P2P stats (alias for getUserProfile for backward compatibility)
      */
     async getUserStats(): Promise<UserP2PStats> {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve({
-                    totalTrades: 150,
-                    completedTrades: 148,
-                    completionRate: 98.7,
-                    avgReleaseTime: 8,
-                    rating: 4.9,
-                    positiveReviews: 145,
-                    negativeReviews: 3
-                });
-            }, 500);
-        });
+        return this.getUserProfile();
+    }
+
+    /**
+     * Get user's transaction history
+     */
+    async getUserHistory(): Promise<any[]> {
+        try {
+            const response = await axiosInstance.get('/api/v1/p2pads/user/history');
+
+            console.log('User history response:', response.data);
+
+            const apiData = response.data.data || response.data;
+
+            if (!Array.isArray(apiData)) {
+                console.error('API response is not an array:', apiData);
+                return [];
+            }
+
+            // Map API response to transaction history format
+            return apiData.map((item: any) => ({
+                id: item.id?.toString() || `trade_${Date.now()}`,
+                adId: item.adId,
+                type: item.type, // BUY or SELL
+                asset: item.asset,
+                fiatCurrency: item.fiatCurrency,
+                cryptoAmount: item.cryptoAmount,
+                fiatAmount: item.fiatAmount,
+                status: item.status?.toLowerCase() || 'pending',
+                paymentMethod: getPaymentMethodByType(item.paymentMethod || 'BANK_TRANSFER'),
+                counterparty: item.counterparty || 'Unknown',
+                createdAt: item.createdAt || new Date().toISOString(),
+                completedAt: item.completedAt || null
+            }));
+        } catch (error: any) {
+            console.error('Error fetching user history:', error);
+            return [];
+        }
     }
 }
 

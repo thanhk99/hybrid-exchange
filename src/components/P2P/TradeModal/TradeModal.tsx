@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
 import { P2POrder, PaymentMethod } from '@/src/types/p2p';
 import PaymentMethodBadge from '../PaymentMethodBadge/PaymentMethodBadge';
+import PaymentMethodService from '@/src/services/paymentMethod';
 import styles from './TradeModal.module.css';
 
 interface TradeModalProps {
@@ -16,14 +17,54 @@ interface TradeModalProps {
 export default function TradeModal({ order, isOpen, onClose, onConfirm }: TradeModalProps) {
     const [fiatAmount, setFiatAmount] = useState('');
     const [cryptoAmount, setCryptoAmount] = useState('0.00');
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(
+        order.paymentMethods && order.paymentMethods.length > 0 ? order.paymentMethods[0] : null
+    );
+    const [myPaymentMethods, setMyPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [isLoadingMethods, setIsLoadingMethods] = useState(false);
     const [error, setError] = useState('');
 
+    const isBuying = order.type === 'sell'; // User is buying if order is sell type
+
     useEffect(() => {
-        if (order.paymentMethods.length > 0) {
-            setSelectedPaymentMethod(order.paymentMethods[0]);
+        console.log('TradeModal - Order changed:', order);
+
+        if (isBuying) {
+            // BUYING: Select from Maker's payment methods
+            if (order.paymentMethods && order.paymentMethods.length > 0) {
+                const currentMethodStillValid = selectedPaymentMethod && order.paymentMethods.find(pm => pm.id === selectedPaymentMethod.id);
+                if (!currentMethodStillValid) {
+                    setSelectedPaymentMethod(order.paymentMethods[0]);
+                }
+            } else {
+                setSelectedPaymentMethod(null);
+            }
+        } else {
+            // SELLING: Fetch my payment methods
+            if (isOpen) {
+                setIsLoadingMethods(true);
+                PaymentMethodService.getPaymentMethods()
+                    .then(methods => {
+                        console.log('Fetched my payment methods:', methods);
+                        setMyPaymentMethods(methods);
+
+                        // Filter methods that match order's accepted types
+                        const validMethods = methods.filter(myPm =>
+                            order.paymentMethods.some(orderPm => orderPm.type === myPm.type)
+                        );
+
+                        // Auto-select first available account if not set
+                        if (validMethods.length > 0) {
+                            setSelectedPaymentMethod(validMethods[0]);
+                        } else {
+                            setSelectedPaymentMethod(null);
+                        }
+                    })
+                    .catch(err => console.error('Failed to fetch payment methods', err))
+                    .finally(() => setIsLoadingMethods(false));
+            }
         }
-    }, [order]);
+    }, [order, isOpen, isBuying]);
 
     useEffect(() => {
         if (fiatAmount) {
@@ -51,6 +92,7 @@ export default function TradeModal({ order, isOpen, onClose, onConfirm }: TradeM
 
     const handleConfirm = () => {
         const amount = parseFloat(fiatAmount);
+        const crypto = parseFloat(cryptoAmount);
 
         if (!amount || isNaN(amount)) {
             setError('Vui lòng nhập số tiền');
@@ -66,19 +108,27 @@ export default function TradeModal({ order, isOpen, onClose, onConfirm }: TradeM
             return;
         }
 
-        onConfirm(amount, selectedPaymentMethod.id);
+        // Send crypto amount to server as requested
+        onConfirm(crypto, selectedPaymentMethod.id);
     };
 
     if (!isOpen) return null;
 
-    const isBuying = order.type === 'sell'; // User is buying if order is sell type
+
+
+    // Filter valid methods for display when selling
+    const validMyMethods = !isBuying ? myPaymentMethods.filter(myPm =>
+        order.paymentMethods.some(orderPm => orderPm.type === myPm.type)
+    ) : [];
 
     return (
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                 <div className={styles.header}>
                     <div className={styles.headerLeft}>
-                        <div className={styles.merchantName}>{order.merchantName}</div>
+                        <div className={styles.merchantName}>
+                            {isBuying ? `Mua ${order.currency} từ ${order.merchantName}` : `Bán ${order.currency} cho ${order.merchantName}`}
+                        </div>
                         <div className={styles.verified}>✓ ID đã xác minh</div>
                     </div>
                     <button className={styles.closeButton} onClick={onClose}>
@@ -118,7 +168,7 @@ export default function TradeModal({ order, isOpen, onClose, onConfirm }: TradeM
                 <div className={styles.form}>
                     <div className={styles.field}>
                         <label className={styles.label}>
-                            {isBuying ? 'Bạn thanh toán' : 'Bạn nhận'}
+                            {isBuying ? 'Bạn thanh toán (VND)' : 'Bạn nhận được (VND)'}
                         </label>
                         <div className={styles.inputGroup}>
                             <input
@@ -138,7 +188,7 @@ export default function TradeModal({ order, isOpen, onClose, onConfirm }: TradeM
 
                     <div className={styles.field}>
                         <label className={styles.label}>
-                            {isBuying ? 'Bạn nhận' : 'Bạn thanh toán'}
+                            {isBuying ? 'Bạn nhận (Crypto)' : 'Bạn bán (Crypto)'}
                         </label>
                         <div className={styles.inputGroup}>
                             <input
@@ -154,33 +204,43 @@ export default function TradeModal({ order, isOpen, onClose, onConfirm }: TradeM
                         </div>
                     </div>
 
-                    {order.paymentMethods.length > 1 && (
-                        <div className={styles.field}>
-                            <label className={styles.label}>Phương thức thanh toán</label>
-                            <div className={styles.paymentMethods}>
-                                {order.paymentMethods.map((method) => (
-                                    <button
-                                        key={method.id}
-                                        type="button"
-                                        className={`${styles.paymentMethod} ${selectedPaymentMethod?.id === method.id ? styles.paymentMethodActive : ''
-                                            }`}
-                                        onClick={() => setSelectedPaymentMethod(method)}
-                                    >
-                                        <PaymentMethodBadge method={method} size="small" />
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    {/* Payment Methods Selection */}
+                    <div className={styles.field}>
+                        <label className={styles.label}>
+                            {isBuying ? 'Phương thức thanh toán của người bán' : 'Nhận tiền qua tài khoản'}
+                        </label>
 
-                    {order.paymentMethods.length === 1 && (
-                        <div className={styles.field}>
-                            <label className={styles.label}>Phương thức thanh toán</label>
-                            <div className={styles.singlePayment}>
-                                <PaymentMethodBadge method={order.paymentMethods[0]} size="medium" />
+                        {!isBuying && (
+                            <div className={styles.sellerSelection}>
+                                <label className={styles.subLabel}>Chọn tài khoản nhận tiền của bạn</label>
+                                <div className={styles.paymentMethods}>
+                                    {isLoadingMethods ? (
+                                        <div className={styles.loadingText}>Đang tải...</div>
+                                    ) : validMyMethods.length > 0 ? (
+                                        validMyMethods.map((method) => (
+                                            <button
+                                                key={method.id}
+                                                type="button"
+                                                className={`${styles.paymentMethod} ${selectedPaymentMethod?.id === method.id ? styles.paymentMethodActive : ''}`}
+                                                onClick={() => setSelectedPaymentMethod(method)}
+                                            >
+                                                <div className={styles.accountInfo}>
+                                                    <div className={styles.bankName}>{method.bankName || method.name}</div>
+                                                    <div className={styles.accountNumber}>{method.accountNumber}</div>
+                                                </div>
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <div className={styles.error}>
+                                            Bạn chưa có tài khoản phù hợp với quảng cáo này.
+                                            (Người mua chấp nhận: {order.paymentMethods.map(pm => pm.name).join(', ')})
+                                            Vui lòng thêm mới trong Profile.
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
                     {error && (
                         <div className={styles.error}>{error}</div>
@@ -201,4 +261,5 @@ export default function TradeModal({ order, isOpen, onClose, onConfirm }: TradeM
             </div>
         </div>
     );
+
 }

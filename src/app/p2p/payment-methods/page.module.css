@@ -3,7 +3,6 @@
     max-width: 1200px;
     margin: 0 auto;
     background: #ffffff;
-    /* white background */
 }
 
 .header {
@@ -17,7 +16,6 @@
     font-size: 28px;
     font-weight: 700;
     color: #222222;
-    /* dark text */
     margin: 0 0 4px 0;
 }
 
@@ -45,6 +43,80 @@
 .addButton:hover {
     background: #2563eb;
     transform: translateY(-1px);
+}
+
+.addButton:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Error Alert */
+.errorAlert {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #991b1b;
+    font-size: 14px;
+}
+
+.errorAlert button {
+    background: transparent;
+    border: none;
+    color: #991b1b;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.errorAlert button:hover {
+    background: rgba(153, 27, 27, 0.1);
+}
+
+/* Loading State */
+.loadingState {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 64px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingState p {
+    font-size: 14px;
+    color: #555555;
+    margin: 0;
 }
 
 /* Empty State */

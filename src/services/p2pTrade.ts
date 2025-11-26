@@ -12,7 +12,7 @@ const PAYMENT_METHODS: PaymentMethod[] = [
     {
         id: 'bank_1',
         uid: 'user123',
-        type: 'bank_transfer',
+        type: 'BANK_TRANSFER',
         name: 'Chuyển khoản ngân hàng',
         accountName: 'Nguyen Van A',
         accountNumber: '1234567890',
@@ -59,12 +59,45 @@ class P2PTradeService {
                 minLimit: orderData.minAmount || 0,
                 maxLimit: orderData.maxAmount || 0,
                 availableAmount: orderData.availableAmount || 0,
-                paymentMethods: orderData.paymentMethods || [],
+                paymentMethods: (orderData.paymentMethods || []).map((pm: any) => {
+                    const typeMap: Record<string, string> = {
+                        'BankTransfer': 'BANK_TRANSFER',
+                        'Momo': 'MOMO',
+                        'ZaloPay': 'ZALOPAY',
+                        'ViettelPay': 'VIETTEL_PAY',
+                        'VNPay': 'VNPAY',
+                        'ShopeePay': 'SHOPEEPAY'
+                    };
+
+                    // Handle both string and object formats safely
+                    let rawType = '';
+                    if (typeof pm === 'string') {
+                        rawType = pm;
+                    } else if (pm && typeof pm === 'object') {
+                        rawType = pm.type || pm.code || '';
+                    }
+
+                    const type = typeMap[rawType] || (rawType ? rawType.toUpperCase() : 'UNKNOWN');
+
+                    return PAYMENT_METHODS.find(m => m.type === type) || {
+                        id: `${type}_${orderData.id || adId}`,
+                        uid: 'unknown',
+                        type: type as any,
+                        name: rawType || 'Unknown Method',
+                        isDefault: false,
+                        isActive: true,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                }),
                 terms: orderData.terms || '',
                 status: 'active',
                 createdAt: orderData.createdAt || new Date().toISOString()
             };
 
+            const selectedPaymentMethod = order.paymentMethods.find(pm => pm.id === data.paymentMethodId) || order.paymentMethods[0];
+
+            // Keep backend status as-is for proper UI condition matching
             const trade: P2PTrade = {
                 id: data.id,
                 orderId: adId,
@@ -76,8 +109,8 @@ class P2PTradeService {
                 amount: data.amount,
                 cryptoAmount: data.cryptoAmount,
                 totalPrice: data.totalPrice,
-                paymentMethod: order.paymentMethods.find(pm => pm.id === data.paymentMethodId) || order.paymentMethods[0],
-                status: data.status,
+                paymentMethod: selectedPaymentMethod || PAYMENT_METHODS[0], // Fallback to avoid undefined
+                status: data.status as any, // Keep backend enum value
                 createdAt: data.createdAt,
                 expiresAt: data.expiresAt
             };
@@ -118,12 +151,14 @@ class P2PTradeService {
                 paymentMethods: (orderData.paymentMethods || []).map((pm: any) => {
                     if (typeof pm === 'string') {
                         const typeMap: Record<string, string> = {
-                            'BankTransfer': 'bank_transfer',
-                            'Momo': 'momo',
-                            'ZaloPay': 'zalopay',
-                            'ViettelPay': 'viettel_pay'
+                            'BankTransfer': 'BANK_TRANSFER',
+                            'Momo': 'MOMO',
+                            'ZaloPay': 'ZALOPAY',
+                            'ViettelPay': 'VIETTEL_PAY',
+                            'VNPay': 'VNPAY',
+                            'ShopeePay': 'SHOPEEPAY'
                         };
-                        const type = typeMap[pm] || pm.toLowerCase();
+                        const type = typeMap[pm] || pm.toUpperCase();
                         return PAYMENT_METHODS.find(m => m.type === type) || {
                             id: `${type}_${Date.now()}`,
                             uid: 'unknown',
@@ -142,6 +177,7 @@ class P2PTradeService {
                 createdAt: orderData.createdAt || ''
             };
 
+            // Keep backend status as-is for proper UI condition matching
             const trade: P2PTrade = {
                 id: data.id,
                 orderId: orderId,
@@ -153,8 +189,21 @@ class P2PTradeService {
                 amount: data.amount,
                 cryptoAmount: data.cryptoAmount,
                 totalPrice: data.totalPrice,
-                paymentMethod: data.paymentMethod || order.paymentMethods[0] || PAYMENT_METHODS[0],
-                status: data.status,
+                paymentMethod: data.paymentMethod ? {
+                    id: data.paymentMethod.id || `pm_${Date.now()}`,
+                    uid: data.paymentMethod.uid || 'unknown',
+                    type: data.paymentMethod.type,
+                    name: data.paymentMethod.bankName || data.paymentMethod.name || 'Bank Transfer',
+                    accountName: data.paymentMethod.accountName,
+                    accountNumber: data.paymentMethod.accountNumber,
+                    bankName: data.paymentMethod.bankName,
+                    branch: data.paymentMethod.branch,
+                    isDefault: false,
+                    isActive: true,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                } : (order.paymentMethods[0] || PAYMENT_METHODS[0]),
+                status: data.status as any, // Keep backend enum value
                 createdAt: data.createdAt,
                 expiresAt: data.expiresAt
             };
@@ -167,27 +216,29 @@ class P2PTradeService {
     }
 
     /**
-     * Mark payment as sent
+     * Buyer confirms payment
      */
-    async confirmPayment(tradeId: string, proofUrl: string): Promise<void> {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log(`Payment confirmed for trade ${tradeId} with proof: ${proofUrl}`);
-                resolve();
-            }, 1000);
-        });
+    async confirmPayment(orderId: string, proofUrl: string): Promise<void> {
+        try {
+            const response = await axiosInstance.post(`/api/v1/p2pads/order/${orderId}/confirm`);
+            console.log('Confirm payment response:', response.data);
+        } catch (error: any) {
+            console.error('Error confirming payment:', error);
+            throw new Error(error.response?.data?.message || 'Failed to confirm payment');
+        }
     }
 
     /**
-     * Release crypto (seller action)
+     * Seller releases crypto
      */
-    async releaseCrypto(tradeId: string): Promise<void> {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log(`Crypto released for trade ${tradeId}`);
-                resolve();
-            }, 1000);
-        });
+    async releaseCrypto(orderId: string): Promise<void> {
+        try {
+            const response = await axiosInstance.post(`/api/v1/p2pads/order/${orderId}/release`);
+            console.log('Release crypto response:', response.data);
+        } catch (error: any) {
+            console.error('Error releasing crypto:', error);
+            throw new Error(error.response?.data?.message || 'Failed to release crypto');
+        }
     }
 
     /**

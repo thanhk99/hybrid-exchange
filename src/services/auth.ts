@@ -52,8 +52,13 @@ export default class AuthService {
         throw new Error('No refresh token available');
       }
 
+      // Use x-no-auth to bypass the axios interceptor for this request
       const response = await axiosInstance.post(endpoint, {
         refreshToken
+      }, {
+        headers: {
+          'x-no-auth': 'true'
+        }
       });
 
       if (response.data.accessToken) {
@@ -67,10 +72,9 @@ export default class AuthService {
       return response;
     }
     catch (error) {
-      console.error('Refresh token error:', error);
-
-      // Clear token nếu refresh thất bại
-      TokenService.clearToken();
+      console.error('🔴 Refresh token request failed:', error);
+      // Don't redirect here - let axios interceptor handle it
+      // Just throw the error so interceptor can catch it
       throw error;
     }
   }

@@ -119,7 +119,7 @@ export default function P2PMarketplace() {
     };
 
     const filteredPaymentMethods = paymentMethods.filter(method =>
-        method.name.toLowerCase().includes(paymentSearchTerm.toLowerCase())
+        (method.name || '').toLowerCase().includes(paymentSearchTerm.toLowerCase())
     );
 
     const sortOptions = [

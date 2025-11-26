@@ -1,6 +1,8 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import AuthService from "../services/auth";
 import TokenService from "../services/token";
+import { store } from "../app/store/store";
+import { logout } from "../app/store/authSlice";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT) || 30000;
@@ -24,6 +26,14 @@ const redirectToLogin = () => {
 // Clear token
 const clearAuthData = () => {
   TokenService.clearToken(ACCESS_TOKEN_KEY);
+
+  // Dispatch logout action to clear Redux store
+  store.dispatch(logout());
+
+  if (typeof window !== "undefined") {
+    localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
+  }
   redirectToLogin();
 };
 
@@ -70,6 +80,12 @@ axiosInstance.interceptors.response.use(
 
     // ====== TOKEN EXPIRED ======
     if ((status === 401 || status === 403) && !originalRequest._retry) {
+      // If the failed request is the refresh token request itself, don't retry
+      if (originalRequest.url?.includes(REFRESH_ENDPOINT)) {
+        clearAuthData();
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       if (isRefreshing) {

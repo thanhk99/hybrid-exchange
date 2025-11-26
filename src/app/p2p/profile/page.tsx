@@ -80,7 +80,6 @@ export default function P2PProfilePage() {
             {/* Stats Grid */}
             <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
-                    <div className={styles.statIcon}>📊</div>
                     <div className={styles.statContent}>
                         <div className={styles.statLabel}>Tổng giao dịch</div>
                         <div className={styles.statValue}>{stats.totalTrades}</div>
@@ -88,7 +87,6 @@ export default function P2PProfilePage() {
                 </div>
 
                 <div className={styles.statCard}>
-                    <div className={styles.statIcon}>✅</div>
                     <div className={styles.statContent}>
                         <div className={styles.statLabel}>Hoàn thành</div>
                         <div className={styles.statValue}>{stats.completedTrades}</div>
@@ -96,7 +94,6 @@ export default function P2PProfilePage() {
                 </div>
 
                 <div className={styles.statCard}>
-                    <div className={styles.statIcon}>⚡</div>
                     <div className={styles.statContent}>
                         <div className={styles.statLabel}>Tỷ lệ hoàn thành</div>
                         <div className={styles.statValue}>{stats.completionRate.toFixed(1)}%</div>
@@ -104,7 +101,6 @@ export default function P2PProfilePage() {
                 </div>
 
                 <div className={styles.statCard}>
-                    <div className={styles.statIcon}>⏱️</div>
                     <div className={styles.statContent}>
                         <div className={styles.statLabel}>Thời gian giải phóng TB</div>
                         <div className={styles.statValue}>{stats.avgReleaseTime} phút</div>
@@ -117,14 +113,12 @@ export default function P2PProfilePage() {
                 <h3 className={styles.cardTitle}>Đánh giá</h3>
                 <div className={styles.reviewsStats}>
                     <div className={styles.reviewStat}>
-                        <div className={styles.reviewIcon}>👍</div>
                         <div className={styles.reviewContent}>
                             <div className={styles.reviewLabel}>Tích cực</div>
                             <div className={styles.reviewValue}>{stats.positiveReviews}</div>
                         </div>
                     </div>
                     <div className={styles.reviewStat}>
-                        <div className={styles.reviewIcon}>👎</div>
                         <div className={styles.reviewContent}>
                             <div className={styles.reviewLabel}>Tiêu cực</div>
                             <div className={styles.reviewValue}>{stats.negativeReviews}</div>
@@ -135,13 +129,10 @@ export default function P2PProfilePage() {
 
             {/* Achievements */}
             <div className={styles.achievementsCard}>
-                <h3 className={styles.cardTitle}>
-                    <TrophyOutlined /> Thành tích
-                </h3>
+                <h3 className={styles.cardTitle}>Thành tích</h3>
                 <div className={styles.achievements}>
                     {stats.completedTrades >= 10 && (
                         <div className={styles.achievement}>
-                            <div className={styles.achievementIcon}>🏆</div>
                             <div className={styles.achievementContent}>
                                 <div className={styles.achievementName}>Người giao dịch mới</div>
                                 <div className={styles.achievementDesc}>Hoàn thành 10 giao dịch</div>
@@ -150,7 +141,6 @@ export default function P2PProfilePage() {
                     )}
                     {stats.completedTrades >= 50 && (
                         <div className={styles.achievement}>
-                            <div className={styles.achievementIcon}>⭐</div>
                             <div className={styles.achievementContent}>
                                 <div className={styles.achievementName}>Người giao dịch chuyên nghiệp</div>
                                 <div className={styles.achievementDesc}>Hoàn thành 50 giao dịch</div>
@@ -159,7 +149,6 @@ export default function P2PProfilePage() {
                     )}
                     {stats.completionRate >= 95 && (
                         <div className={styles.achievement}>
-                            <div className={styles.achievementIcon}>💎</div>
                             <div className={styles.achievementContent}>
                                 <div className={styles.achievementName}>Đáng tin cậy</div>
                                 <div className={styles.achievementDesc}>Tỷ lệ hoàn thành {'>'} 95%</div>
@@ -168,7 +157,6 @@ export default function P2PProfilePage() {
                     )}
                     {stats.rating >= 4.5 && (
                         <div className={styles.achievement}>
-                            <div className={styles.achievementIcon}>🌟</div>
                             <div className={styles.achievementContent}>
                                 <div className={styles.achievementName}>Đánh giá cao</div>
                                 <div className={styles.achievementDesc}>Rating {'>'} 4.5 sao</div>

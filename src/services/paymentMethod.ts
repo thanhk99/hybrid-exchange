@@ -10,11 +10,21 @@ class PaymentMethodService {
             const response = await axiosInstance.get('/api/v1/payment-methods');
             const data = response.data.data || response.data;
 
-            // Filter only active payment methods
-            return Array.isArray(data) ? data.filter((pm: PaymentMethod) => pm.isActive) : [];
-        } catch (error) {
+            // Handle both single object and array responses
+            let methods: PaymentMethod[] = [];
+            if (Array.isArray(data)) {
+                methods = data;
+            } else if (data && typeof data === 'object') {
+                // Single object returned, wrap in array
+                methods = [data];
+            }
+
+            // Filter only active payment methods (treat null/undefined as active)
+            const activeMethods = methods.filter((pm: PaymentMethod) => pm.isActive !== false);
+            return activeMethods;
+        } catch (error: any) {
             console.error('Error fetching payment methods:', error);
-            return [];
+            throw error; // Throw error instead of returning empty array
         }
     }
 

@@ -2,80 +2,135 @@
 
 import { useState, useEffect } from 'react';
 import { PlusOutlined, EditOutlined, DeleteOutlined, BankOutlined, WalletOutlined, MobileOutlined, CreditCardOutlined } from '@ant-design/icons';
-import { PaymentMethod } from '@/src/types/p2p';
+import { PaymentMethod, PaymentMethodType } from '@/src/types/p2p';
+import PaymentMethodService from '@/src/services/paymentMethod';
+import { Modal } from 'antd';
+import { Notification } from '@/src/components/common/Notification/Notification';
 import styles from './page.module.css';
 
 export default function PaymentMethodsPage() {
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingMethod, setEditingMethod] = useState<PaymentMethod | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [notification, setNotification] = useState<{
+        type: 'success' | 'error' | 'warning' | 'info';
+        message: string;
+        isVisible: boolean;
+    }>({
+        type: 'info',
+        message: '',
+        isVisible: false
+    });
 
     useEffect(() => {
         loadPaymentMethods();
     }, []);
 
+    const showNotification = (type: 'success' | 'error', message: string) => {
+        setNotification({
+            type,
+            message,
+            isVisible: true
+        });
+    };
+
+    const closeNotification = () => {
+        setNotification(prev => ({ ...prev, isVisible: false }));
+    };
+
     const loadPaymentMethods = async () => {
-        const saved = localStorage.getItem('userPaymentMethods');
-        if (saved) {
-            setPaymentMethods(JSON.parse(saved));
+        try {
+            setLoading(true);
+            const methods = await PaymentMethodService.getPaymentMethods();
+            setPaymentMethods(methods);
+        } catch (error) {
+            showNotification('error', 'Không thể tải danh sách phương thức thanh toán');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const savePaymentMethods = (methods: PaymentMethod[]) => {
-        localStorage.setItem('userPaymentMethods', JSON.stringify(methods));
-        setPaymentMethods(methods);
+    const handleAddMethod = async (method: Partial<PaymentMethod>) => {
+        try {
+            await PaymentMethodService.addPaymentMethod(method);
+            showNotification('success', 'Thêm phương thức thanh toán thành công');
+            loadPaymentMethods();
+            setShowAddModal(false);
+        } catch (error: any) {
+            showNotification('error', error.message || 'Thêm thất bại');
+        }
     };
 
-    const handleAddMethod = (method: PaymentMethod) => {
-        const newMethods = [...paymentMethods, { ...method, id: `pm_${Date.now()}` }];
-        savePaymentMethods(newMethods);
-        setShowAddModal(false);
-    };
-
-    const handleEditMethod = (method: PaymentMethod) => {
-        const newMethods = paymentMethods.map(pm => pm.id === method.id ? method : pm);
-        savePaymentMethods(newMethods);
-        setEditingMethod(null);
+    const handleEditMethod = async (method: PaymentMethod) => {
+        try {
+            await PaymentMethodService.updatePaymentMethod(method.id, method);
+            showNotification('success', 'Cập nhật thành công');
+            loadPaymentMethods();
+            setEditingMethod(null);
+        } catch (error: any) {
+            showNotification('error', error.message || 'Cập nhật thất bại');
+        }
     };
 
     const handleDeleteMethod = (id: string) => {
-        if (!confirm('Bạn có chắc chắn muốn xóa phương thức thanh toán này?')) return;
-        const newMethods = paymentMethods.filter(pm => pm.id !== id);
-        savePaymentMethods(newMethods);
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa phương thức thanh toán này?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: async () => {
+                try {
+                    await PaymentMethodService.deletePaymentMethod(id);
+                    showNotification('success', 'Đã xóa phương thức thanh toán');
+                    loadPaymentMethods();
+                } catch (error: any) {
+                    showNotification('error', error.message || 'Xóa thất bại');
+                }
+            }
+        });
     };
 
     const getMethodIcon = (type: string) => {
         switch (type) {
-            case 'bank_transfer': return <BankOutlined />;
-            case 'momo': return <WalletOutlined />;
-            case 'zalopay': return <MobileOutlined />;
-            case 'viettel_pay': return <MobileOutlined />;
+            case 'BANK_TRANSFER': return <BankOutlined />;
+            case 'MOMO': return <WalletOutlined />;
+            case 'ZALOPAY': return <MobileOutlined />;
+            case 'VIETTEL_PAY': return <MobileOutlined />;
             default: return <CreditCardOutlined />;
         }
     };
 
     const getMethodColor = (type: string) => {
         switch (type) {
-            case 'bank_transfer': return '#3b82f6'; // Blue
-            case 'momo': return '#ec4899'; // Pink
-            case 'zalopay': return '#0ea5e9'; // Sky
-            case 'viettel_pay': return '#ef4444'; // Red
+            case 'BANK_TRANSFER': return '#3b82f6'; // Blue
+            case 'MOMO': return '#ec4899'; // Pink
+            case 'ZALOPAY': return '#0ea5e9'; // Sky
+            case 'VIETTEL_PAY': return '#ef4444'; // Red
             default: return '#64748b';
         }
     };
 
     const getMethodName = (type: string) => {
         const names: Record<string, string> = {
-            'bank_transfer': 'Chuyển khoản ngân hàng',
-            'momo': 'Momo',
-            'zalopay': 'ZaloPay',
-            'viettel_pay': 'ViettelPay'
+            'BANK_TRANSFER': 'Chuyển khoản ngân hàng',
+            'MOMO': 'Momo',
+            'ZALOPAY': 'ZaloPay',
+            'VIETTEL_PAY': 'ViettelPay'
         };
         return names[type] || type;
     };
 
     return (
         <div className={styles.container}>
+            <Notification
+                type={notification.type}
+                message={notification.message}
+                isVisible={notification.isVisible}
+                onClose={closeNotification}
+            />
+
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Phương thức thanh toán</h1>
@@ -89,7 +144,9 @@ export default function PaymentMethodsPage() {
                 </button>
             </div>
 
-            {paymentMethods.length === 0 ? (
+            {loading ? (
+                <div className={styles.loading}>Đang tải...</div>
+            ) : paymentMethods.length === 0 ? (
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIconWrapper}>
                         <BankOutlined className={styles.emptyIcon} />
@@ -139,7 +196,7 @@ export default function PaymentMethodsPage() {
                                     <div className={styles.infoValue}>{method.accountName}</div>
                                 </div>
                                 <div className={styles.infoGroup}>
-                                    <label>{method.type === 'bank_transfer' ? 'Số tài khoản' : 'Số điện thoại'}</label>
+                                    <label>{method.type === 'BANK_TRANSFER' ? 'Số tài khoản' : 'Số điện thoại'}</label>
                                     <div className={styles.infoValue}>{method.accountNumber}</div>
                                 </div>
                                 {method.bankName && (
@@ -170,28 +227,32 @@ export default function PaymentMethodsPage() {
 
 interface PaymentMethodModalProps {
     method: PaymentMethod | null;
-    onSave: (method: PaymentMethod) => void;
+    onSave: (method: any) => void;
     onClose: () => void;
 }
 
 function PaymentMethodModal({ method, onSave, onClose }: PaymentMethodModalProps) {
-    const [type, setType] = useState<'bank_transfer' | 'momo' | 'zalopay' | 'viettel_pay'>(method?.type || 'bank_transfer');
+    const [type, setType] = useState<PaymentMethodType>((method?.type as PaymentMethodType) || 'BANK_TRANSFER');
     const [accountName, setAccountName] = useState(method?.accountName || '');
     const [accountNumber, setAccountNumber] = useState(method?.accountNumber || '');
     const [bankName, setBankName] = useState(method?.bankName || '');
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const newMethod: PaymentMethod = {
-            id: method?.id || '',
-            type: type as any,
-            name: '', // Will be set by helper
-            icon: '', // Will be set by helper
-            accountName,
-            accountNumber,
-            ...(type === 'bank_transfer' && { bankName })
-        };
-        onSave(newMethod);
+        setSubmitting(true);
+        try {
+            const newMethod = {
+                ...(method && { id: method.id }),
+                type,
+                accountName,
+                accountNumber,
+                ...(type === 'BANK_TRANSFER' && { bankName })
+            };
+            await onSave(newMethod);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -207,17 +268,17 @@ function PaymentMethodModal({ method, onSave, onClose }: PaymentMethodModalProps
                         <label>Loại phương thức</label>
                         <select
                             value={type}
-                            onChange={(e) => setType(e.target.value as 'bank_transfer' | 'momo' | 'zalopay' | 'viettel_pay')}
+                            onChange={(e) => setType(e.target.value as PaymentMethodType)}
                             className={styles.select}
                         >
-                            <option value="bank_transfer">Chuyển khoản ngân hàng</option>
-                            <option value="momo">Momo</option>
-                            <option value="zalopay">ZaloPay</option>
-                            <option value="viettel_pay">ViettelPay</option>
+                            <option value="BANK_TRANSFER">Chuyển khoản ngân hàng</option>
+                            <option value="MOMO">Momo</option>
+                            <option value="ZALOPAY">ZaloPay</option>
+                            <option value="VIETTEL_PAY">ViettelPay</option>
                         </select>
                     </div>
 
-                    {type === 'bank_transfer' && (
+                    {type === 'BANK_TRANSFER' && (
                         <div className={styles.formGroup}>
                             <label>Tên ngân hàng</label>
                             <input
@@ -244,7 +305,7 @@ function PaymentMethodModal({ method, onSave, onClose }: PaymentMethodModalProps
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>{type === 'bank_transfer' ? 'Số tài khoản' : 'Số điện thoại'}</label>
+                        <label>{type === 'BANK_TRANSFER' ? 'Số tài khoản' : 'Số điện thoại'}</label>
                         <input
                             type="text"
                             value={accountNumber}
@@ -257,8 +318,8 @@ function PaymentMethodModal({ method, onSave, onClose }: PaymentMethodModalProps
 
                     <div className={styles.modalActions}>
                         <button type="button" className={styles.cancelBtn} onClick={onClose}>Hủy</button>
-                        <button type="submit" className={styles.submitBtn}>
-                            {method ? 'Lưu thay đổi' : 'Thêm mới'}
+                        <button type="submit" className={styles.submitBtn} disabled={submitting}>
+                            {submitting ? 'Đang xử lý...' : (method ? 'Lưu thay đổi' : 'Thêm mới')}
                         </button>
                     </div>
                 </form>

@@ -43,9 +43,11 @@ export default function CreateP2POrder() {
         const loadPaymentData = async () => {
             try {
                 const methods = await PaymentMethodService.getPaymentMethods();
+                console.log('CreatePage - Fetched methods:', methods);
                 setPaymentMethods(methods);
 
-                const banks = methods.filter((m: PaymentMethod) => m.type === 'bank_transfer');
+                const banks = methods.filter((m: PaymentMethod) => m.type === 'BANK_TRANSFER');
+                console.log('CreatePage - Filtered banks:', banks);
                 setBankAccounts(banks);
             } catch (error) {
                 console.error('Failed to load payment methods:', error);
@@ -110,7 +112,7 @@ export default function CreateP2POrder() {
 
         setIsSubmitting(true);
         try {
-            await P2POrderService.createOrder({
+            const payload: any = {
                 type: orderType,
                 currency,
                 fiatCurrency,
@@ -118,9 +120,18 @@ export default function CreateP2POrder() {
                 availableAmount: amountNum,
                 minLimit: minLimitNum,
                 maxLimit: maxLimitNum,
-                paymentMethods: selectedPaymentMethods,
                 terms
-            });
+            };
+
+            if (orderType === 'sell') {
+                // For SELL orders, we need to send the ID of the bank account to receive money
+                payload.paymentMethodId = selectedBankAccount?.id;
+            } else {
+                // For BUY orders, we send the list of accepted payment types
+                payload.paymentMethods = selectedPaymentTypes;
+            }
+
+            await P2POrderService.createOrder(payload);
 
             alert('Tạo quảng cáo thành công!');
             router.push('/p2p');

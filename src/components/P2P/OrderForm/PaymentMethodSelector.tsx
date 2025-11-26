@@ -7,12 +7,12 @@ interface PaymentMethodSelectorProps {
 }
 
 const PAYMENT_TYPES = [
-    { type: 'bank_transfer', name: 'Chuyển khoản ngân hàng' },
-    { type: 'momo', name: 'Momo' },
-    { type: 'zalopay', name: 'ZaloPay' },
-    { type: 'viettel_pay', name: 'ViettelPay' },
-    { type: 'vnpay', name: 'VNPay' },
-    { type: 'shopee_pay', name: 'ShopeePay' }
+    { type: 'BANK_TRANSFER', name: 'Chuyển khoản ngân hàng' },
+    { type: 'MOMO', name: 'Momo' },
+    { type: 'ZALOPAY', name: 'ZaloPay' },
+    { type: 'VIETTEL_PAY', name: 'ViettelPay' },
+    { type: 'VNPAY', name: 'VNPay' },
+    { type: 'SHOPEEPAY', name: 'ShopeePay' }
 ];
 
 export default function PaymentMethodSelector({

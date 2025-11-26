@@ -1,4 +1,4 @@
-// contexts/UserContext.tsx
+// contexts/AuthContext.tsx
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
@@ -6,7 +6,7 @@ import TokenService from "../services/token";
 import UserService from "../services/user";
 import { UserInfo } from "../types/user";
 
-interface UserContextType {
+interface AuthContextType {
   user: UserInfo | null;
   loading: boolean;
   error: string | null;
@@ -17,21 +17,20 @@ interface UserContextType {
   clearError: () => void;
 }
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function UserProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const clearError = useCallback(() => setError(null), []);
 
-  // Fetch user info
   const fetchUser = useCallback(async (): Promise<void> => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = TokenService.getAccessToken();
       if (!token) {
         setUser(null);
@@ -39,33 +38,26 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
 
       const response = await UserService.getProfile();
-      
-      if (response?.data) {
-        setUser(response.data);
-      } else {
-        throw new Error('Invalid response format');
-      }
-      
-    } catch (error: any) {
-      console.error('Failed to fetch user:', error);
-      
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      // Assuming API returns { data: UserInfo }
+      const userData = response?.data?.data ?? response?.data ?? null;
+      setUser(userData);
+    } catch (err: any) {
+      console.error('Failed to fetch user:', err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
         setError('Phiên đăng nhập đã hết hạn');
         TokenService.clearToken();
-      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+      } else if (err.code === 'NETWORK_ERROR' || !err.response) {
         setError('Lỗi kết nối mạng');
       } else {
-        setError(error.response?.data?.message || 'Không thể tải thông tin người dùng');
+        setError(err.response?.data?.message || 'Không thể tải thông tin người dùng');
       }
-      
       setUser(null);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Login function
-  const login = useCallback(async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       setLoading(true);
       setError(null);
@@ -74,50 +66,30 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const response = await AuthService.login({ email, password });
 
       if (response.data.accessToken) {
-        TokenService.setToken(
-          response.data.accessToken,
-          response.data.refreshToken
-        );
-        
+        TokenService.setToken(response.data.accessToken, response.data.refreshToken);
         await fetchUser();
-        
-        return { 
-          success: true, 
-          message: 'Đăng nhập thành công' 
-        };
-      } else {
-        throw new Error('No access token received');
+        return { success: true, message: 'Đăng nhập thành công' };
       }
-      
-    } catch (error: any) {
-      console.error('Login error:', error);
-      
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          'Đăng nhập thất bại';
-      
+      throw new Error('No access token received');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Đăng nhập thất bại';
       setError(errorMessage);
-      return { 
-        success: false, 
-        message: errorMessage 
-      };
+      return { success: false, message: errorMessage };
     } finally {
       setLoading(false);
     }
   }, [fetchUser]);
 
-  // Logout function
   const logout = useCallback(() => {
     TokenService.clearToken();
     setUser(null);
     setError(null);
-    
     if (typeof window !== 'undefined') {
       window.location.href = '/login';
     }
   }, []);
 
-  // Auto fetch user on mount
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
@@ -133,12 +105,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       }
     };
-
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [fetchUser]);
 
-  const value: UserContextType = {
+  const value: AuthContextType = {
     user,
     loading,
     error,
@@ -149,17 +120,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     clearError,
   };
 
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export const useUser = (): UserContextType => {
-  const context = useContext(UserContext);
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

@@ -1,22 +1,25 @@
 export type OrderType = 'buy' | 'sell';
 export type OrderStatus = 'active' | 'completed' | 'cancelled';
-export type TradeStatus = 'pending' | 'paid' | 'confirmed' | 'completed' | 'cancelled' | 'disputed';
-export type PaymentMethodType = 'bank_transfer' | 'momo' | 'zalopay' | 'viettel_pay' | 'vnpay' | 'shopee_pay';
+export type TradeStatus = 'pending' | 'paid' | 'confirmed' | 'completed' | 'cancelled' | 'disputed'
+    | 'ORDER_PLACED' | 'AWAITING_PAYMENT' | 'PAYMENT_SENT' | 'AWAITING_RELEASE' | 'COMPLETED' | 'CANCELLED' | 'DISPUTE_OPENED'
+    | 'order_placed' | 'awaiting_payment' | 'payment_sent' | 'awaiting_release' | 'dispute_opened';
+export type PaymentMethodType = 'BANK_TRANSFER' | 'MOMO' | 'ZALOPAY' | 'VIETTEL_PAY' | 'VNPAY' | 'SHOPEEPAY';
 
 export interface PaymentMethod {
     id: string;
-    uid: string;
+    uid?: string;
     type: PaymentMethodType;
-    name: string;
+    name?: string;
     icon?: string;
     accountName?: string;
     accountNumber?: string;
     bankName?: string;
+    branch?: string;
     qrCode?: string;
-    isDefault: boolean;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
+    isDefault?: boolean;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
     deletedAt?: string;
 }
 

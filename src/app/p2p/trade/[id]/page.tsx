@@ -10,12 +10,14 @@ import UserRating from '@/src/components/P2P/UserRating/UserRating';
 import PaymentMethodBadge from '@/src/components/P2P/PaymentMethodBadge/PaymentMethodBadge';
 import { P2PTrade, TradeMessage } from '@/src/types/p2p';
 import P2PService from '@/src/services/p2p';
+import { useUser } from '@/src/contexts/UserContext';
 import styles from './page.module.css';
 
 export default function TradeDetail() {
     const router = useRouter();
     const params = useParams();
     const tradeId = params.id as string;
+    const { user } = useUser();
 
     const [trade, setTrade] = useState<P2PTrade | null>(null);
     const [messages, setMessages] = useState<TradeMessage[]>([]);
@@ -55,24 +57,19 @@ export default function TradeDetail() {
     };
 
     const handleConfirmPayment = async () => {
-        if (!paymentProof) {
-            alert('Vui lòng tải lên bằng chứng thanh toán');
-            return;
-        }
-
         try {
-            // In real app, upload file first
-            const proofUrl = 'https://example.com/proof.jpg';
-            await P2PService.confirmPayment(tradeId, proofUrl);
+            await P2PService.confirmPayment(tradeId, '');
             alert('Đã xác nhận thanh toán!');
-            loadTradeData();
+            // Reload trade data and messages to show updated status and system message
+            await loadTradeData();
         } catch (error) {
             console.error('Failed to confirm payment:', error);
+            alert('Xác nhận thanh toán thất bại. Vui lòng thử lại.');
         }
     };
 
     const handleReleaseCrypto = async () => {
-        if (!confirm('Bạn có chắc chắn muốn giải phóng tiền điện tử?')) return;
+        if (!confirm('Bạn có chắc chắn muốn giải phóng tiền điện tử? Hành động này không thể hoàn tác.')) return;
 
         try {
             await P2PService.releaseCrypto(tradeId);
@@ -117,8 +114,22 @@ export default function TradeDetail() {
         );
     }
 
-    const isBuyer = trade.buyerId === 'current_user';
+    // Determine if current user is the ad creator (Maker) or the matcher (Taker)
+    const isMaker = user?.uid === trade.order.merchantId;
+
+    // Determine if current user is buyer
+    // - If Maker and order type is 'buy' → User is Buyer
+    // - If Maker and order type is 'sell' → User is Seller
+    // - If Taker and order type is 'buy' → User is Seller
+    // - If Taker and order type is 'sell' → User is Buyer
+    const isBuyer = isMaker
+        ? trade.order.type === 'buy'  // Maker: buy ad = buyer
+        : trade.order.type === 'sell'; // Taker: sell ad = buyer
+
     const counterparty = isBuyer ? trade.sellerName : trade.buyerName;
+
+    // Check if trade has expired
+    const isExpired = new Date(trade.expiresAt) < new Date();
 
     return (
         <div className={styles.container}>
@@ -137,6 +148,11 @@ export default function TradeDetail() {
 
             <div className={styles.content}>
                 <div className={styles.mainColumn}>
+                    {/* Role Banner */}
+                    <div className={`${styles.roleBanner} ${isBuyer ? styles.roleBuyer : styles.roleSeller}`}>
+                        {isBuyer ? 'Bạn là NGƯỜI MUA' : 'Bạn là NGƯỜI BÁN'}
+                    </div>
+
                     {/* Trade Info */}
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
@@ -166,85 +182,108 @@ export default function TradeDetail() {
                                     {formatAmount(trade.totalPrice)} {trade.order.fiatCurrency}
                                 </span>
                             </div>
-                            <div className={styles.infoRow}>
-                                <span className={styles.infoLabel}>Phương thức thanh toán</span>
-                                <PaymentMethodBadge method={trade.paymentMethod} />
-                            </div>
                         </div>
                     </div>
 
                     {/* Payment Instructions */}
-                    {isBuyer && trade.status === 'pending' && (
+                    {isBuyer && (trade.status === 'pending' || trade.status === 'ORDER_PLACED' || trade.status === 'AWAITING_PAYMENT' || trade.status === 'order_placed' || trade.status === 'awaiting_payment') && (
                         <div className={styles.card}>
-                            <h3 className={styles.cardTitle}>Thông tin thanh toán</h3>
-                            <div className={styles.paymentInfo}>
-                                <div className={styles.paymentRow}>
-                                    <span className={styles.paymentLabel}>Tên tài khoản</span>
-                                    <span className={styles.paymentValue}>
-                                        {trade.paymentMethod.accountName}
-                                    </span>
+                            <h3 className={styles.cardTitle}>Thông tin ngân hàng thụ hưởng</h3>
+
+                            {isExpired && (
+                                <div className={styles.warningBox} style={{ marginBottom: '1rem' }}>
+                                    <WarningOutlined className={styles.warningIcon} />
+                                    <div>
+                                        <p><strong>Giao dịch đã hết hạn</strong></p>
+                                        <p>Bạn không thể xác nhận thanh toán cho giao dịch đã hết hạn</p>
+                                    </div>
                                 </div>
+                            )}
+
+                            <div className={styles.paymentInfo}>
+                                {trade.paymentMethod.bankName && (
+                                    <div className={styles.paymentRow}>
+                                        <span className={styles.paymentLabel}>Ngân hàng</span>
+                                        <span className={styles.paymentValue}>
+                                            {trade.paymentMethod.bankName}
+                                        </span>
+                                    </div>
+                                )}
                                 <div className={styles.paymentRow}>
                                     <span className={styles.paymentLabel}>Số tài khoản</span>
                                     <span className={styles.paymentValue}>
                                         {trade.paymentMethod.accountNumber}
                                     </span>
                                 </div>
-                            </div>
-
-                            <div className={styles.uploadSection}>
-                                <label className={styles.uploadLabel}>
-                                    Tải lên bằng chứng thanh toán
-                                </label>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => setPaymentProof(e.target.files?.[0] || null)}
-                                    className={styles.fileInput}
-                                />
-                                {paymentProof && (
-                                    <p className={styles.fileName}>{paymentProof.name}</p>
+                                <div className={styles.paymentRow}>
+                                    <span className={styles.paymentLabel}>Chủ tài khoản</span>
+                                    <span className={styles.paymentValue}>
+                                        {trade.paymentMethod.accountName}
+                                    </span>
+                                </div>
+                                {trade.paymentMethod.branch && (
+                                    <div className={styles.paymentRow}>
+                                        <span className={styles.paymentLabel}>Chi nhánh</span>
+                                        <span className={styles.paymentValue}>
+                                            {trade.paymentMethod.branch}
+                                        </span>
+                                    </div>
                                 )}
                             </div>
 
                             <button
                                 className={styles.confirmButton}
                                 onClick={handleConfirmPayment}
-                                disabled={!paymentProof}
+                                disabled={isExpired}
+                                style={isExpired ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                             >
-                                <UploadOutlined /> Xác nhận đã thanh toán
+                                <UploadOutlined /> Đã thanh toán
                             </button>
                         </div>
                     )}
 
                     {/* Seller Actions */}
-                    {!isBuyer && trade.status === 'paid' && (
+                    {!isBuyer && (trade.status === 'pending' || trade.status === 'ORDER_PLACED' || trade.status === 'AWAITING_PAYMENT' || trade.status === 'order_placed' || trade.status === 'awaiting_payment') && (
                         <div className={styles.card}>
                             <div className={styles.warningBox}>
                                 <WarningOutlined className={styles.warningIcon} />
                                 <div>
-                                    <p><strong>Vui lòng kiểm tra thanh toán</strong></p>
-                                    <p>Đảm bảo bạn đã nhận đủ số tiền trước khi giải phóng tiền điện tử</p>
+                                    <p><strong>Đang chờ người mua thanh toán</strong></p>
+                                    <p>Vui lòng đợi người mua xác nhận đã chuyển tiền</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {!isBuyer && (trade.status === 'paid' || trade.status === 'PAYMENT_SENT' || trade.status === 'AWAITING_RELEASE' || trade.status === 'payment_sent' || trade.status === 'awaiting_release') && (
+                        <div className={styles.card}>
+                            <div className={styles.warningBox}>
+                                <WarningOutlined className={styles.warningIcon} />
+                                <div>
+                                    <p><strong>Người mua đã xác nhận thanh toán</strong></p>
+                                    <p>Vui lòng kiểm tra tài khoản ngân hàng của bạn. Sau khi xác nhận đã nhận đủ số tiền, nhấn nút bên dưới để giải phóng coin cho người mua.</p>
                                 </div>
                             </div>
                             <button
                                 className={styles.releaseButton}
                                 onClick={handleReleaseCrypto}
                             >
-                                Giải phóng {trade.order.currency}
+                                Đã nhận được tiền
                             </button>
                         </div>
                     )}
 
                     {/* Actions */}
-                    <div className={styles.actions}>
-                        <button
-                            className={styles.cancelButton}
-                            onClick={handleCancelTrade}
-                        >
-                            Hủy giao dịch
-                        </button>
-                    </div>
+                    {(trade.status === 'pending' || trade.status === 'ORDER_PLACED' || trade.status === 'AWAITING_PAYMENT' || trade.status === 'order_placed' || trade.status === 'awaiting_payment') && (
+                        <div className={styles.actions}>
+                            <button
+                                className={styles.cancelButton}
+                                onClick={handleCancelTrade}
+                            >
+                                Hủy giao dịch
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className={styles.sideColumn}>
@@ -273,10 +312,10 @@ export default function TradeDetail() {
                                     <div
                                         key={msg.id}
                                         className={`${styles.message} ${msg.isSystem
-                                                ? styles.messageSystem
-                                                : msg.senderId === 'current_user'
-                                                    ? styles.messageOwn
-                                                    : styles.messageOther
+                                            ? styles.messageSystem
+                                            : msg.senderId === 'current_user'
+                                                ? styles.messageOwn
+                                                : styles.messageOther
                                             }`}
                                     >
                                         {!msg.isSystem && (

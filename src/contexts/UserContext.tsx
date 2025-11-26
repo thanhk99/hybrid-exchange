@@ -1,12 +1,10 @@
+// src/contexts/UserContext.tsx
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
 import TokenService from "../services/token";
 import UserService from "../services/user";
-import { UserContextType, UserInfo } from "../types/user";
-
-
-
+import { UserInfo, UserContextType } from "../types/user";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -21,7 +19,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = TokenService.getAccessToken();
       if (!token) {
         setUser(null);
@@ -29,30 +27,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
 
       const response = await UserService.getProfile();
-      
-      if (response?.data) {
-        setUser(response.data);
-      } else {
-        throw new Error('Invalid response format');
-      }
-      
-    } catch (error: any) {
-      console.error('Failed to fetch user:', error);
-      
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      const userData = response?.data?.data ?? response?.data ?? null;
+      setUser(userData);
+    } catch (err: any) {
+      console.error('Failed to fetch user:', err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
         setError('Phiên đăng nhập đã hết hạn');
         TokenService.clearToken();
+      } else if (err.code === 'NETWORK_ERROR' || !err.response) {
+        setError('Lỗi kết nối mạng');
       } else {
-        setError(error.response?.data?.message || 'Không thể tải thông tin người dùng');
+        setError(err.response?.data?.message || 'Không thể tải thông tin người dùng');
       }
-      
       setUser(null);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const login = useCallback(async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       setLoading(true);
       setError(null);
@@ -61,33 +54,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const response = await AuthService.login({ email, password });
 
       if (response.data.accessToken) {
-        TokenService.setToken(
-          response.data.accessToken,
-          response.data.refreshToken
-        );
-        
+        TokenService.setToken(response.data.accessToken, response.data.refreshToken);
         await fetchUser();
-        
-        return { 
-          success: true, 
-          message: 'Đăng nhập thành công' 
-        };
-      } else {
-        throw new Error('No access token received');
+        return { success: true, message: 'Đăng nhập thành công' };
       }
-      
-    } catch (error: any) {
-      console.error('Login error:', error);
-      
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          'Đăng nhập thất bại';
-      
+      throw new Error('No access token received');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Đăng nhập thất bại';
       setError(errorMessage);
-      return { 
-        success: false, 
-        message: errorMessage 
-      };
+      return { success: false, message: errorMessage };
     } finally {
       setLoading(false);
     }
@@ -97,7 +73,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     TokenService.clearToken();
     setUser(null);
     setError(null);
-    
     if (typeof window !== 'undefined') {
       window.location.href = '/login';
     }
@@ -118,11 +93,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     clearError,
   };
 
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
 export const useUser = (): UserContextType => {
