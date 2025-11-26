@@ -69,7 +69,7 @@ export default function Header() {
       icon: <SwapOutlined />,
       label: "Giao dịch P2P",
       content: "Mua/bán không mất phí giao dịch thông qua hơn 100 phương thức thanh toán",
-      onClick: () => { router.push("/p2p/express"); closeMenu(); },
+      onClick: () => { router.push("/p2p"); closeMenu(); },
     },
   ];
 

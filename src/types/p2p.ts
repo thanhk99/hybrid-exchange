@@ -1,16 +1,23 @@
 export type OrderType = 'buy' | 'sell';
 export type OrderStatus = 'active' | 'completed' | 'cancelled';
 export type TradeStatus = 'pending' | 'paid' | 'confirmed' | 'completed' | 'cancelled' | 'disputed';
-export type PaymentMethodType = 'bank_transfer' | 'momo' | 'zalopay' | 'viettel_pay';
+export type PaymentMethodType = 'bank_transfer' | 'momo' | 'zalopay' | 'viettel_pay' | 'vnpay' | 'shopee_pay';
 
 export interface PaymentMethod {
     id: string;
+    uid: string;
     type: PaymentMethodType;
     name: string;
-    icon: string;
+    icon?: string;
     accountName?: string;
     accountNumber?: string;
     bankName?: string;
+    qrCode?: string;
+    isDefault: boolean;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt?: string;
 }
 
 export interface P2POrder {

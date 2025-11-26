@@ -1,0 +1,103 @@
+.container {
+    margin-bottom: 24px;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.required {
+    color: #ff4d4f;
+    margin-left: 4px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.option:hover {
+    border-color: #1890ff;
+    background: #f0f8ff;
+}
+
+.option.active {
+    border-color: #1890ff;
+    background: #e6f7ff;
+}
+
+.radio {
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+.details {
+    flex: 1;
+}
+
+.name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.number {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.bank {
+    font-size: 12px;
+    color: #999;
+}
+
+.hint {
+    font-size: 12px;
+    color: #999;
+}
+
+.noMethods {
+    padding: 24px;
+    text-align: center;
+    border: 1px dashed #e0e0e0;
+    border-radius: 8px;
+}
+
+.noMethods p {
+    margin: 0 0 16px 0;
+    color: #666;
+}
+
+.addButton {
+    padding: 8px 16px;
+    background: #1890ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.addButton:hover {
+    background: #40a9ff;
+}

@@ -29,7 +29,7 @@ export default function P2PMarketplace() {
     const currencies = ['USDT', 'BTC', 'ETH', 'BNB'];
     const fiatCurrencies = ['VND'];
     const [currencyIcons, setCurrencyIcons] = useState<Record<string, string>>({});
-    const paymentMethods = P2PService.getPaymentMethods();
+    const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
 
     useEffect(() => {
         // Load currency icons
@@ -42,6 +42,18 @@ export default function P2PMarketplace() {
             setCurrencyIcons(iconsMap);
         };
         loadCurrencyIcons();
+
+        // Load payment methods
+        const loadPaymentMethods = async () => {
+            try {
+                const methods = await P2PService.getPaymentMethods();
+                setPaymentMethods(methods);
+            } catch (error) {
+                console.error('Failed to load payment methods:', error);
+                setPaymentMethods([]);
+            }
+        };
+        loadPaymentMethods();
     }, []);
 
     useEffect(() => {
@@ -52,7 +64,7 @@ export default function P2PMarketplace() {
         setLoading(true);
         try {
             let data = await P2PService.getOrders({
-                type: orderType,
+                type: orderType === 'buy' ? 'sell' : 'buy',
                 currency,
                 paymentMethods: selectedPaymentMethods.length > 0 ? selectedPaymentMethods : undefined
             });
@@ -85,7 +97,7 @@ export default function P2PMarketplace() {
         if (!selectedOrder) return;
 
         try {
-            const trade = await P2PService.createTrade(selectedOrder, amount, paymentMethodId);
+            const trade = await P2PService.createTrade(selectedOrder.id, amount);
             setShowTradeModal(false);
             router.push(`/p2p/trade/${trade.id}`);
         } catch (error) {

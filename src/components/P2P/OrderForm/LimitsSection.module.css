@@ -1,0 +1,56 @@
+.container {
+    margin-bottom: 24px;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.fieldLabel {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.inputGroup {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input {
+    flex: 1;
+    padding: 10px 60px 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    border-color: #1890ff;
+}
+
+.suffix {
+    position: absolute;
+    right: 12px;
+    font-size: 13px;
+    color: #999;
+    pointer-events: none;
+}

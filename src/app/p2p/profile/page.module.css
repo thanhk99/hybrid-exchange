@@ -11,13 +11,13 @@
 .title {
     font-size: 28px;
     font-weight: 700;
-    color: #fff;
+    color: #000;
     margin: 0 0 8px 0;
 }
 
 .subtitle {
     font-size: 14px;
-    color: #888;
+    color: #666;
     margin: 0;
 }
 
@@ -35,7 +35,7 @@
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid #2a2a2a;
+    border: 3px solid #e5e7eb;
     border-top-color: #3b82f6;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
@@ -50,8 +50,8 @@
 
 /* Profile Card */
 .profileCard {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 24px;
@@ -63,7 +63,7 @@
     gap: 16px;
     margin-bottom: 24px;
     padding-bottom: 24px;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .avatar {
@@ -85,7 +85,7 @@
 .userName {
     font-size: 24px;
     font-weight: 700;
-    color: #fff;
+    color: #000;
     margin: 0 0 8px 0;
 }
 
@@ -98,11 +98,11 @@
 }
 
 .editButton {
-    background: #0a0a0a;
-    border: 1px solid #2a2a2a;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 10px 20px;
-    color: #fff;
+    color: #000;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -131,8 +131,8 @@
 }
 
 .statCard {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 20px;
     display: flex;
@@ -150,7 +150,7 @@
     font-size: 32px;
     width: 56px;
     height: 56px;
-    background: #0a0a0a;
+    background: #f3f4f6;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -164,20 +164,20 @@
 
 .statLabel {
     font-size: 13px;
-    color: #888;
+    color: #666;
     margin-bottom: 4px;
 }
 
 .statValue {
     font-size: 24px;
     font-weight: 700;
-    color: #fff;
+    color: #000;
 }
 
 /* Reviews Card */
 .reviewsCard {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 24px;
@@ -186,7 +186,7 @@
 .cardTitle {
     font-size: 18px;
     font-weight: 600;
-    color: #fff;
+    color: #000;
     margin: 0 0 20px 0;
     display: flex;
     align-items: center;
@@ -204,7 +204,7 @@
     align-items: center;
     gap: 16px;
     padding: 16px;
-    background: #0a0a0a;
+    background: #f3f4f6;
     border-radius: 8px;
 }
 
@@ -224,20 +224,20 @@
 
 .reviewLabel {
     font-size: 13px;
-    color: #888;
+    color: #666;
     margin-bottom: 4px;
 }
 
 .reviewValue {
     font-size: 20px;
     font-weight: 700;
-    color: #fff;
+    color: #000;
 }
 
 /* Achievements */
 .achievementsCard {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 24px;
 }
@@ -280,13 +280,13 @@
 .achievementName {
     font-size: 15px;
     font-weight: 600;
-    color: #fff;
+    color: #000;
     margin-bottom: 4px;
 }
 
 .achievementDesc {
     font-size: 13px;
-    color: #888;
+    color: #666;
 }
 
 /* Responsive */

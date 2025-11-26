@@ -1,13 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeftOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import P2PHeader from '@/src/components/P2P/P2PHeader/P2PHeader';
-import CurrencySelector from '@/src/components/P2P/CurrencySelector/CurrencySelector';
-import PaymentMethodBadge from '@/src/components/P2P/PaymentMethodBadge/PaymentMethodBadge';
+import OrderTypeSelector from '@/src/components/P2P/OrderForm/OrderTypeSelector';
+import CurrencySection from '@/src/components/P2P/OrderForm/CurrencySection';
+import PriceAmountSection from '@/src/components/P2P/OrderForm/PriceAmountSection';
+import LimitsSection from '@/src/components/P2P/OrderForm/LimitsSection';
+import BankAccountSelector from '@/src/components/P2P/OrderForm/BankAccountSelector';
+import PaymentMethodSelector from '@/src/components/P2P/OrderForm/PaymentMethodSelector';
+import TermsSection from '@/src/components/P2P/OrderForm/TermsSection';
 import { OrderType, PaymentMethod } from '@/src/types/p2p';
-import P2PService from '@/src/services/p2p';
+import P2POrderService from '@/src/services/p2pOrder';
+import PaymentMethodService from '@/src/services/paymentMethod';
+import { getAssetsOverview } from '@/src/services/balance';
 import styles from './page.module.css';
 
 export default function CreateP2POrder() {
@@ -20,25 +27,67 @@ export default function CreateP2POrder() {
     const [minLimit, setMinLimit] = useState('');
     const [maxLimit, setMaxLimit] = useState('');
     const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [selectedBankAccount, setSelectedBankAccount] = useState<PaymentMethod | null>(null);
+    const [selectedPaymentTypes, setSelectedPaymentTypes] = useState<string[]>([]);
     const [terms, setTerms] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [availableBalance, setAvailableBalance] = useState<number>(0);
 
     const currencies = ['USDT', 'BTC', 'ETH', 'BNB'];
     const fiatCurrencies = ['VND'];
-    const paymentMethods = P2PService.getPaymentMethods();
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [bankAccounts, setBankAccounts] = useState<PaymentMethod[]>([]);
 
-    const togglePaymentMethod = (method: PaymentMethod) => {
-        setSelectedPaymentMethods(prev =>
-            prev.find(m => m.id === method.id)
-                ? prev.filter(m => m.id !== method.id)
-                : [...prev, method]
-        );
-    };
+    // Load payment methods and bank accounts from API
+    useEffect(() => {
+        const loadPaymentData = async () => {
+            try {
+                const methods = await PaymentMethodService.getPaymentMethods();
+                setPaymentMethods(methods);
+
+                const banks = methods.filter((m: PaymentMethod) => m.type === 'bank_transfer');
+                setBankAccounts(banks);
+            } catch (error) {
+                console.error('Failed to load payment methods:', error);
+            }
+        };
+        loadPaymentData();
+    }, []);
+
+    // Load available balance for sell orders
+    useEffect(() => {
+        const fetchBalance = async () => {
+            if (orderType === 'sell') {
+                try {
+                    const assets = await getAssetsOverview();
+                    const fundingAsset = assets.funding.assets.find((a: any) => a.currency === currency);
+                    setAvailableBalance(fundingAsset ? fundingAsset.balance : 0);
+                } catch (error) {
+                    console.error('Failed to fetch balance:', error);
+                    setAvailableBalance(0);
+                }
+            }
+        };
+        fetchBalance();
+    }, [currency, orderType]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (selectedPaymentMethods.length === 0) {
+        // Validation for sell orders
+        if (orderType === 'sell' && !selectedBankAccount) {
+            alert('Vui lòng chọn tài khoản ngân hàng để nhận tiền');
+            return;
+        }
+
+        if (orderType === 'sell' && bankAccounts.length === 0) {
+            alert('Bạn chưa có tài khoản ngân hàng. Vui lòng thêm tài khoản ngân hàng trước.');
+            router.push('/p2p/payment-methods');
+            return;
+        }
+
+        // Validation for buy orders
+        if (orderType === 'buy' && selectedPaymentTypes.length === 0) {
             alert('Vui lòng chọn ít nhất một phương thức thanh toán');
             return;
         }
@@ -61,7 +110,7 @@ export default function CreateP2POrder() {
 
         setIsSubmitting(true);
         try {
-            await P2PService.createOrder({
+            await P2POrderService.createOrder({
                 type: orderType,
                 currency,
                 fiatCurrency,
@@ -115,169 +164,59 @@ export default function CreateP2POrder() {
 
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.card}>
-                    {/* Order Type */}
-                    <div className={styles.section}>
-                        <label className={styles.sectionLabel}>Loại quảng cáo</label>
-                        <div className={styles.typeButtons}>
-                            <button
-                                type="button"
-                                className={`${styles.typeButton} ${orderType === 'buy' ? styles.typeButtonActive : ''}`}
-                                onClick={() => setOrderType('buy')}
-                            >
-                                Mua
-                            </button>
-                            <button
-                                type="button"
-                                className={`${styles.typeButton} ${orderType === 'sell' ? styles.typeButtonActive : ''}`}
-                                onClick={() => setOrderType('sell')}
-                            >
-                                Bán
-                            </button>
-                        </div>
-                    </div>
+                    <OrderTypeSelector value={orderType} onChange={setOrderType} />
 
-                    {/* Currency Selection */}
-                    <div className={styles.section}>
-                        <label className={styles.sectionLabel}>Tiền điện tử</label>
-                        <div className={styles.row}>
-                            <CurrencySelector
-                                value={currency}
-                                onChange={setCurrency}
-                                currencies={currencies}
-                                label="Tiền điện tử"
-                            />
-                            <CurrencySelector
-                                value={fiatCurrency}
-                                onChange={setFiatCurrency}
-                                currencies={fiatCurrencies}
-                                label="Tiền tệ"
-                            />
-                        </div>
-                    </div>
+                    <CurrencySection
+                        currency={currency}
+                        fiatCurrency={fiatCurrency}
+                        onCurrencyChange={setCurrency}
+                        onFiatCurrencyChange={setFiatCurrency}
+                        currencies={currencies}
+                        fiatCurrencies={fiatCurrencies}
+                    />
 
-                    {/* Price & Amount */}
-                    <div className={styles.section}>
-                        <label className={styles.sectionLabel}>Giá và số lượng</label>
-                        <div className={styles.row}>
-                            <div className={styles.field}>
-                                <label className={styles.label}>Đơn giá</label>
-                                <div className={styles.inputGroup}>
-                                    <input
-                                        type="number"
-                                        className={styles.input}
-                                        placeholder="0.00"
-                                        value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
-                                        required
-                                    />
-                                    <span className={styles.inputSuffix}>{fiatCurrency}</span>
-                                </div>
-                            </div>
-                            <div className={styles.field}>
-                                <label className={styles.label}>Số lượng</label>
-                                <div className={styles.inputGroup}>
-                                    <input
-                                        type="number"
-                                        className={styles.input}
-                                        placeholder="0.00"
-                                        value={amount}
-                                        onChange={(e) => setAmount(e.target.value)}
-                                        required
-                                    />
-                                    <span className={styles.inputSuffix}>{currency}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <PriceAmountSection
+                        price={price}
+                        amount={amount}
+                        currency={currency}
+                        fiatCurrency={fiatCurrency}
+                        onPriceChange={setPrice}
+                        onAmountChange={setAmount}
+                    />
 
-                    {/* Limits */}
-                    <div className={styles.section}>
-                        <label className={styles.sectionLabel}>Giới hạn giao dịch</label>
-                        <div className={styles.row}>
-                            <div className={styles.field}>
-                                <label className={styles.label}>Tối thiểu</label>
-                                <div className={styles.inputGroup}>
-                                    <input
-                                        type="number"
-                                        className={styles.input}
-                                        placeholder="0.00"
-                                        value={minLimit}
-                                        onChange={(e) => setMinLimit(e.target.value)}
-                                        required
-                                    />
-                                    <span className={styles.inputSuffix}>{fiatCurrency}</span>
-                                </div>
-                            </div>
-                            <div className={styles.field}>
-                                <label className={styles.label}>Tối đa</label>
-                                <div className={styles.inputGroup}>
-                                    <input
-                                        type="number"
-                                        className={styles.input}
-                                        placeholder="0.00"
-                                        value={maxLimit}
-                                        onChange={(e) => setMaxLimit(e.target.value)}
-                                        required
-                                    />
-                                    <span className={styles.inputSuffix}>{fiatCurrency}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <LimitsSection
+                        minLimit={minLimit}
+                        maxLimit={maxLimit}
+                        fiatCurrency={fiatCurrency}
+                        onMinLimitChange={setMinLimit}
+                        onMaxLimitChange={setMaxLimit}
+                    />
 
-                    {/* Payment Methods */}
-                    <div className={styles.section}>
-                        <label className={styles.sectionLabel}>
-                            Phương thức thanh toán
-                            <span className={styles.required}>*</span>
-                        </label>
-                        <div className={styles.paymentGrid}>
-                            {paymentMethods.map(method => (
-                                <label
-                                    key={method.id}
-                                    className={`${styles.paymentOption} ${selectedPaymentMethods.find(m => m.id === method.id)
-                                            ? styles.paymentOptionActive
-                                            : ''
-                                        }`}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={!!selectedPaymentMethods.find(m => m.id === method.id)}
-                                        onChange={() => togglePaymentMethod(method)}
-                                        className={styles.checkbox}
-                                    />
-                                    <PaymentMethodBadge method={method} size="small" />
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Terms */}
-                    <div className={styles.section}>
-                        <label className={styles.sectionLabel}>Điều khoản (Tùy chọn)</label>
-                        <textarea
-                            className={styles.textarea}
-                            placeholder="Nhập điều khoản giao dịch của bạn..."
-                            value={terms}
-                            onChange={(e) => setTerms(e.target.value)}
-                            rows={4}
+                    {orderType === 'sell' && (
+                        <BankAccountSelector
+                            bankAccounts={bankAccounts}
+                            selectedAccount={selectedBankAccount}
+                            onSelect={setSelectedBankAccount}
+                            currency={currency}
                         />
-                    </div>
+                    )}
 
-                    {/* Info Box */}
-                    <div className={styles.infoBox}>
-                        <InfoCircleOutlined className={styles.infoIcon} />
-                        <div className={styles.infoText}>
-                            <p><strong>Lưu ý:</strong></p>
-                            <ul>
-                                <li>Quảng cáo sẽ được hiển thị công khai sau khi tạo</li>
-                                <li>Bạn có thể chỉnh sửa hoặc xóa quảng cáo bất kỳ lúc nào</li>
-                                <li>Đảm bảo bạn có đủ số dư để thực hiện giao dịch</li>
-                            </ul>
-                        </div>
-                    </div>
+                    {orderType === 'buy' && (
+                        <PaymentMethodSelector
+                            selectedTypes={selectedPaymentTypes}
+                            onToggle={(type) => {
+                                setSelectedPaymentTypes(prev =>
+                                    prev.includes(type)
+                                        ? prev.filter(t => t !== type)
+                                        : [...prev, type]
+                                );
+                            }}
+                            currency={currency}
+                        />
+                    )}
 
-                    {/* Submit Button */}
+                    <TermsSection value={terms} onChange={setTerms} />
+
                     <button
                         type="submit"
                         className={styles.submitButton}
