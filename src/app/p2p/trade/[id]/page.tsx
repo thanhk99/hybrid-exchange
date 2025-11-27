@@ -13,6 +13,9 @@ import P2PService from '@/src/services/p2p';
 import { useUser } from '@/src/contexts/UserContext';
 import styles from './page.module.css';
 
+import { Notification as ToastNotification } from '@/src/components/common/Notification/Notification';
+import { ConfirmModal } from '@/src/components/common/ConfirmModal/ConfirmModal';
+
 export default function TradeDetail() {
     const router = useRouter();
     const params = useParams();
@@ -24,10 +27,24 @@ export default function TradeDetail() {
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [paymentProof, setPaymentProof] = useState<File | null>(null);
+    const [notification, setNotification] = useState({
+        type: 'info' as 'success' | 'error' | 'info' | 'warning',
+        message: '',
+        isVisible: false
+    });
+    const [showCancelModal, setShowCancelModal] = useState(false);
 
     useEffect(() => {
         loadTradeData();
     }, [tradeId]);
+
+    const showNotification = (type: 'success' | 'error' | 'info' | 'warning', message: string) => {
+        setNotification({ type, message, isVisible: true });
+    };
+
+    const closeNotification = () => {
+        setNotification(prev => ({ ...prev, isVisible: false }));
+    };
 
     const loadTradeData = async () => {
         try {
@@ -39,6 +56,7 @@ export default function TradeDetail() {
             setMessages(messagesData);
         } catch (error) {
             console.error('Failed to load trade:', error);
+            showNotification('error', 'Không thể tải thông tin giao dịch');
         } finally {
             setLoading(false);
         }
@@ -53,18 +71,19 @@ export default function TradeDetail() {
             setNewMessage('');
         } catch (error) {
             console.error('Failed to send message:', error);
+            showNotification('error', 'Gửi tin nhắn thất bại');
         }
     };
 
     const handleConfirmPayment = async () => {
         try {
             await P2PService.confirmPayment(tradeId, '');
-            alert('Đã xác nhận thanh toán!');
+            showNotification('success', 'Đã xác nhận thanh toán!');
             // Reload trade data and messages to show updated status and system message
             await loadTradeData();
         } catch (error) {
             console.error('Failed to confirm payment:', error);
-            alert('Xác nhận thanh toán thất bại. Vui lòng thử lại.');
+            showNotification('error', 'Xác nhận thanh toán thất bại. Vui lòng thử lại.');
         }
     };
 
@@ -73,23 +92,24 @@ export default function TradeDetail() {
 
         try {
             await P2PService.releaseCrypto(tradeId);
-            alert('Đã giải phóng tiền điện tử!');
+            showNotification('success', 'Đã giải phóng tiền điện tử!');
             loadTradeData();
         } catch (error) {
             console.error('Failed to release crypto:', error);
+            showNotification('error', 'Giải phóng tiền thất bại. Vui lòng thử lại.');
         }
     };
 
     const handleCancelTrade = async () => {
-        const reason = prompt('Lý do hủy giao dịch:');
-        if (!reason) return;
-
         try {
-            await P2PService.cancelTrade(tradeId, reason);
-            alert('Đã hủy giao dịch!');
-            router.push('/p2p');
-        } catch (error) {
+            await P2PService.cancelTrade(tradeId, 'User cancelled');
+            showNotification('success', 'Đã hủy giao dịch!');
+            setTimeout(() => {
+                router.push('/p2p');
+            }, 1500);
+        } catch (error: any) {
             console.error('Failed to cancel trade:', error);
+            showNotification('error', error.message || 'Hủy giao dịch thất bại');
         }
     };
 
@@ -133,6 +153,23 @@ export default function TradeDetail() {
 
     return (
         <div className={styles.container}>
+            <ToastNotification
+                type={notification.type}
+                message={notification.message}
+                isVisible={notification.isVisible}
+                onClose={closeNotification}
+            />
+
+            <ConfirmModal
+                isOpen={showCancelModal}
+                onClose={() => setShowCancelModal(false)}
+                onConfirm={handleCancelTrade}
+                title="Hủy giao dịch"
+                content="Bạn có chắc chắn muốn hủy giao dịch này không? Hành động này không thể hoàn tác."
+                confirmText="Xác nhận hủy"
+                isDanger={true}
+            />
+
             <P2PHeader
                 title={`Giao dịch #${trade.id.slice(0, 8)}`}
                 subtitle={`${isBuyer ? 'Mua' : 'Bán'} ${trade.order.currency}`}
@@ -278,7 +315,7 @@ export default function TradeDetail() {
                         <div className={styles.actions}>
                             <button
                                 className={styles.cancelButton}
-                                onClick={handleCancelTrade}
+                                onClick={() => setShowCancelModal(true)}
                             >
                                 Hủy giao dịch
                             </button>

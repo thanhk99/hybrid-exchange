@@ -281,14 +281,19 @@ function PaymentMethodModal({ method, onSave, onClose }: PaymentMethodModalProps
                     {type === 'BANK_TRANSFER' && (
                         <div className={styles.formGroup}>
                             <label>Tên ngân hàng</label>
-                            <input
-                                type="text"
+                            <select
                                 value={bankName}
                                 onChange={(e) => setBankName(e.target.value)}
-                                placeholder="VD: Vietcombank"
-                                className={styles.input}
+                                className={styles.select}
                                 required
-                            />
+                            >
+                                <option value="">Chọn ngân hàng</option>
+                                {PaymentMethodService.getVietnameseBanks().map(bank => (
+                                    <option key={bank.code} value={bank.shortName}>
+                                        {bank.shortName} - {bank.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     )}
 

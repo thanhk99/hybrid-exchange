@@ -244,13 +244,16 @@ class P2PTradeService {
     /**
      * Cancel trade
      */
-    async cancelTrade(tradeId: string, reason: string): Promise<void> {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log(`Trade ${tradeId} cancelled: ${reason}`);
-                resolve();
-            }, 800);
-        });
+    async cancelTrade(orderId: string, reason?: string): Promise<void> {
+        try {
+            const response = await axiosInstance.post(`/api/v1/p2pads/order/${orderId}/cancel`, {
+                reason: reason || 'User cancelled'
+            });
+            console.log('Cancel order response:', response.data);
+        } catch (error: any) {
+            console.error('Error cancelling order:', error);
+            throw new Error(error.response?.data?.message || 'Failed to cancel order');
+        }
     }
 
     /**

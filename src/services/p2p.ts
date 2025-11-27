@@ -31,6 +31,7 @@ class P2PService {
     addPaymentMethod = PaymentMethodService.addPaymentMethod.bind(PaymentMethodService);
     updatePaymentMethod = PaymentMethodService.updatePaymentMethod.bind(PaymentMethodService);
     deletePaymentMethod = PaymentMethodService.deletePaymentMethod.bind(PaymentMethodService);
+    getVietnameseBanks = PaymentMethodService.getVietnameseBanks.bind(PaymentMethodService);
 }
 
 export default new P2PService();

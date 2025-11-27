@@ -10,9 +10,11 @@ import { P2POrder, OrderType, PaymentMethodType } from '@/src/types/p2p';
 import P2PService from '@/src/services/p2p';
 import WalletService from '@/src/services/wallet';
 import styles from './page.module.css';
+import { useUser } from '@/src/contexts/UserContext';
 
 export default function P2PMarketplace() {
     const router = useRouter();
+    const { user } = useUser();
     const [orderType, setOrderType] = useState<OrderType>('buy');
     const [currency, setCurrency] = useState('USDT');
     const [fiatCurrency, setFiatCurrency] = useState('VND');
@@ -58,16 +60,42 @@ export default function P2PMarketplace() {
 
     useEffect(() => {
         fetchOrders();
-    }, [orderType, currency, selectedPaymentMethods, sortBy]);
+    }, [orderType, currency, selectedPaymentMethods, sortBy, user]);
 
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            let data = await P2PService.getOrders({
+            // Fetch public orders
+            const publicOrdersPromise = P2PService.getOrders({
                 type: orderType === 'buy' ? 'sell' : 'buy',
                 currency,
                 paymentMethods: selectedPaymentMethods.length > 0 ? selectedPaymentMethods : undefined
             });
+
+            // Fetch user's own orders if logged in
+            const userOrdersPromise = user ? P2PService.getUserOrders() : Promise.resolve([]);
+
+            const [publicOrders, userOrders] = await Promise.all([publicOrdersPromise, userOrdersPromise]);
+
+            // Filter user's orders to match current view
+            // If viewing "Buy" tab, we want to see orders where people are selling (type='sell')
+            // So if I created a 'sell' ad, it should appear in the 'Buy' tab
+            const targetType = orderType === 'buy' ? 'sell' : 'buy';
+
+            const relevantUserOrders = (userOrders as P2POrder[]).filter(order =>
+                order.status === 'active' &&
+                order.type === targetType &&
+                order.currency === currency &&
+                (selectedPaymentMethods.length === 0 ||
+                    order.paymentMethods.some(pm => selectedPaymentMethods.includes(pm.type)))
+            );
+
+            // Merge orders, prioritizing user's own orders at the top or just mixing them
+            // We need to remove duplicates if the public API eventually includes them
+            const publicOrderIds = new Set(publicOrders.map(o => o.id));
+            const uniqueUserOrders = relevantUserOrders.filter(o => !publicOrderIds.has(o.id));
+
+            let data = [...uniqueUserOrders, ...publicOrders];
 
             // Apply sorting
             if (sortBy === 'price_asc') {
@@ -353,8 +381,12 @@ export default function P2PMarketplace() {
                                             <button
                                                 className={styles.tradeButton}
                                                 onClick={() => handleTrade(order)}
+                                                disabled={user?.uid === order.merchantId}
+                                                style={user?.uid === order.merchantId ? { opacity: 0.5, cursor: 'not-allowed', background: '#ccc' } : {}}
                                             >
-                                                {orderType === 'buy' ? 'Mua' : 'Bán'}
+                                                {user?.uid === order.merchantId
+                                                    ? 'Quảng cáo của bạn'
+                                                    : (orderType === 'buy' ? 'Mua' : 'Bán')}
                                             </button>
                                         </td>
                                     </tr>
