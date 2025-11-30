@@ -357,7 +357,7 @@ export default function Withdraw() {
 
                                             {isNetworkDropdownOpen && (
                                                 <div className={styles.dropdownMenu}>
-                                                    {selectedCurrency.networks.map((network: Network) => (
+                                                    {(selectedCurrency.networks || []).map((network: Network) => (
                                                         <div
                                                             key={network.id}
                                                             className={styles.dropdownItem}
