@@ -4,7 +4,11 @@
   width: 100%;
   margin: 0 auto;
   overflow: hidden;
-  background: #f8f9fa;
+  background: var(--bg-zinc-50);
+  background-image:
+    linear-gradient(rgba(224, 224, 224, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(224, 224, 224, 0.3) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 .sliderWrapper {
@@ -23,7 +27,7 @@
   position: relative;
   width: 100%;
   height: 0;
-  padding-bottom: 33.33%; 
+  padding-bottom: 33.33%;
   overflow: hidden;
 }
 
@@ -40,16 +44,16 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--blue-600);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
   transition: all 0.3s ease;
   cursor: pointer;
   z-index: 20;
@@ -62,105 +66,110 @@
 
 .navButton:hover {
   background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+  transform: translateY(-50%) scale(1.1);
+  color: var(--blue-500);
 }
 
 .prevButton {
-  left: 20px;
+  left: 24px;
 }
 
 .nextButton {
-  right: 20px;
+  right: 24px;
 }
 
 .dotsContainer {
   position: absolute;
-  bottom: 20px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 8px;
+  gap: 10px;
   z-index: 20;
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   border: 2px solid white;
   background: transparent;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .dotActive {
-  background: white;
-  transform: scale(1.1);
+  background: var(--blue-500);
+  border-color: var(--blue-500);
+  transform: scale(1.2);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
 }
 
 .dotInactive {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .dotInactive:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: white;
+  transform: scale(1.1);
 }
 
 /* Responsive */
 @media (max-width: 1200px) {
   .slideContent {
-    padding-bottom: 40%; /* Tỷ lệ hơi cao hơn trên tablet */
+    padding-bottom: 40%;
   }
 }
 
 @media (max-width: 768px) {
   .slideContent {
-    padding-bottom: 50%; /* Tỷ lệ cao hơn trên mobile */
+    padding-bottom: 50%;
   }
-  
+
   .navButton {
-    width: 36px;
-    height: 36px;
-    opacity: 0.8; /* Luôn hiển thị trên mobile */
+    width: 40px;
+    height: 40px;
+    opacity: 0.9;
   }
-  
+
   .prevButton {
-    left: 12px;
+    left: 16px;
   }
-  
+
   .nextButton {
-    right: 12px;
+    right: 16px;
   }
-  
+
   .dotsContainer {
-    bottom: 15px;
+    bottom: 16px;
+    gap: 8px;
   }
-  
+
   .dot {
-    width: 10px;
-    height: 10px;
-    border-width: 1px;
+    width: 8px;
+    height: 8px;
+    border-width: 1.5px;
   }
 }
 
 @media (max-width: 480px) {
   .slideContent {
-    padding-bottom: 60%; 
+    padding-bottom: 60%;
   }
-  
+
   .navButton {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
   }
-  
+
   .dotsContainer {
     bottom: 12px;
   }
-  
+
   .dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
   }
 }

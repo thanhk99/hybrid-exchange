@@ -21,7 +21,7 @@ export default function CurrencySelector({ value, onChange, currencies, label, s
                 const currenciesData = await WalletService.getCurrencies();
                 const iconsMap: Record<string, string> = {};
                 currenciesData.forEach(c => {
-                    iconsMap[c.symbol] = c.icon;
+                    iconsMap[c.symbol] = c.icon || '';
                 });
                 setCurrencyIcons(iconsMap);
             };

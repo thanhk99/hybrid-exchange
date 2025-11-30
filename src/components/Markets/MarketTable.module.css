@@ -1,0 +1,266 @@
+.container {
+    padding: 24px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.searchInput {
+    padding: 8px 16px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 250px;
+    transition: all 0.2s;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+.headerActions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.filterBtn {
+    padding: 8px 16px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background: #fff;
+    color: #1a1a1a;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.filterBtn:hover {
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.table th {
+    text-align: left;
+    padding: 16px;
+    color: #8c8c8c;
+    font-weight: 500;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.table td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #1a1a1a;
+    font-size: 14px;
+}
+
+.coinInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.coinLogo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.coinIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.symbol {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.name {
+    color: #8c8c8c;
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+.price {
+    font-weight: 500;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.table .positive {
+    color: #0ECB81;
+}
+
+.table .negative {
+    color: #F6465D;
+}
+
+.actionButton {
+    padding: 6px 16px;
+    border-radius: 4px;
+    border: none;
+    background: #f0f0f0;
+    color: #1a1a1a;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.actionButton:hover {
+    background: #e6e6e6;
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    gap: 8px;
+}
+
+.pageBtn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d9d9d9;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pageBtn:hover:not(:disabled) {
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.pageBtn.active {
+    background: #1890ff;
+    border-color: #1890ff;
+    color: #fff;
+}
+
+.pageBtn:disabled {
+    background: #f5f5f5;
+    color: #d9d9d9;
+    cursor: not-allowed;
+}
+
+.mobileOnly {
+    display: none;
+}
+
+@media (max-width: 920px) {
+    .container {
+        padding: 16px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .headerActions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .searchInput {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .filterBtn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .desktopOnly {
+        display: none !important;
+    }
+
+    .mobileOnly {
+        display: table-cell;
+    }
+
+    .table {
+        min-width: 100%;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px 4px;
+        font-size: 13px;
+    }
+
+    .table th:first-child,
+    .table td:first-child {
+        padding-left: 8px;
+    }
+
+    .table th:last-child,
+    .table td:last-child {
+        padding-right: 8px;
+        text-align: center;
+    }
+
+    .coinLogo {
+        width: 24px;
+        height: 24px;
+    }
+
+    .symbol {
+        font-size: 14px;
+    }
+
+    .name {
+        font-size: 11px;
+    }
+
+    .actionButton {
+        padding: 4px 12px;
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,115 @@
+.notification-bell-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.notification-bell-button:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.notification-bell-dropdown .ant-dropdown-menu {
+    padding: 0;
+}
+
+.notification-dropdown {
+    width: 380px;
+    max-height: 600px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+        0 3px 6px -4px rgba(0, 0, 0, 0.12),
+        0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.notification-dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fafafa;
+}
+
+.notification-dropdown-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
+}
+
+.notification-dropdown-body {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 480px;
+}
+
+.notification-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.notification-dropdown-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #f0f0f0;
+    text-align: center;
+    background: #fafafa;
+}
+
+.notification-dropdown-footer a {
+    color: #1890ff;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.notification-dropdown-footer a:hover {
+    color: #40a9ff;
+}
+
+/* Scrollbar styling */
+.notification-dropdown-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-dropdown-body::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.notification-dropdown-body::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    border-radius: 3px;
+}
+
+.notification-dropdown-body::-webkit-scrollbar-thumb:hover {
+    background: #bfbfbf;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .notification-dropdown {
+        width: 320px;
+    }
+
+    .notification-dropdown-header {
+        padding: 12px 16px;
+    }
+
+    .notification-dropdown-header h3 {
+        font-size: 14px;
+    }
+
+    .notification-dropdown-footer {
+        padding: 10px 16px;
+    }
+}

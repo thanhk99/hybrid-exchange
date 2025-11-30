@@ -356,20 +356,31 @@
   filter: none;
 }
 
+.mobileHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .mobileClose {
-  background: none;
+  background: rgba(102, 126, 234, 0.1);
   border: none;
-  color: #2c3e50;
+  color: #667eea;
   font-size: 18px;
   cursor: pointer;
-  padding: 6px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
 }
 
 .mobileClose:hover {
-  background: rgba(102, 126, 234, 0.1);
-  transform: scale(1.1);
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(1.05);
+  color: #5a6fd8;
 }
 
 .mobileContent {

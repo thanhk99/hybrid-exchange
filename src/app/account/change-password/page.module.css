@@ -1,0 +1,169 @@
+.changePasswordPage {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.breadcrumb {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.breadcrumb span:first-child {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.breadcrumb span:first-child:hover {
+    color: var(--blue-600);
+}
+
+.separator {
+    color: var(--text-tertiary);
+}
+
+.pageTitle {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 24px 0;
+    letter-spacing: -0.5px;
+}
+
+.formSection {
+    background: var(--bg-white);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.errorMessage {
+    background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+    color: #991B1B;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #FCA5A5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.successMessage {
+    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+    color: #065F46;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #6EE7B7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.formGroup {
+    margin-bottom: 28px;
+}
+
+.formGroup label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input {
+    width: 100%;
+    padding: 14px 45px 14px 16px;
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 12px;
+    font-size: 16px;
+    color: var(--text-primary);
+    background: var(--bg-zinc-50);
+    transition: all 0.3s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--blue-500);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.eyeIcon {
+    position: absolute;
+    right: 16px;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    font-size: 18px;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eyeIcon:hover {
+    color: var(--text-primary);
+}
+
+.hint {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.submitButton {
+    width: 100%;
+    padding: 16px;
+    background: var(--blue-600);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 12px;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.submitButton:hover:not(:disabled) {
+    background: var(--blue-500);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px -1px rgba(37, 99, 235, 0.3);
+}
+
+.submitButton:disabled {
+    background: var(--bg-zinc-100);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .changePasswordPage {
+        padding: 20px 16px;
+    }
+
+    .formSection {
+        padding: 24px 20px;
+    }
+}

@@ -60,8 +60,10 @@ export default function P2PSidebar() {
                             className={`${styles.menuItem} ${isActive ? styles.menuItemActive : ''}`}
                         >
                             <div className={styles.menuItemInner}>
-                                {isActive && <div className={styles.activeIndicator} />}
-                                <span className={styles.menuLabel}>{item.label}</span>
+                                <div className={styles.menuIcon}>{item.icon}</div>
+                                <div className={styles.menuContent}>
+                                    <span className={styles.menuLabel}>{item.label}</span>
+                                </div>
                             </div>
                         </Link>
                     );

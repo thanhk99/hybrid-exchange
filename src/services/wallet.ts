@@ -6,8 +6,8 @@ export interface Currency {
     id: string;
     symbol: string;
     name: string;
-    icon: string;
-    networks: Network[];
+    icon?: string;
+    networks?: Network[];
 }
 
 export interface Network {
@@ -201,6 +201,33 @@ const MOCK_CURRENCIES: Currency[] = [
     },
 ];
 
+export interface InternalTransferRequest {
+    recipientIdentifier: string; // UID, Email, or Phone
+    currency: string;
+    amount: number;
+}
+
+export interface WalletTransferRequest {
+    fromWallet: 'FUNDING' | 'SPOT' | 'EARN';
+    toWallet: 'FUNDING' | 'SPOT' | 'EARN';
+    currency: string;
+    amount: number;
+}
+
+export interface SwapRequest {
+    fromCoin: string;
+    toCoin: string;
+    amount: number;
+}
+
+export interface SwapResponse {
+    fromCoin: string;
+    toCoin: string;
+    sentAmount: number;
+    receivedAmount: number;
+    rate: number;
+}
+
 export default class WalletService {
     static async getCurrencies(): Promise<Currency[]> {
         // Simulate API call
@@ -234,14 +261,64 @@ export default class WalletService {
     }
 
     static async transfer(recipient: string, currency: string, amount: number): Promise<void> {
-        // Simulate API call for internal transfer
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                // Simulate success
-                console.log(`Transfer ${amount} ${currency} to ${recipient}`);
-                resolve();
-            }, 1500);
-        });
+        // Legacy method, keeping for compatibility if needed, but should use transferInternal
+        return this.transferInternal({
+            recipientIdentifier: recipient,
+            currency,
+            amount
+        }).then(() => { });
+    }
+
+    /**
+     * Internal Transfer (User to User)
+     */
+    static async transferInternal(data: InternalTransferRequest): Promise<AxiosResponse<ApiResponse<any>>> {
+        try {
+            const response = await axiosInstance.post<ApiResponse<any>>('api/v1/transfer/internal', data);
+            return response;
+        } catch (error) {
+            console.error('Internal transfer error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Wallet Transfer (Between own wallets)
+     */
+    static async transferWallet(data: WalletTransferRequest): Promise<AxiosResponse<ApiResponse<any>>> {
+        try {
+            const response = await axiosInstance.post<ApiResponse<any>>('api/v1/transfer/wallet', data);
+            return response;
+        } catch (error) {
+            console.error('Wallet transfer error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Swap Coins
+     */
+    static async swap(data: SwapRequest): Promise<AxiosResponse<ApiResponse<SwapResponse>>> {
+        try {
+            const response = await axiosInstance.post<ApiResponse<SwapResponse>>('api/v1/swap', data);
+            return response;
+        } catch (error) {
+            console.error('Swap error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Manual Price Update
+     */
+    static async updateCoinPrices(): Promise<AxiosResponse<ApiResponse<any>>> {
+        try {
+            const response = await axiosInstance.post<ApiResponse<any>>('api/v1/coin/update-prices', {});
+            return response;
+        } catch (error) {
+            console.error('Update prices error:', error);
+            throw error;
+        }
     }
 
     static async withdraw(address: string, currency: string, network: string, amount: number): Promise<void> {
@@ -385,4 +462,18 @@ export default class WalletService {
             }, 800);
         });
     }
+
+    // Get exchange rate between two currencies
+    static async getExchangeRate(fromCoin: string, toCoin: string): Promise<AxiosResponse<ApiResponse<{ rate: number }>>> {
+        try {
+            const response = await axiosInstance.get<ApiResponse<{ rate: number }>>(`/api/v1/coin/exchange-rate`, {
+                params: { from: fromCoin, to: toCoin }
+            });
+            return response;
+        } catch (error) {
+            console.error('Get exchange rate error:', error);
+            throw error;
+        }
+    }
 }
+

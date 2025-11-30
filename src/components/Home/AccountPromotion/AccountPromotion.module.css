@@ -1,12 +1,15 @@
-/* AccountPromotion.module.css - Phiên bản tone trắng */
+/* AccountPromotion.module.css */
 .container {
   position: relative;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  background-image:
+    linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%),
+    linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+  background-size: 100%, 40px 40px, 40px 40px;
   overflow: hidden;
   margin: 40px 0;
   width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
 }
 
 .background {
@@ -15,7 +18,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('/api/placeholder/1200/600') center/cover;
 }
 
 .gradientOverlay {
@@ -24,9 +26,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(248, 250, 252, 0.95) 0%, 
-    rgba(241, 245, 249, 0.95) 100%);
+  background: linear-gradient(135deg,
+      rgba(239, 246, 255, 0.8) 0%,
+      rgba(219, 234, 254, 0.8) 100%);
 }
 
 .particles {
@@ -39,7 +41,7 @@
 
 .particle {
   position: absolute;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   border-radius: 50%;
   animation: float 6s infinite ease-in-out;
 }
@@ -55,9 +57,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) translateX(0);
   }
+
   50% {
     transform: translateY(-20px) translateX(10px);
   }
@@ -76,19 +81,19 @@
 }
 
 .textSection {
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .badge {
   display: inline-block;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 24px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  color: #667eea;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--blue-600);
 }
 
 .title {
@@ -96,11 +101,11 @@
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 20px;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .highlight {
-  background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, var(--blue-500), var(--blue-600));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -109,7 +114,7 @@
 .description {
   font-size: 1.25rem;
   line-height: 1.6;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 40px;
   max-width: 600px;
 }
@@ -131,15 +136,15 @@
 .featureIcon {
   width: 44px;
   height: 44px;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
-  color: #667eea;
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  color: var(--blue-500);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .featureText {
@@ -150,12 +155,12 @@
   font-weight: 600;
   margin-bottom: 4px;
   font-size: 15px;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .featureDesc {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .buttons {
@@ -165,7 +170,8 @@
   flex-wrap: wrap;
 }
 
-.demoButton, .tradingButton {
+.demoButton,
+.tradingButton {
   position: relative;
   display: flex;
   align-items: center;
@@ -182,16 +188,16 @@
 
 .demoButton {
   background: white;
-  color: #374151;
+  color: var(--text-primary);
   border: 2px solid #e5e7eb;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .tradingButton {
-  background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, var(--blue-500), var(--blue-600));
   color: white;
   border: none;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 .buttonGlow {
@@ -200,11 +206,12 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.6s ease;
 }
 
-.demoButton:hover, .tradingButton:hover {
+.demoButton:hover,
+.tradingButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
@@ -215,12 +222,12 @@
 }
 
 .demoButton:hover {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: var(--blue-500);
+  color: var(--blue-500);
 }
 
 .tradingButton:hover {
-  background: linear-gradient(45deg, #5a6fd8, #6b46c1);
+  background: linear-gradient(45deg, var(--blue-600), #1e40af);
 }
 
 .stats {
@@ -236,12 +243,12 @@
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 4px;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .statLabel {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .visualSection {
@@ -259,7 +266,9 @@
   max-width: 400px;
 }
 
-.card1, .card2, .card3 {
+.card1,
+.card2,
+.card3 {
   position: absolute;
   background: white;
   border: 1px solid #e5e7eb;
@@ -274,7 +283,7 @@
   right: 0;
   width: 240px;
   transform: rotate(3deg);
-  border-left: 4px solid #667eea;
+  border-left: 4px solid var(--blue-500);
 }
 
 .card2 {
@@ -282,7 +291,7 @@
   right: 140px;
   width: 260px;
   transform: rotate(-2deg);
-  border-left: 4px solid #10b981;
+  border-left: 4px solid var(--green-500);
 }
 
 .card3 {
@@ -293,7 +302,9 @@
   border-left: 4px solid #f59e0b;
 }
 
-.card1:hover, .card2:hover, .card3:hover {
+.card1:hover,
+.card2:hover,
+.card3:hover {
   transform: rotate(0) translateY(-10px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
@@ -311,7 +322,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: var(--bg-zinc-50);
   border-radius: 10px;
   flex-shrink: 0;
   border: 1px solid #e5e7eb;
@@ -325,12 +336,12 @@
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 6px;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .cardDesc {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 /* Responsive */
@@ -339,11 +350,11 @@
     padding: 60px 40px;
     gap: 50px;
   }
-  
+
   .title {
     font-size: 3rem;
   }
-  
+
   .cardStack {
     height: 300px;
     max-width: 350px;
@@ -357,32 +368,34 @@
     padding: 50px 40px;
     text-align: center;
   }
-  
+
   .title {
     font-size: 2.8rem;
   }
-  
+
   .description {
     margin-left: auto;
     margin-right: auto;
   }
-  
+
   .features {
     margin-left: auto;
     margin-right: auto;
   }
-  
+
   .visualSection {
     order: -1;
     height: 250px;
   }
-  
+
   .cardStack {
     height: 250px;
     max-width: 300px;
   }
-  
-  .card1, .card2, .card3 {
+
+  .card1,
+  .card2,
+  .card3 {
     padding: 20px;
   }
 }
@@ -391,53 +404,56 @@
   .content {
     padding: 40px 30px;
   }
-  
+
   .title {
     font-size: 2.2rem;
   }
-  
+
   .description {
     font-size: 1.125rem;
   }
-  
+
   .features {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .buttons {
     flex-direction: column;
     align-items: center;
   }
-  
-  .demoButton, .tradingButton {
+
+  .demoButton,
+  .tradingButton {
     width: 100%;
     max-width: 300px;
     justify-content: center;
   }
-  
+
   .stats {
     justify-content: space-around;
     gap: 30px;
   }
-  
+
   .statNumber {
     font-size: 2rem;
   }
-  
+
   .visualSection {
     height: 200px;
   }
-  
+
   .cardStack {
     height: 200px;
     max-width: 250px;
   }
-  
-  .card1, .card2, .card3 {
+
+  .card1,
+  .card2,
+  .card3 {
     padding: 16px;
   }
-  
+
   .cardIcon {
     font-size: 24px;
     width: 40px;
@@ -449,45 +465,48 @@
   .content {
     padding: 30px 20px;
   }
-  
+
   .title {
     font-size: 1.8rem;
   }
-  
+
   .description {
     font-size: 1rem;
   }
-  
-  .demoButton, .tradingButton {
+
+  .demoButton,
+  .tradingButton {
     padding: 16px 24px;
     font-size: 14px;
   }
-  
+
   .stats {
     gap: 20px;
   }
-  
+
   .statNumber {
     font-size: 1.5rem;
   }
-  
+
   .visualSection {
     height: 180px;
   }
-  
+
   .cardStack {
     height: 180px;
     max-width: 220px;
   }
-  
-  .card1, .card2, .card3 {
+
+  .card1,
+  .card2,
+  .card3 {
     padding: 14px;
   }
-  
+
   .cardTitle {
     font-size: 14px;
   }
-  
+
   .cardDesc {
     font-size: 12px;
   }

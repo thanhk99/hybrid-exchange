@@ -1,0 +1,23 @@
+.notifications-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+    padding: 40px 20px;
+}
+
+.notifications-page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .notifications-page {
+        padding: 20px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .notifications-page {
+        padding: 0;
+    }
+}

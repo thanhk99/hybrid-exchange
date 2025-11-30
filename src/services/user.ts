@@ -55,4 +55,24 @@ export default class UserService {
       return null;
     }
   }
+
+  static async changeName(name: string): Promise<AxiosResponse<ApiResponse<UserInfo>>> {
+    try {
+      const response = await axiosInstance.post<ApiResponse<UserInfo>>('api/v1/user/changeName', { username: name });
+      return response;
+    } catch (error) {
+      console.error('Change name error:', error);
+      throw error;
+    }
+  }
+
+  static async changePhone(phone: string): Promise<AxiosResponse<ApiResponse<UserInfo>>> {
+    try {
+      const response = await axiosInstance.post<ApiResponse<UserInfo>>('api/v1/user/changePhone', { phone });
+      return response;
+    } catch (error) {
+      console.error('Change phone error:', error);
+      throw error;
+    }
+  }
 }

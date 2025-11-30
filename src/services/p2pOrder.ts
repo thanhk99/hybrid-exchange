@@ -328,6 +328,53 @@ class P2POrderService {
             return [];
         }
     }
+
+    /**
+     * Update an existing P2P ad
+     * @param id - The ad ID
+     * @param updateData - The data to update
+     */
+    async updateAd(id: string | number, updateData: {
+        price?: number;
+        minAmount?: number;
+        maxAmount?: number;
+        availableAmount?: number;
+        isActive?: boolean;
+        termsConditions?: string;
+    }): Promise<any> {
+        try {
+            console.log(`Updating ad ${id} with data:`, updateData);
+
+            const response = await axiosInstance.put(`/api/v1/p2pads/${id}`, updateData);
+
+            console.log('Update ad response:', response.data);
+
+            return response.data;
+        } catch (error: any) {
+            console.error('Error updating ad:', error);
+            throw new Error(error.response?.data?.message || 'Failed to update ad');
+        }
+    }
+
+    /**
+     * Cancel/deactivate a P2P ad
+     * This will also unlock any remaining funds for SELL ads
+     * @param id - The ad ID
+     */
+    async cancelAd(id: string | number): Promise<any> {
+        try {
+            console.log(`Cancelling ad ${id}`);
+
+            const response = await axiosInstance.post(`/api/v1/p2pads/${id}/cancel`);
+
+            console.log('Cancel ad response:', response.data);
+
+            return response.data;
+        } catch (error: any) {
+            console.error('Error cancelling ad:', error);
+            throw new Error(error.response?.data?.message || 'Failed to cancel ad');
+        }
+    }
 }
 
 export default new P2POrderService();

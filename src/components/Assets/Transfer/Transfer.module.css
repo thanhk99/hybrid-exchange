@@ -1,160 +1,103 @@
 .transferContainer {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 0 20px;
-    min-height: calc(100vh - 80px);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    min-height: calc(100vh - 60px);
 }
 
 .header {
-    margin-bottom: 32px;
+    margin-bottom: 40px;
     text-align: center;
 }
 
 .title {
     font-size: 28px;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
-.subtitle {
-    font-size: 15px;
-    color: #6b7280;
-    font-weight: 400;
-}
-
 .content {
-    background: white;
-    border: 1px solid #f3f4f6;
+    background: var(--bg-white);
+    border: 1px solid rgba(229, 231, 235, 0.5);
     border-radius: 24px;
     padding: 32px;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-}
-
-.formSection {
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 32px;
 }
 
-.formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-    margin-left: 4px;
-}
-
-/* Wallet Select Dropdown */
-.walletSelectContainer {
+.stepContainer {
     position: relative;
+    padding-left: 48px;
 }
 
-.walletSelect {
-    width: 100%;
-    padding: 14px 16px;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #111827;
-    cursor: pointer;
-    transition: all 0.2s;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 40px;
+.stepContainer::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: -32px;
+    width: 2px;
+    background-color: var(--bg-zinc-100);
+    z-index: 0;
 }
 
-.walletSelect:hover {
-    border-color: #9ca3af;
-    background-color: #f9fafb;
+.stepContainer:last-child::before {
+    display: none;
 }
 
-.walletSelect:focus {
-    outline: none;
-    border-color: #111827;
-    box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05);
-}
-
-/* Wallet Selector */
-.walletSelector {
+.stepHeader {
     display: flex;
     align-items: center;
     gap: 16px;
+    margin-bottom: 20px;
     position: relative;
-    background: #f9fafb;
-    padding: 6px;
-    border-radius: 16px;
-    border: 1px solid #f3f4f6;
 }
 
-.walletBox {
-    flex: 1;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.walletBox:hover {
-    border-color: #d1d5db;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.walletLabel {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #9ca3af;
-    font-weight: 600;
-}
-
-.walletName {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.swapButton {
+.stepBadge {
+    position: absolute;
+    left: -48px;
     width: 40px;
     height: 40px;
     border-radius: 50%;
     background: white;
-    border: 1px solid #e5e7eb;
+    border: 2px solid var(--bg-zinc-200);
+    color: var(--text-tertiary);
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    color: #6b7280;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    z-index: 2;
     font-size: 16px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    font-weight: 700;
+    z-index: 1;
+    transition: all 0.2s;
 }
 
-.swapButton:hover {
-    transform: translateX(-50%) rotate(180deg);
-    color: #1f2937;
-    border-color: #d1d5db;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+.stepActive .stepBadge {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.stepCompleted .stepBadge {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: white;
+}
+
+.stepTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stepContent {
+    background: transparent;
+    border-radius: 16px;
+    padding: 0;
 }
 
 /* Dropdown */
@@ -164,10 +107,10 @@
 
 .dropdownButton {
     width: 100%;
-    padding: 14px 16px;
+    padding: 16px;
     background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -177,8 +120,8 @@
 }
 
 .dropdownButton:hover {
-    border-color: #9ca3af;
-    background: #f9fafb;
+    border-color: var(--blue-200);
+    background: var(--bg-zinc-50);
 }
 
 .selectedItem {
@@ -188,16 +131,20 @@
 }
 
 .selectedIcon {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
 }
 
 .selectedText {
-    color: #111827;
     font-weight: 600;
+    color: var(--text-primary);
     font-size: 16px;
+}
+
+.placeholder {
+    color: var(--text-tertiary);
 }
 
 .dropdownMenu {
@@ -206,10 +153,10 @@
     left: 0;
     right: 0;
     background: white;
-    border: 1px solid #f3f4f6;
+    border: 1px solid rgba(229, 231, 235, 0.8);
     border-radius: 16px;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    z-index: 100;
+    z-index: 10;
     max-height: 320px;
     overflow-y: auto;
     padding: 8px;
@@ -217,71 +164,116 @@
 
 .dropdownItem {
     padding: 12px 16px;
-    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 12px;
-    transition: all 0.2s;
-    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 12px;
 }
 
 .dropdownItem:hover {
-    background: #f3f4f6;
+    background: var(--bg-zinc-50);
 }
 
 .currencyIcon {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
 }
 
 .balanceInfo {
-    font-size: 13px;
-    color: #6b7280;
     margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
     text-align: right;
     font-weight: 500;
 }
 
-.balanceInfo strong {
-    color: #111827;
+/* Wallet Selection */
+.walletSelection {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
+.walletGroup {
+    flex: 1;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    margin-left: 4px;
+}
+
+.walletSelect {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 16px;
+    font-size: 15px;
+    color: var(--text-primary);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.walletSelect:hover {
+    border-color: var(--blue-200);
+    background: var(--bg-zinc-50);
+}
+
+.walletSelect:focus {
+    outline: none;
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.swapIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-zinc-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 28px;
+    color: var(--text-secondary);
+}
+
+.swapIcon:hover {
+    background: var(--blue-100);
+    color: var(--blue-600);
+    transform: rotate(180deg);
+}
+
+/* Input */
 .inputWrapper {
     position: relative;
 }
 
 .input {
     width: 100%;
-    padding: 16px 16px 16px 48px;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #111827;
+    padding: 16px;
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 16px;
+    font-size: 15px;
+    color: var(--text-primary);
     transition: all 0.2s;
-    background: #fff;
+    background: white;
 }
 
 .input:focus {
     outline: none;
-    border-color: #111827;
-    box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05);
-}
-
-.input::placeholder {
-    color: #d1d5db;
-    font-weight: 500;
-}
-
-.inputIcon {
-    position: absolute;
-    left: 18px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9ca3af;
-    font-size: 20px;
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .maxButton {
@@ -289,13 +281,13 @@
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    background: #f3f4f6;
+    background: var(--bg-zinc-100);
     border: none;
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 12px;
     font-weight: 700;
-    color: #374151;
+    color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s;
     text-transform: uppercase;
@@ -303,66 +295,36 @@
 }
 
 .maxButton:hover {
-    background: #e5e7eb;
-    color: #111827;
-}
-
-.infoBox {
-    background: #f9fafb;
-    border: 1px solid #f3f4f6;
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    gap: 12px;
-}
-
-.infoIcon {
-    color: #6b7280;
-    font-size: 18px;
-    margin-top: 2px;
-}
-
-.infoText {
-    font-size: 13px;
-    color: #4b5563;
-    line-height: 1.5;
-}
-
-.infoText p {
-    margin: 0 0 4px 0;
-}
-
-.infoText ul {
-    margin: 0;
-    padding-left: 16px;
-    color: #6b7280;
+    background: var(--bg-zinc-200);
+    color: var(--text-primary);
 }
 
 .transferButton {
     width: 100%;
     padding: 16px;
-    background: #111827;
+    background: var(--blue-600);
     color: white;
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
-    margin-top: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-top: 32px;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
 .transferButton:hover:not(:disabled) {
-    background: #000;
+    background: var(--blue-500);
     transform: translateY(-1px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
 }
 
 .transferButton:disabled {
-    opacity: 0.7;
+    background: var(--bg-zinc-100);
+    color: var(--text-tertiary);
     cursor: not-allowed;
-    transform: none;
+    box-shadow: none;
 }
 
 /* Modal */
@@ -386,62 +348,54 @@
     border-radius: 24px;
     padding: 32px;
     width: 100%;
-    max-width: 400px;
+    max-width: 480px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modalTitle {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
-    margin-bottom: 24px;
-    color: #111827;
+    margin-bottom: 32px;
+    color: var(--text-primary);
     text-align: center;
-}
-
-.modalContent {
-    background: #f9fafb;
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 24px;
 }
 
 .confirmRow {
     display: flex;
     justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 16px;
     font-size: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--bg-zinc-100);
 }
 
-.confirmRow:last-child {
+.confirmRow:last-of-type {
     border-bottom: none;
-    padding-bottom: 0;
-}
-
-.confirmRow:first-child {
-    padding-top: 0;
+    margin-bottom: 32px;
 }
 
 .confirmLabel {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
 .confirmValue {
     font-weight: 600;
-    color: #111827;
+    color: var(--text-primary);
+    text-align: right;
 }
 
 .modalActions {
     display: flex;
-    gap: 12px;
+    gap: 16px;
+    margin-top: 32px;
 }
 
 .cancelButton,
 .confirmButton {
     flex: 1;
-    padding: 14px;
+    padding: 16px;
     border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -452,25 +406,32 @@
 
 .cancelButton {
     background: white;
-    color: #374151;
-    border: 1px solid #e5e7eb;
+    color: var(--text-secondary);
+    border: 1px solid rgba(229, 231, 235, 0.8);
 }
 
 .cancelButton:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: var(--bg-zinc-50);
+    border-color: var(--bg-zinc-200);
+    color: var(--text-primary);
 }
 
 .confirmButton {
-    background: #111827;
+    background: var(--blue-600);
     color: white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
 .confirmButton:hover {
-    background: #000;
+    background: var(--blue-500);
     transform: translateY(-1px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
 }
 
 .spin {
@@ -515,37 +476,40 @@
         margin: 0;
     }
 
-    .content {
-        padding: 24px 20px;
-        border-radius: 20px;
-    }
-
     .title {
         font-size: 24px;
     }
 
-    .walletSelector {
-        flex-direction: column;
-        gap: 0;
+    .stepContainer {
+        padding-left: 32px;
+    }
+
+    .stepBadge {
+        left: -32px;
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .stepContainer::before {
+        left: 11px;
+    }
+
+    .stepContent {
         padding: 0;
-        background: transparent;
-        border: none;
     }
 
-    .walletBox {
-        width: 100%;
-        border-radius: 16px;
+    .walletSelection {
+        flex-direction: column;
+        gap: 12px;
     }
 
-    .swapButton {
-        position: relative;
-        left: auto;
-        transform: none;
-        margin: -12px auto;
-        z-index: 5;
+    .swapIcon {
+        margin-top: 0;
+        transform: rotate(90deg);
     }
 
-    .swapButton:hover {
-        transform: rotate(180deg);
+    .swapIcon:hover {
+        transform: rotate(270deg);
     }
 }

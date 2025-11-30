@@ -1,63 +1,78 @@
 .securityPage {
     max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 20px;
 }
 
 .pageHeader {
-    margin-bottom: 32px;
-}
-
-.pageTitle {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1f2937;
-    margin: 0;
-}
-
-.section {
     margin-bottom: 40px;
 }
 
+.pageTitle {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.section {
+    margin-bottom: 48px;
+    background: var(--bg-white);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
 .sectionTitle {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
-    color: #1f2937;
-    margin: 0 0 16px 0;
+    color: var(--text-primary);
+    margin: 0 0 24px 0;
 }
 
 .securityList {
     display: flex;
     flex-direction: column;
-    gap: 1px;
-    background: #e5e7eb;
-    border-radius: 12px;
-    overflow: hidden;
+    gap: 16px;
 }
 
 .securityItem {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 20px 24px;
-    background: white;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--bg-zinc-100);
     transition: all 0.2s;
     cursor: pointer;
 }
 
+.securityItem:last-child {
+    border-bottom: none;
+}
+
 .securityItem:hover {
-    background: #f9fafb;
+    background: transparent;
+}
+
+.securityItem:hover .itemIcon {
+    background: var(--blue-50);
+    color: var(--blue-600);
 }
 
 .itemIcon {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    background: #f3f4f6;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--bg-zinc-100);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    color: #6b7280;
+    font-size: 24px;
+    color: var(--text-secondary);
     flex-shrink: 0;
+    transition: all 0.2s;
 }
 
 .itemContent {
@@ -65,9 +80,9 @@
 }
 
 .itemContent h3 {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--text-primary);
     margin: 0 0 4px 0;
     display: flex;
     align-items: center;
@@ -75,26 +90,27 @@
 }
 
 .itemContent p {
-    font-size: 13px;
-    color: #6b7280;
+    font-size: 14px;
+    color: var(--text-secondary);
     margin: 0;
     line-height: 1.5;
 }
 
 .badge {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 4px 10px;
     background: #fef3c7;
     color: #92400e;
     font-size: 11px;
     font-weight: 600;
-    border-radius: 4px;
+    border-radius: 20px;
+    text-transform: uppercase;
 }
 
 .itemAction {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     flex-shrink: 0;
 }
 
@@ -102,39 +118,49 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #059669;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green-600);
+    background: var(--green-50);
+    padding: 6px 12px;
+    border-radius: 20px;
 }
 
 .statusInfo {
-    font-size: 13px;
-    color: #6b7280;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
 }
 
 .linkButton {
     background: none;
     border: none;
-    color: #3b82f6;
-    font-size: 13px;
-    font-weight: 500;
+    color: var(--blue-600);
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 0;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
     transition: all 0.2s;
 }
 
 .linkButton:hover {
-    color: #1f2937;
+    background: var(--blue-50);
 }
 
 @media (max-width: 768px) {
+    .securityPage {
+        padding: 20px 16px;
+    }
+
     .securityItem {
         flex-direction: column;
         align-items: flex-start;
-        padding: 16px;
+        padding: 16px 0;
+        gap: 16px;
     }
 
     .itemAction {
@@ -143,10 +169,10 @@
     }
 
     .itemContent h3 {
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .itemContent p {
-        font-size: 12px;
+        font-size: 13px;
     }
 }

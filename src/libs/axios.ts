@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from "axios";
-import AuthService from "../services/auth";
 import TokenService from "../services/token";
 import { store } from "../app/store/store";
 import { logout } from "../app/store/authSlice";
@@ -103,6 +102,7 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        const AuthService = (await import("../services/auth")).default;
         const refreshResponse = await AuthService.refreshToken(REFRESH_ENDPOINT);
 
         const newToken = refreshResponse?.data?.accessToken;

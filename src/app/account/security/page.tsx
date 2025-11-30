@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
     LockOutlined,
     MailOutlined,
@@ -19,6 +20,8 @@ import {
 import styles from './page.module.css';
 
 export default function SecurityPage() {
+    const router = useRouter();
+
     return (
         <div className={styles.securityPage}>
             <div className={styles.pageHeader}>
@@ -114,7 +117,30 @@ export default function SecurityPage() {
                             <span className={styles.statusInfo}>
                                 abc***@gmail.com
                             </span>
-                            <button className={styles.linkButton}>Thay đổi</button>
+                            <button
+                                className={styles.linkButton}
+                                onClick={() => router.push('/account/change-email')}
+                            >
+                                Thay đổi
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className={styles.securityItem}>
+                        <div className={styles.itemIcon}>
+                            <MobileOutlined />
+                        </div>
+                        <div className={styles.itemContent}>
+                            <h3>Số điện thoại</h3>
+                            <p>Bảo vệ tài khoản và giao dịch của bạn qua SMS</p>
+                        </div>
+                        <div className={styles.itemAction}>
+                            <button
+                                className={styles.linkButton}
+                                onClick={() => router.push('/account/change-phone')}
+                            >
+                                Thay đổi
+                            </button>
                         </div>
                     </div>
 
@@ -159,7 +185,12 @@ export default function SecurityPage() {
                             <p>Quản lý các thiết bị đã đăng nhập vào tài khoản</p>
                         </div>
                         <div className={styles.itemAction}>
-                            <button className={styles.linkButton}>Quản lý <RightOutlined /></button>
+                            <button
+                                className={styles.linkButton}
+                                onClick={() => router.push('/account/devices')}
+                            >
+                                Quản lý <RightOutlined />
+                            </button>
                         </div>
                     </div>
 
@@ -223,7 +254,12 @@ export default function SecurityPage() {
                             <p>Thay đổi mật khẩu đăng nhập của bạn</p>
                         </div>
                         <div className={styles.itemAction}>
-                            <RightOutlined />
+                            <button
+                                className={styles.linkButton}
+                                onClick={() => router.push('/account/change-password')}
+                            >
+                                Thay đổi
+                            </button>
                         </div>
                     </div>
                 </div>

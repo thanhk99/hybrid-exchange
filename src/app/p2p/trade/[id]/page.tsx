@@ -11,6 +11,7 @@ import PaymentMethodBadge from '@/src/components/P2P/PaymentMethodBadge/PaymentM
 import { P2PTrade, TradeMessage } from '@/src/types/p2p';
 import P2PService from '@/src/services/p2p';
 import { useUser } from '@/src/contexts/UserContext';
+import { useNotifications } from '@/src/contexts/NotificationContext';
 import styles from './page.module.css';
 
 import { Notification as ToastNotification } from '@/src/components/common/Notification/Notification';
@@ -33,10 +34,9 @@ export default function TradeDetail() {
         isVisible: false
     });
     const [showCancelModal, setShowCancelModal] = useState(false);
+    const [showReleaseModal, setShowReleaseModal] = useState(false);
 
-    useEffect(() => {
-        loadTradeData();
-    }, [tradeId]);
+    const { notifications } = useNotifications();
 
     const showNotification = (type: 'success' | 'error' | 'info' | 'warning', message: string) => {
         setNotification({ type, message, isVisible: true });
@@ -61,6 +61,34 @@ export default function TradeDetail() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        loadTradeData();
+    }, [tradeId]);
+
+    // Listen for real-time updates
+    useEffect(() => {
+        if (notifications.length > 0) {
+            const latestNotification = notifications[0];
+            console.log('Latest notification:', latestNotification);
+
+            // Check if the notification relates to this trade
+            // Convert IDs to strings for comparison to avoid type mismatches
+            const notifTradeId = latestNotification.data?.tradeId?.toString();
+            const notifOrderId = latestNotification.data?.orderId?.toString();
+            const currentTradeId = tradeId.toString();
+
+            console.log(`Checking match: TradeID=${currentTradeId}, NotifTradeID=${notifTradeId}, NotifOrderId=${notifOrderId}`);
+
+            if (notifTradeId === currentTradeId || notifOrderId === currentTradeId) {
+                console.log('Received update for this trade, reloading data...');
+                loadTradeData();
+
+                // Optional: Show a toast to inform user if it's a significant update
+                // showNotification('info', 'Trạng thái giao dịch đã được cập nhật');
+            }
+        }
+    }, [notifications, tradeId]);
 
     const handleSendMessage = async () => {
         if (!newMessage.trim()) return;
@@ -88,8 +116,6 @@ export default function TradeDetail() {
     };
 
     const handleReleaseCrypto = async () => {
-        if (!confirm('Bạn có chắc chắn muốn giải phóng tiền điện tử? Hành động này không thể hoàn tác.')) return;
-
         try {
             await P2PService.releaseCrypto(tradeId);
             showNotification('success', 'Đã giải phóng tiền điện tử!');
@@ -168,6 +194,16 @@ export default function TradeDetail() {
                 content="Bạn có chắc chắn muốn hủy giao dịch này không? Hành động này không thể hoàn tác."
                 confirmText="Xác nhận hủy"
                 isDanger={true}
+            />
+
+            <ConfirmModal
+                isOpen={showReleaseModal}
+                onClose={() => setShowReleaseModal(false)}
+                onConfirm={handleReleaseCrypto}
+                title="Xác nhận đã nhận tiền"
+                content="Bạn có chắc chắn đã nhận đủ số tiền từ người mua? Sau khi xác nhận, tiền điện tử sẽ được chuyển cho người mua và hành động này không thể hoàn tác."
+                confirmText="Đã nhận được tiền"
+                isDanger={false}
             />
 
             <P2PHeader
@@ -303,7 +339,7 @@ export default function TradeDetail() {
                             </div>
                             <button
                                 className={styles.releaseButton}
-                                onClick={handleReleaseCrypto}
+                                onClick={() => setShowReleaseModal(true)}
                             >
                                 Đã nhận được tiền
                             </button>

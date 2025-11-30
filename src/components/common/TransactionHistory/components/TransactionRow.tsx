@@ -7,19 +7,6 @@ interface TransactionRowProps {
 }
 
 export default function TransactionRow({ transaction, styles }: TransactionRowProps) {
-    const getTypeIcon = (type: string) => {
-        switch (type) {
-            case 'deposit':
-                return '📥';
-            case 'withdraw':
-                return '📤';
-            case 'transfer':
-                return '💸';
-            default:
-                return '💰';
-        }
-    };
-
     const getTypeLabel = (type: string) => {
         switch (type) {
             case 'deposit':
@@ -36,11 +23,11 @@ export default function TransactionRow({ transaction, styles }: TransactionRowPr
     const getStatusLabel = (status: string) => {
         switch (status) {
             case 'completed':
-                return '✓ Hoàn thành';
+                return 'Hoàn thành';
             case 'pending':
-                return '⏳ Đang xử lý';
+                return 'Đang xử lý';
             case 'failed':
-                return '✗ Thất bại';
+                return 'Thất bại';
             default:
                 return status;
         }
@@ -56,7 +43,7 @@ export default function TransactionRow({ transaction, styles }: TransactionRowPr
         <div className={styles.historyRow}>
             <div className={styles.historyInfo}>
                 <div className={styles.historyType}>
-                    {getTypeIcon(transaction.type)} {getTypeLabel(transaction.type)}
+                    {getTypeLabel(transaction.type)}
                 </div>
                 <div className={styles.historyDetails}>
                     {transaction.recipient && <span>Đến: {transaction.recipient}</span>}

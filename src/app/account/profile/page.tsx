@@ -13,6 +13,9 @@ export default function ProfilePage() {
     const [showNicknameModal, setShowNicknameModal] = useState(false);
     const [userProfile, setUserProfile] = useState<UserInfo | null>(null);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     useEffect(() => {
         fetchProfile();
@@ -31,12 +34,45 @@ export default function ProfilePage() {
         }
     };
 
-    const handleSaveNickname = (newNickname: string) => {
-        // TODO: Call API to update nickname
-        if (userProfile) {
-            setUserProfile({ ...userProfile, username: newNickname });
+    const handleSaveNickname = async (newNickname: string) => {
+        if (!newNickname || newNickname.trim().length === 0) {
+            setError('Vui lòng nhập biệt danh');
+            return;
         }
-        setShowNicknameModal(false);
+
+        setSaving(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            const response = await UserService.changeName(newNickname.trim());
+
+            // Check for success (either data exists or status is 200/201)
+            if ((response.data && response.data.data) || response.status === 200 || response.status === 201) {
+                setSuccess('Thay đổi biệt danh thành công!');
+
+                // Update local state with new data if available
+                if (response.data && response.data.data) {
+                    setUserProfile(response.data.data);
+                } else {
+                    // If no data returned, just update the name locally or refetch
+                    fetchProfile();
+                }
+
+                // Close modal after 1.5 seconds to show success message
+                setTimeout(() => {
+                    setShowNicknameModal(false);
+                    setSuccess('');
+                }, 1500);
+            } else {
+                setError(response.data?.message || 'Thay đổi biệt danh thất bại');
+            }
+        } catch (err: any) {
+            console.error('Change name error:', err);
+            setError(err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const getKycStatusText = (status: string) => {
@@ -152,7 +188,12 @@ export default function ProfilePage() {
                         <label>Số điện thoại</label>
                         <div className={styles.infoValue}>
                             <span>{maskPhone(userProfile.phone)}</span>
-                            <button className={styles.editButton}>Thay đổi</button>
+                            <button
+                                className={styles.editButton}
+                                onClick={() => router.push('/account/change-phone')}
+                            >
+                                Thay đổi
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -234,6 +275,9 @@ export default function ProfilePage() {
                 nickname={userProfile.username}
                 onClose={() => setShowNicknameModal(false)}
                 onSave={handleSaveNickname}
+                loading={saving}
+                error={error}
+                success={success}
             />
         </div>
     );

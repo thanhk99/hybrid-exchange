@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   UserOutlined,
   ApiOutlined,
@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/src/app/store/store";
 import { logout } from "@/src/app/store/authSlice";
+import NotificationBell from "@/src/components/Notification/NotificationBell/NotificationBell";
 
 export default function Header() {
   const router = useRouter();
@@ -37,6 +38,17 @@ export default function Header() {
     (state: any) => state.auth
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -250,6 +262,7 @@ export default function Header() {
             <div className={styles.desktopUserSection}>
               {isAuthenticated ? (
                 <div className={styles.headerUser}>
+                  <NotificationBell />
                   <div className={styles.userAsset}>
                     <HeaderItem
                       label="Tài sản"
@@ -310,9 +323,12 @@ export default function Header() {
             <img src="/imgs/Logo-VIX.svg" alt="logo" />
             <span>VIX Trading</span>
           </div>
-          <button className={styles.mobileClose} onClick={closeMenu}>
-            <CloseOutlined />
-          </button>
+          <div className={styles.mobileHeaderRight}>
+            {isAuthenticated && <NotificationBell />}
+            <button className={styles.mobileClose} onClick={closeMenu}>
+              <CloseOutlined />
+            </button>
+          </div>
         </div>
 
         <div className={styles.mobileContent}>

@@ -15,6 +15,8 @@ class P2PService {
     getUserStats = P2POrderService.getUserStats.bind(P2POrderService);
     getUserProfile = P2POrderService.getUserProfile.bind(P2POrderService);
     getUserHistory = P2POrderService.getUserHistory.bind(P2POrderService);
+    updateAd = P2POrderService.updateAd.bind(P2POrderService);
+    cancelAd = P2POrderService.cancelAd.bind(P2POrderService);
 
     // Re-export trade methods
     createTrade = P2PTradeService.createTrade.bind(P2PTradeService);

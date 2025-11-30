@@ -7,9 +7,12 @@ interface NicknameModalProps {
     nickname: string;
     onClose: () => void;
     onSave: (nickname: string) => void;
+    loading?: boolean;
+    error?: string;
+    success?: string;
 }
 
-export default function NicknameModal({ isOpen, nickname, onClose, onSave }: NicknameModalProps) {
+export default function NicknameModal({ isOpen, nickname, onClose, onSave, loading = false, error = '', success = '' }: NicknameModalProps) {
     const [tempNickname, setTempNickname] = React.useState(nickname);
 
     React.useEffect(() => {
@@ -19,6 +22,9 @@ export default function NicknameModal({ isOpen, nickname, onClose, onSave }: Nic
     if (!isOpen) return null;
 
     const handleSave = () => {
+        if (tempNickname.trim().length < 2) {
+            return;
+        }
         onSave(tempNickname);
     };
 
@@ -36,6 +42,16 @@ export default function NicknameModal({ isOpen, nickname, onClose, onSave }: Nic
                     <p className={styles.modalDescription}>
                         Biệt danh của bạn được dùng để giao dịch và nhận tin trong ứng dụng
                     </p>
+                    {error && (
+                        <div className={styles.errorMessage}>
+                            {error}
+                        </div>
+                    )}
+                    {success && (
+                        <div className={styles.successMessage}>
+                            {success}
+                        </div>
+                    )}
                     <div className={styles.inputWrapper}>
                         <input
                             type="text"
@@ -44,11 +60,13 @@ export default function NicknameModal({ isOpen, nickname, onClose, onSave }: Nic
                             onChange={(e) => setTempNickname(e.target.value.slice(0, 20))}
                             maxLength={20}
                             placeholder="Nhập biệt danh"
+                            disabled={loading}
                         />
                         {tempNickname && (
                             <button
                                 className={styles.clearButton}
                                 onClick={() => setTempNickname('')}
+                                disabled={loading}
                             >
                                 <CloseOutlined />
                             </button>
@@ -59,11 +77,15 @@ export default function NicknameModal({ isOpen, nickname, onClose, onSave }: Nic
                     </p>
                 </div>
                 <div className={styles.modalFooter}>
-                    <button className={styles.cancelButton} onClick={onClose}>
+                    <button className={styles.cancelButton} onClick={onClose} disabled={loading}>
                         Hủy
                     </button>
-                    <button className={styles.confirmButton} onClick={handleSave}>
-                        Xác nhận
+                    <button
+                        className={styles.confirmButton}
+                        onClick={handleSave}
+                        disabled={loading || tempNickname.trim().length < 2}
+                    >
+                        {loading ? 'Đang lưu...' : 'Xác nhận'}
                     </button>
                 </div>
             </div>

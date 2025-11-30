@@ -1,5 +1,6 @@
 import Header from "../components/Layout/Header/Header";
 import { UserProvider } from "../contexts/UserContext";
+import { NotificationProvider } from "../contexts/NotificationContext";
 import { Providers } from "./provider";
 import "./globals.css";
 export default function RootLayout({
@@ -12,8 +13,10 @@ export default function RootLayout({
       <body>
         <Providers>
           <UserProvider>
-            <Header/>
-            <main>{children}</main>
+            <NotificationProvider>
+              <Header />
+              <main>{children}</main>
+            </NotificationProvider>
           </UserProvider>
         </Providers>
 

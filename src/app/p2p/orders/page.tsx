@@ -6,6 +6,8 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import P2PHeader from '@/src/components/P2P/P2PHeader/P2PHeader';
 import StatusBadge from '@/src/components/P2P/StatusBadge/StatusBadge';
 import PaymentMethodBadge from '@/src/components/P2P/PaymentMethodBadge/PaymentMethodBadge';
+import { EditAdModal, EditAdData } from '@/src/components/P2P/EditAdModal/EditAdModal';
+import { ConfirmModal } from '@/src/components/common/ConfirmModal/ConfirmModal';
 import { P2POrder, UserP2PStats } from '@/src/types/p2p';
 import P2PService from '@/src/services/p2p';
 import styles from './page.module.css';
@@ -16,6 +18,11 @@ export default function MyOrders() {
     const [stats, setStats] = useState<UserP2PStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
+
+    // Modal states
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [selectedAd, setSelectedAd] = useState<P2POrder | null>(null);
 
     useEffect(() => {
         loadData();
@@ -36,15 +43,39 @@ export default function MyOrders() {
         }
     };
 
-    const handleDeleteOrder = async (orderId: string) => {
-        if (!confirm('Bạn có chắc chắn muốn xóa quảng cáo này?')) return;
+    const handleEditClick = (ad: P2POrder) => {
+        setSelectedAd(ad);
+        setEditModalOpen(true);
+    };
+
+    const handleDeleteClick = (ad: P2POrder) => {
+        setSelectedAd(ad);
+        setDeleteModalOpen(true);
+    };
+
+    const handleEditAd = async (data: EditAdData) => {
+        if (!selectedAd) return;
 
         try {
-            // await P2PService.deleteOrder(orderId);
-            alert('Đã xóa quảng cáo!');
-            loadData();
-        } catch (error) {
-            console.error('Failed to delete order:', error);
+            await P2PService.updateAd(selectedAd.id, data);
+            alert('Đã cập nhật quảng cáo thành công!');
+            await loadData();
+        } catch (error: any) {
+            console.error('Failed to update ad:', error);
+            throw error; // Re-throw to let modal handle it
+        }
+    };
+
+    const handleDeleteAd = async () => {
+        if (!selectedAd) return;
+
+        try {
+            await P2PService.cancelAd(selectedAd.id);
+            alert('Đã xóa quảng cáo thành công!');
+            await loadData();
+        } catch (error: any) {
+            console.error('Failed to delete ad:', error);
+            alert('Không thể xóa quảng cáo. Vui lòng thử lại.');
         }
     };
 
@@ -179,22 +210,55 @@ export default function MyOrders() {
                                     </div>
                                 </div>
 
-                                <div className={styles.orderActions}>
-                                    <button className={styles.editButton}>
-                                        <EditOutlined /> Chỉnh sửa
-                                    </button>
-                                    <button
-                                        className={styles.deleteButton}
-                                        onClick={() => handleDeleteOrder(order.id)}
-                                    >
-                                        <DeleteOutlined /> Xóa
-                                    </button>
-                                </div>
+                                {order.status === 'active' && (
+                                    <div className={styles.orderActions}>
+                                        <button
+                                            className={styles.editButton}
+                                            onClick={() => handleEditClick(order)}
+                                        >
+                                            <EditOutlined /> Chỉnh sửa
+                                        </button>
+                                        <button
+                                            className={styles.deleteButton}
+                                            onClick={() => handleDeleteClick(order)}
+                                        >
+                                            <DeleteOutlined /> Xóa
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
                 )}
             </div>
+
+            {/* Modals */}
+            <EditAdModal
+                isOpen={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                onSave={handleEditAd}
+                ad={selectedAd}
+            />
+
+            <ConfirmModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleDeleteAd}
+                title="Xác nhận xóa quảng cáo"
+                content={
+                    <div>
+                        <p>Bạn có chắc chắn muốn xóa quảng cáo này?</p>
+                        {selectedAd?.type === 'sell' && (
+                            <p style={{ marginTop: '8px', color: '#fbbf24' }}>
+                                Lưu ý: Số tiền còn lại sẽ được mở khóa.
+                            </p>
+                        )}
+                    </div>
+                }
+                confirmText="Xóa"
+                cancelText="Hủy"
+                isDanger={true}
+            />
         </div>
     );
 }

@@ -24,7 +24,7 @@ export default function TradeModal({ order, isOpen, onClose, onConfirm }: TradeM
     const [isLoadingMethods, setIsLoadingMethods] = useState(false);
     const [error, setError] = useState('');
 
-    const isBuying = order.type === 'sell'; // User is buying if order is sell type
+    const isBuying = order.type === 'sell'; 
 
     useEffect(() => {
         console.log('TradeModal - Order changed:', order);

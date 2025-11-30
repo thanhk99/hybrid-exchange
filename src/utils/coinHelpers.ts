@@ -34,3 +34,16 @@ export const formatCrypto = (value: number): string => {
         maximumFractionDigits: 8
     });
 };
+
+// Format Market Cap with Vietnamese abbreviations
+export const formatMarketCap = (value: number): string => {
+    if (value >= 1e12) {
+        return (value / 1e12).toFixed(2) + ' NT';
+    } else if (value >= 1e9) {
+        return (value / 1e9).toFixed(2) + ' T';
+    } else if (value >= 1e6) {
+        return (value / 1e6).toFixed(2) + ' Tr';
+    } else {
+        return formatCurrency(value);
+    }
+};
