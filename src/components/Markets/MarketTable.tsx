@@ -30,7 +30,7 @@ export default function MarketTable() {
     const [filters, setFilters] = useState<FilterOptions>({});
     const stompClientRef = useRef<StompClient | null>(null);
 
-    // Initial data & WS connection
+    // Initial data & WebSocket connection
     useEffect(() => {
         fetchInitialData();
         connectWebSocket();
@@ -39,6 +39,7 @@ export default function MarketTable() {
                 stompClientRef.current.disconnect();
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchInitialData = async () => {
@@ -47,7 +48,9 @@ export default function MarketTable() {
             if (response.data && response.data.data) {
                 const allMarkets = response.data.data as MarketCoin[];
                 const filtered = allMarkets.filter(m => SUPPORTED_COINS.includes(m.symbol));
-                setMarkets(filtered.length > 0 ? filtered : allMarkets);
+                const marketsToSet = filtered.length > 0 ? filtered : allMarkets;
+                const sortedMarkets = marketsToSet.sort((a, b) => (b.marketCap || 0) - (a.marketCap || 0));
+                setMarkets(sortedMarkets);
             }
         } catch (e) {
             console.error('Failed to fetch markets', e);
@@ -190,14 +193,9 @@ export default function MarketTable() {
                                 <td className={`${Number(coin.priceChange24h) >= 0 ? styles.positive : styles.negative} ${styles.desktopOnly}`}>{formatPercent(coin.priceChange24h)}</td>
                                 <td className={styles.desktopOnly}>
                                     {coin.low24h && coin.high24h ? (
-                                        <PriceRangeChart
-                                            low={coin.low24h}
-                                            high={coin.high24h}
-                                            current={coin.currentPrice}
-                                        />
+                                        <PriceRangeChart low={coin.low24h} high={coin.high24h} current={coin.currentPrice} />
                                     ) : '-'}
                                 </td>
-
                                 {/* Mobile View Column */}
                                 <td className={styles.mobileOnly} style={{ textAlign: 'right' }}>
                                     <div className={styles.price}>{formatPrice(coin.currentPrice)}</div>
@@ -205,7 +203,6 @@ export default function MarketTable() {
                                         {formatPercent(coin.priceChange24h)}
                                     </div>
                                 </td>
-
                                 <td>
                                     <button className={styles.actionButton} onClick={() => router.push(`/trade/${coin.symbol}`)}>
                                         Giao dịch

@@ -24,7 +24,10 @@ export class StompClient {
         };
 
         this.ws.onmessage = (event) => {
-            const data = event.data.toString();
+            const rawData = event.data.toString();
+            // STOMP servers may send heartbeats (newlines) which we should ignore
+            // or they might precede a frame.
+            const data = rawData.trimStart();
 
             if (data.startsWith("CONNECTED")) {
                 this.isConnected = true;

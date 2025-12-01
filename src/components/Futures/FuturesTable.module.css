@@ -1,0 +1,183 @@
+.container {
+    padding: 24px;
+    background: #000;
+    /* Black background as per screenshot */
+    color: #fff;
+    min-height: 100vh;
+}
+
+.header {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1200px;
+    /* Wider for more columns */
+}
+
+.table th {
+    text-align: right;
+    /* Align right for numbers */
+    padding: 16px 12px;
+    color: #8c8c8c;
+    font-weight: 500;
+    font-size: 12px;
+    border-bottom: 1px solid #222;
+    white-space: nowrap;
+}
+
+.table th:first-child {
+    text-align: left;
+}
+
+.table td {
+    padding: 16px 12px;
+    border-bottom: 1px solid #222;
+    color: #fff;
+    font-size: 14px;
+    vertical-align: middle;
+    text-align: right;
+}
+
+.table td:first-child {
+    text-align: left;
+}
+
+.table tbody tr {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.table tbody tr:hover {
+    background: #111;
+}
+
+.coinInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.coinLogo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.symbolWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.symbol {
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+}
+
+.badge {
+    background: #332a00;
+    /* Dark gold background */
+    color: #FFD700;
+    /* Gold text */
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.price {
+    font-weight: 600;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.positive {
+    color: #0ECB81;
+}
+
+.negative {
+    color: #F6465D;
+}
+
+.fundingRate {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+}
+
+.rangeBarContainer {
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: auto;
+    /* Align right */
+}
+
+.rangeBar {
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+    position: relative;
+    width: 100%;
+}
+
+.rangeProgress {
+    position: absolute;
+    height: 100%;
+    background: #fff;
+    border-radius: 2px;
+}
+
+.rangeLabels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #8c8c8c;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.sparkline {
+    width: 80px;
+    height: 30px;
+    margin-left: auto;
+}
+
+/* Helper for secondary text */
+.secondaryText {
+    color: #8c8c8c;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+@media (max-width: 920px) {
+    .container {
+        padding: 16px;
+    }
+
+    .table th,
+    .table td {
+        padding: 12px 8px;
+        font-size: 12px;
+    }
+}

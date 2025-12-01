@@ -1,9 +1,5 @@
-import MarketTable from "@/src/components/Markets/MarketTable";
+import { redirect } from 'next/navigation';
 
 export default function MarketsPage() {
-    return (
-        <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-            <MarketTable />
-        </div>
-    );
+    redirect('/markets/crypto');
 }

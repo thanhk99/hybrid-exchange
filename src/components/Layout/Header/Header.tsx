@@ -90,13 +90,13 @@ export default function Header() {
       icon: <FundOutlined />,
       label: "Thị trường",
       content: "Xem giá, khối lượng và dữ liệu tiền mã hóa mới nhất",
-      onClick: () => { closeMenu(); },
+      onClick: () => { router.push("/markets"); closeMenu(); },
     },
     {
       icon: <ControlOutlined />,
       label: "Cơ hội",
       content: "Khám phá những loại tiền mã hóa mới và thịnh hành",
-      onClick: () => { closeMenu(); },
+      onClick: () => { router.push("/markets"); closeMenu(); },
     },
   ];
 
