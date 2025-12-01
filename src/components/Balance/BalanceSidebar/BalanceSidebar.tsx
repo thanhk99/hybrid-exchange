@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { WalletOutlined, DollarOutlined, LineChartOutlined, RiseOutlined } from '@ant-design/icons';
+import { WalletOutlined, DollarOutlined, LineChartOutlined, RiseOutlined, FundOutlined } from '@ant-design/icons';
 import styles from './BalanceSidebar.module.css';
 
 interface MenuItem {
@@ -34,6 +34,12 @@ export default function BalanceSidebar() {
             icon: <LineChartOutlined />,
             label: 'Ví Spot',
             description: 'Giao dịch và chuyển đổi'
+        },
+        {
+            path: '/balance/futures',
+            icon: <FundOutlined />,
+            label: 'Ví Futures',
+            description: 'Giao dịch hợp đồng tương lai'
         },
         {
             path: '/balance/earn',

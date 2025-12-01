@@ -18,6 +18,7 @@ export default function BalanceOverviewPage() {
     const [fundingTotal, setFundingTotal] = useState(0);
     const [spotTotal, setSpotTotal] = useState(0);
     const [earnTotal, setEarnTotal] = useState(0);
+    const [futuresTotal, setFuturesTotal] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -77,11 +78,35 @@ export default function BalanceOverviewPage() {
                 });
             }
 
+            // Add futures asset
+            if (data.futures?.asset) {
+                const futuresAsset = data.futures.asset;
+                const existingAsset = allAssets.find(a => a.symbol === futuresAsset.currency);
+
+                // Futures balance is usually separated, but if we want to aggregate total USDT
+                if (existingAsset) {
+                    existingAsset.balance += futuresAsset.totalValue || 0;
+                    existingAsset.usdValue += futuresAsset.valueUsd || 0;
+                    // Note: Futures available/locked logic might differ, simplistically adding here
+                    // or we might want to list it as a separate entry if the user prefers
+                } else {
+                    allAssets.push({
+                        symbol: futuresAsset.currency,
+                        name: futuresAsset.currency,
+                        balance: futuresAsset.totalValue || 0,
+                        usdValue: futuresAsset.valueUsd || 0,
+                        available: futuresAsset.availableBalance || 0,
+                        locked: futuresAsset.lockedBalance || 0,
+                    });
+                }
+            }
+
             setAssets(allAssets);
             setTotalBalance(data.totalAssetUsd || 0);
             setFundingTotal(data.funding?.totalUsd || 0);
             setSpotTotal(data.spot?.totalUsd || 0);
             setEarnTotal(data.earn?.totalUsd || 0);
+            setFuturesTotal(data.futures?.totalUsd || 0);
         } catch (err) {
             console.error('Error fetching balance data:', err);
             const errorMessage = err instanceof Error
@@ -153,6 +178,13 @@ export default function BalanceOverviewPage() {
                     description="Giao dịch spot và chuyển đổi crypto"
                     hideBalance={hideBalance}
                     onClick={() => router.push('/balance/spot')}
+                />
+                <WalletCard
+                    title="Ví Futures"
+                    balance={futuresTotal}
+                    description="Giao dịch hợp đồng tương lai"
+                    hideBalance={hideBalance}
+                    onClick={() => router.push('/balance/futures')}
                 />
                 <WalletCard
                     title="Ví Earn"

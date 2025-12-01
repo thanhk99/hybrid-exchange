@@ -60,13 +60,18 @@ export class StompClient {
             }
         };
 
-        this.ws.onclose = () => {
+        this.ws.onclose = (event) => {
+            console.log(`WebSocket closed: code=${event.code}, reason=${event.reason}, wasClean=${event.wasClean}`);
             this.isConnected = false;
             // Optional: Auto reconnect logic could go here
         };
 
         this.ws.onerror = (err) => {
-            console.error("WebSocket error:", err);
+            console.error("WebSocket error details:", err);
+            // Check if it's a connection refused error (common with wrong port)
+            if (this.ws?.readyState === WebSocket.CLOSED) {
+                console.error("WebSocket connection failed. Please check if the backend is running on " + this.url);
+            }
         };
     }
 

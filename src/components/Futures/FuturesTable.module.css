@@ -1,9 +1,10 @@
 .container {
     padding: 24px;
-    background: #000;
-    /* Black background as per screenshot */
-    color: #fff;
-    min-height: 100vh;
+    background: #fff;
+    color: #1a1a1a;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
 }
 
 .header {
@@ -18,7 +19,7 @@
 .title {
     font-size: 24px;
     font-weight: 700;
-    color: #fff;
+    color: #1a1a1a;
     margin: 0;
 }
 
@@ -40,7 +41,7 @@
     color: #8c8c8c;
     font-weight: 500;
     font-size: 12px;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid #f0f0f0;
     white-space: nowrap;
 }
 
@@ -50,8 +51,8 @@
 
 .table td {
     padding: 16px 12px;
-    border-bottom: 1px solid #222;
-    color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    color: #1a1a1a;
     font-size: 14px;
     vertical-align: middle;
     text-align: right;
@@ -67,7 +68,7 @@
 }
 
 .table tbody tr:hover {
-    background: #111;
+    background: #f9f9f9;
 }
 
 .coinInfo {
@@ -92,13 +93,13 @@
 .symbol {
     font-weight: 700;
     font-size: 14px;
-    color: #fff;
+    color: #1a1a1a;
 }
 
 .badge {
-    background: #332a00;
-    /* Dark gold background */
-    color: #FFD700;
+    background: #FFF9E6;
+    /* Light gold background */
+    color: #D4A017;
     /* Gold text */
     font-size: 10px;
     padding: 2px 6px;
@@ -136,7 +137,7 @@
 
 .rangeBar {
     height: 4px;
-    background: #333;
+    background: #e0e0e0;
     border-radius: 2px;
     position: relative;
     width: 100%;
@@ -145,7 +146,7 @@
 .rangeProgress {
     position: absolute;
     height: 100%;
-    background: #fff;
+    background: #1a1a1a;
     border-radius: 2px;
 }
 

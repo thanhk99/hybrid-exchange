@@ -1,29 +1,17 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import FuturesService from '@/src/services/futures';
 import { StompClient } from '@/src/services/socket';
 import { FuturesCoin } from '@/src/types/futures';
-import TradingModal from './TradingModal';
 import styles from './FuturesTable.module.css';
 
-// Mock sparkline data generator
-const generateSparkline = (change: number) => {
-    // Simple SVG path generator based on change direction
-    const color = change >= 0 ? '#0ECB81' : '#F6465D';
-    const points = Array.from({ length: 10 }, (_, i) => {
-        const x = i * 8;
-        const y = 15 + (Math.random() - 0.5) * 10 + (change >= 0 ? -i : i); // Trend up or down
-        return `${x},${Math.max(0, Math.min(30, y))}`;
-    }).join(' ');
-    return <polyline points={points} fill="none" stroke={color} strokeWidth="2" />;
-};
 
 export default function FuturesTable() {
+    const router = useRouter();
     const [coins, setCoins] = useState<FuturesCoin[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCoin, setSelectedCoin] = useState<FuturesCoin | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const stompClientRef = useRef<StompClient | null>(null);
     const isConnectedRef = useRef(false);
 
@@ -101,8 +89,8 @@ export default function FuturesTable() {
     };
 
     const handleRowClick = (coin: FuturesCoin) => {
-        setSelectedCoin(coin);
-        setIsModalOpen(true);
+        // Navigate to trading page for this futures contract
+        router.push(`/trade-futures/${coin.symbol.toLowerCase()}`);
     };
 
     const formatPrice = (price?: number | null) =>
@@ -155,7 +143,6 @@ export default function FuturesTable() {
                                 <th>Tên</th>
                                 <th>Giá</th>
                                 <th>Thay đổi</th>
-                                <th>24h trước</th>
                                 <th>Phạm vi 24h</th>
                                 <th>Vốn hoá thị trường</th>
                                 <th>Lãi suất funding</th>
@@ -193,11 +180,6 @@ export default function FuturesTable() {
                                             {formatPercent(coin.priceChange24h)}
                                         </td>
                                         <td>
-                                            <svg className={styles.sparkline}>
-                                                {generateSparkline(coin.priceChange24h)}
-                                            </svg>
-                                        </td>
-                                        <td>
                                             <div className={styles.rangeBarContainer}>
                                                 <div className={styles.rangeBar}>
                                                     <div
@@ -231,14 +213,6 @@ export default function FuturesTable() {
                     </table>
                 </div>
             </div>
-
-            {selectedCoin && (
-                <TradingModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    coin={selectedCoin}
-                />
-            )}
         </>
     );
 }

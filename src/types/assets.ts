@@ -22,5 +22,20 @@ export interface AssetOverviewResponse {
         assets: any[];
         totalUsd: number;
     };
+    futures: {
+        totalUsd: number;
+        asset: {
+            currency: string;
+            balance: number;
+            lockedBalance: number;
+            availableBalance: number;
+            unrealizedPnl: number;
+            totalPositionValue: number;
+            marginRatio: number;
+            openPositionsCount: number;
+            totalValue: number;
+            valueUsd: number;
+        };
+    };
     totalAssetUsd: number;
 }

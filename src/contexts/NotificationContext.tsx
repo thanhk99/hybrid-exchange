@@ -166,7 +166,6 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                     throw new Error(`SSE Connection failed: ${response.status} ${response.statusText}`);
                 }
 
-                console.log("SSE Connected");
                 setError(null);
 
                 const reader = response.body?.getReader();
@@ -203,31 +202,24 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                         if (!data) continue;
 
                         if (eventType === 'connected') {
-                            console.log("SSE Connection established:", data);
                             continue;
                         }
 
-                        console.log(`[SSE] Received event [${eventType}]:`, data);
 
                         try {
                             // Only attempt to parse if it looks like a JSON object or array
                             if (data.startsWith('{') || data.startsWith('[')) {
                                 const rawNotification = JSON.parse(data);
-                                console.log('[SSE] Parsed notification:', rawNotification);
                                 const newNotification = mapNotification(rawNotification);
-                                console.log('[SSE] Mapped notification:', newNotification);
 
                                 setNotifications(prev => {
                                     if (prev.some(n => n.id === newNotification.id)) {
-                                        console.log('[SSE] Duplicate notification ignored:', newNotification.id);
                                         return prev;
                                     }
-                                    console.log('[SSE] Adding new notification to list');
                                     return [newNotification, ...prev];
                                 });
                                 setUnreadCount(prev => prev + 1);
                             } else {
-                                console.log("[SSE] Received non-JSON message:", data);
                             }
                         } catch (e) {
                             console.error("[SSE] Error parsing message:", e);
@@ -242,7 +234,6 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                 console.error("SSE Error:", err);
                 // Retry connection after 5 seconds
                 retryTimeout = setTimeout(() => {
-                    console.log("Retrying SSE connection...");
                     connectSSE();
                 }, 5000);
             }

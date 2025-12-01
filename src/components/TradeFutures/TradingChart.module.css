@@ -1,0 +1,123 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #fff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    height: 48px;
+}
+
+.timeframes {
+    display: flex;
+    gap: 4px;
+}
+
+.timeframeBtn {
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    color: #8c8c8c;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.timeframeBtn:hover {
+    background: #f5f5f5;
+    color: #1a1a1a;
+}
+
+.timeframeBtn.active {
+    background: #f5f5f5;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.chartTools {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.toolBtn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: #555;
+}
+
+.toolBtn:hover {
+    background: #f5f5f5;
+    color: #1a1a1a;
+}
+
+.chartArea {
+    flex: 1;
+    background: #fff;
+    position: relative;
+}
+
+.chartContainer {
+    width: 100%;
+    height: 100%;
+}
+
+.loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.legend {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    left: 10px;
+    font-weight: 900;
+    font-size: 18px;
+    color: #1a1a1a;
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 5;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+@media (max-width: 768px) {
+    .timeframes {
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .timeframeBtn {
+        padding: 4px 8px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+}

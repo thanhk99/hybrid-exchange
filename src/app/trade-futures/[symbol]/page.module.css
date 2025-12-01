@@ -1,0 +1,71 @@
+.container {
+    background: #fff;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+}
+
+.mainContent {
+    display: grid;
+    grid-template-columns: 1fr 280px 320px;
+    gap: 1px;
+    background: #f0f0f0;
+    flex: 1;
+    min-height: 600px;
+}
+
+.chartSection {
+    background: #fff;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.orderBookSection {
+    background: #fff;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.tradingFormSection {
+    background: #fff;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.bottomPanel {
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+    min-height: 280px;
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+    .mainContent {
+        grid-template-columns: 1fr 260px 300px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .mainContent {
+        grid-template-columns: 1fr;
+        grid-template-rows: 500px auto auto;
+    }
+
+    .orderBookSection,
+    .tradingFormSection {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        grid-template-rows: 400px auto auto;
+    }
+
+    .chartSection,
+    .orderBookSection,
+    .tradingFormSection {
+        padding: 12px;
+    }
+}

@@ -1,0 +1,68 @@
+.walletPage {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.loadingState,
+.errorState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingState p {
+    color: #666;
+    font-size: 1rem;
+}
+
+.errorMessage {
+    color: #ef4444;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.retryButton {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.retryButton:hover {
+    background: #5568d3;
+}
+
+@media (max-width: 768px) {
+    .walletPage {
+        width: 95%;
+        padding: 1rem;
+    }
+}
