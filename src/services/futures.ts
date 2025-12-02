@@ -1,21 +1,32 @@
-import axios from '@/src/libs/axios';
+import axiosInstance from '@/src/libs/axios';
 import { FuturesCoin, FuturesOrderRequest, ClosePositionRequest, AdjustLeverageRequest } from '@/src/types/futures';
+
+interface OrderBookResponse {
+    symbol: string;
+    bids: [string, string][]; // [price, amount]
+    asks: [string, string][]; // [price, amount]
+    lastUpdateId: number;
+}
 
 const FuturesService = {
     async getFuturesCoins() {
-        return axios.get<{ message: string; data: FuturesCoin[] }>('/api/v1/futures/coins');
+        return axiosInstance.get<{ message: string; data: FuturesCoin[] }>('/api/v1/futures/coins');
+    },
+
+    async getOrderBook(symbol: string) {
+        return axiosInstance.get<{ message: string; data: OrderBookResponse }>(`/api/v1/futures/orders/orderbook/${symbol}`);
     },
 
     async placeFuturesOrder(orderData: FuturesOrderRequest) {
-        return axios.post('/api/v1/futures/order', orderData);
+        return axiosInstance.post('/api/v1/futures/orders', orderData);
     },
 
     async closePosition(data: ClosePositionRequest) {
-        return axios.post('/api/v1/futures/position/close', data);
+        return axiosInstance.post('/api/v1/futures/position/close', data);
     },
 
     async adjustLeverage(data: AdjustLeverageRequest) {
-        return axios.post('/api/v1/futures/leverage', data);
+        return axiosInstance.post('/api/v1/futures/leverage', data);
     },
 };
 

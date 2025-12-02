@@ -14,7 +14,7 @@ import { Notification } from "../../common/Notification/Notification";
 import TransactionHistory from "../../common/TransactionHistory/TransactionHistory";
 import styles from "./Transfer.module.css";
 
-type WalletType = 'funding' | 'spot' | 'earn';
+type WalletType = 'funding' | 'spot' | 'earn' | 'futures';
 
 export default function Transfer() {
     const [currencies, setCurrencies] = useState<Currency[]>([]);
@@ -127,6 +127,7 @@ export default function Transfer() {
             case 'funding': return 'Ví Funding';
             case 'spot': return 'Ví Spot';
             case 'earn': return 'Ví Earn';
+            case 'futures': return 'Ví Futures';
             default: return 'Ví';
         }
     };
@@ -293,6 +294,7 @@ export default function Transfer() {
                                         <option value="funding">Ví Funding</option>
                                         <option value="spot">Ví Spot</option>
                                         <option value="earn">Ví Earn</option>
+                                        <option value="futures">Ví Futures</option>
                                     </select>
                                 </div>
 
@@ -314,6 +316,7 @@ export default function Transfer() {
                                         <option value="funding">Ví Funding</option>
                                         <option value="spot">Ví Spot</option>
                                         <option value="earn">Ví Earn</option>
+                                        <option value="futures">Ví Futures</option>
                                     </select>
                                 </div>
                             </div>

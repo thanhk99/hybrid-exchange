@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './TradingForm.module.css';
 import FuturesService from '@/src/services/futures';
 import { FuturesOrderRequest } from '@/src/types/futures';
 import { Notification } from '@/src/components/common/Notification/Notification';
+import { getAssetsOverview } from '@/src/services/balance';
 
 interface TradingFormProps {
     symbol: string;
@@ -16,12 +17,28 @@ export default function TradingForm({ symbol }: TradingFormProps) {
     const [leverage, setLeverage] = useState(10);
     const [price, setPrice] = useState('96441.0');
     const [amount, setAmount] = useState('');
+    const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(false);
     const [notification, setNotification] = useState({
         type: 'info' as 'success' | 'error' | 'info' | 'warning',
         message: '',
         isVisible: false
     });
+
+    useEffect(() => {
+        fetchBalance();
+    }, []);
+
+    const fetchBalance = async () => {
+        try {
+            const data = await getAssetsOverview();
+            const futuresAsset = (data as any).futures?.asset;
+            const availableBalance = futuresAsset?.availableBalance || futuresAsset?.balance || 0;
+            setBalance(availableBalance);
+        } catch (e) {
+            console.error('Failed to fetch balance', e);
+        }
+    };
 
     const showNotification = (type: 'success' | 'error' | 'info' | 'warning', message: string) => {
         setNotification({ type, message, isVisible: true });
@@ -61,6 +78,7 @@ export default function TradingForm({ symbol }: TradingFormProps) {
 
             // Reset form (optional, keep leverage/price)
             setAmount('');
+            fetchBalance(); // Refresh balance after order
         } catch (error: any) {
             console.error('Order placement failed:', error);
             showNotification('error', error.response?.data?.message || 'Đặt lệnh thất bại');
@@ -180,7 +198,7 @@ export default function TradingForm({ symbol }: TradingFormProps) {
                 {/* Available Balance */}
                 <div className={styles.balanceInfo}>
                     <span className={styles.balanceLabel}>Số dư khả dụng:</span>
-                    <span className={styles.balanceValue}>0.00 USDT</span>
+                    <span className={styles.balanceValue}>{balance.toFixed(2)} USDT</span>
                 </div>
 
                 {/* Submit Button */}

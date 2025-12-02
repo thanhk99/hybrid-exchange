@@ -67,7 +67,9 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                     type: 'inside',
                     xAxisIndex: [0, 1],
                     start: 50,
-                    end: 100
+                    end: 100,
+                    minSpan: 5, // Prevent zooming out too far (minimum 5% of data visible)
+                    zoomLock: false
                 }
             ],
             axisPointer: {
@@ -98,6 +100,8 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                     scale: true,
                     splitLine: { show: false },
                     gridIndex: 0,
+                    min: 'dataMin', // Ensure minimum is based on data
+                    max: 'dataMax', // Ensure maximum is based on data
                 },
                 // Volume axis (right, bottom pane)
                 {

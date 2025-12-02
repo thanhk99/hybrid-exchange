@@ -18,15 +18,11 @@ export class StompClient {
         this.ws = new WebSocket(this.url);
 
         this.ws.onopen = () => {
-            // Send CONNECT frame
-            // STOMP 1.2 requires accept-version and host
             this.ws?.send("CONNECT\naccept-version:1.1,1.0\nhost:localhost\n\n\0");
         };
 
         this.ws.onmessage = (event) => {
             const rawData = event.data.toString();
-            // STOMP servers may send heartbeats (newlines) which we should ignore
-            // or they might precede a frame.
             const data = rawData.trimStart();
 
             if (data.startsWith("CONNECTED")) {

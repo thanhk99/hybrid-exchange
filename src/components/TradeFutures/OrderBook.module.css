@@ -17,6 +17,23 @@
     margin: 0;
 }
 
+.columnHeaders {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 8px 8px 4px 8px;
+    font-size: 11px;
+    color: #8c8c8c;
+    font-weight: 500;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 4px;
+}
+
+.columnHeaders span:nth-child(2),
+.columnHeaders span:nth-child(3) {
+    text-align: right;
+}
+
 .orderList {
     display: flex;
     flex-direction: column;

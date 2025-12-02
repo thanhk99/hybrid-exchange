@@ -208,8 +208,8 @@ export interface InternalTransferRequest {
 }
 
 export interface WalletTransferRequest {
-    fromWallet: 'FUNDING' | 'SPOT' | 'EARN';
-    toWallet: 'FUNDING' | 'SPOT' | 'EARN';
+    fromWallet: 'FUNDING' | 'SPOT' | 'EARN' | 'FUTURES';
+    toWallet: 'FUNDING' | 'SPOT' | 'EARN' | 'FUTURES';
     currency: string;
     amount: number;
 }

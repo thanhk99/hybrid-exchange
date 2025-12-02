@@ -1,44 +1,165 @@
 "use client";
 
-import { useState } from 'react';
+"use client";
+
+import { useState, useEffect, useRef } from 'react';
+import { BarChartOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons';
 import styles from './MarketInfo.module.css';
+import FuturesService from '@/src/services/futures';
+import { StompClient } from '@/src/services/socket';
+import { FuturesCoin } from '@/src/types/futures';
+import { getAssetsOverview } from '@/src/services/balance';
 
 interface MarketInfoProps {
     symbol: string;
 }
 
 export default function MarketInfo({ symbol }: MarketInfoProps) {
-    // Placeholder data - will be replaced with API data
-    const [marketData] = useState({
-        lastPrice: 96441.0,
-        priceChange24h: 2.34,
-        high24h: 97500.0,
-        low24h: 94200.0,
-        volume24h: 2847500000,
-        fundingRate: 0.0001,
-        nextFundingTime: '4h 23m',
-        openInterest: 1250000000,
-    });
+    const [marketData, setMarketData] = useState<FuturesCoin | null>(null);
+    const [balance, setBalance] = useState<number>(0);
+    const [countdown, setCountdown] = useState<string>('--:--:--');
+    const stompClientRef = useRef<StompClient | null>(null);
+    const isConnectedRef = useRef(false);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const formatPrice = (price: number) => price.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-    const formatVolume = (vol: number) => {
+    // Normalize symbol for comparison (remove hyphens, uppercase)
+    const normalizedSymbol = symbol.replace(/-/g, '').toUpperCase();
+
+    useEffect(() => {
+        fetchInitialData();
+        fetchBalance();
+        connectWebSocket();
+        startCountdown();
+
+        return () => {
+            if (stompClientRef.current && isConnectedRef.current) {
+                stompClientRef.current.disconnect();
+                isConnectedRef.current = false;
+            }
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [normalizedSymbol]);
+
+    const fetchInitialData = async () => {
+        try {
+            const response = await FuturesService.getFuturesCoins();
+            if (response.data && response.data.data) {
+                const coin = response.data.data.find(
+                    c => c.symbol.replace(/-/g, '').toUpperCase() === normalizedSymbol
+                );
+                if (coin) {
+                    setMarketData(coin);
+                }
+            }
+        } catch (e) {
+        }
+    };
+
+    const fetchBalance = async () => {
+        try {
+            const data = await getAssetsOverview();
+            // Futures wallet has 'asset' (singular), not 'assets' (plural)
+            const futuresAsset = (data as any).futures?.asset;
+            // Use availableBalance for trading
+            const availableBalance = futuresAsset?.availableBalance || futuresAsset?.balance || 0;
+            setBalance(availableBalance);
+        } catch (e) {
+        }
+    };
+
+    const startCountdown = () => {
+        // Funding every 8 hours: 00:00, 08:00, 16:00 UTC
+        // Calculate next funding time
+        const updateTimer = () => {
+            const now = new Date();
+            const nowUtc = now.getTime() + now.getTimezoneOffset() * 60000;
+
+            // 8 hours in ms
+            const interval = 8 * 60 * 60 * 1000;
+            const nextFunding = Math.ceil(nowUtc / interval) * interval;
+            const diff = nextFunding - nowUtc;
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            setCountdown(
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+            );
+        };
+
+        updateTimer();
+        timerRef.current = setInterval(updateTimer, 1000);
+    };
+
+    const connectWebSocket = () => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+        const wsBase = apiUrl.replace(/^http/, 'ws');
+        const finalWsUrl = `${wsBase}/ws/websocket`;
+
+        const client = new StompClient(finalWsUrl);
+        client.connect(() => {
+            isConnectedRef.current = true;
+            client.subscribe('/topic/futures/markets', (msg) => handleMarketUpdate(msg));
+        });
+        stompClientRef.current = client;
+    };
+
+    const handleMarketUpdate = (updates: any) => {
+        const updateArray = Array.isArray(updates) ? updates : [updates];
+        const update = updateArray.find(
+            u => u.symbol.replace(/-/g, '').toUpperCase() === normalizedSymbol
+        );
+
+        if (update) {
+            setMarketData(prev => {
+                if (!prev) return update;
+                return { ...prev, ...update };
+            });
+        }
+    };
+
+    const formatPrice = (price?: number) => {
+        if (price === undefined || price === null) return '-';
+        return price.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+    };
+
+    const formatVolume = (vol?: number) => {
+        if (vol === undefined || vol === null) return '-';
         if (vol >= 1e9) return `$${(vol / 1e9).toFixed(2)}B`;
         if (vol >= 1e6) return `$${(vol / 1e6).toFixed(2)}M`;
         return `$${vol.toLocaleString()}`;
     };
 
+    const priceChange = marketData?.priceChange24h ?? 0;
+    const isPositive = priceChange >= 0;
+
+    // Derived values with fallbacks
+    const openInterest = marketData?.openInterest || (marketData?.volume24h ? marketData.volume24h * 0.8 : 0);
+    const fundingRate = marketData?.fundingRate ?? 0;
+
     return (
         <div className={styles.container}>
             <div className={styles.symbolSection}>
-                <h1 className={styles.symbol}>{symbol}</h1>
-                <span className={styles.badge}>Vĩnh cửu</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h1 className={styles.symbol}>{symbol}</h1>
+                    <span className={styles.badge}>Vĩnh cửu</span>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', marginLeft: '12px', color: '#8c8c8c', fontSize: '16px' }}>
+                    <BarChartOutlined style={{ cursor: 'pointer' }} />
+                    <EditOutlined style={{ cursor: 'pointer' }} />
+                    <SettingOutlined style={{ cursor: 'pointer' }} />
+                </div>
             </div>
 
             <div className={styles.priceSection}>
                 <div className={styles.mainPrice}>
-                    <span className={styles.price}>{formatPrice(marketData.lastPrice)}</span>
-                    <span className={marketData.priceChange24h >= 0 ? styles.positive : styles.negative}>
-                        {marketData.priceChange24h >= 0 ? '+' : ''}{marketData.priceChange24h.toFixed(2)}%
+                    <span className={styles.price}>{formatPrice(marketData?.lastPrice || marketData?.markPrice)}</span>
+                    <span className={isPositive ? styles.positive : styles.negative}>
+                        {isPositive ? '+' : ''}{priceChange.toFixed(2)}%
                     </span>
                 </div>
             </div>
@@ -46,29 +167,35 @@ export default function MarketInfo({ symbol }: MarketInfoProps) {
             <div className={styles.statsGrid}>
                 <div className={styles.statItem}>
                     <span className={styles.statLabel}>Cao 24h</span>
-                    <span className={styles.statValue}>{formatPrice(marketData.high24h)}</span>
+                    <span className={styles.statValue}>{formatPrice(marketData?.high24h)}</span>
                 </div>
                 <div className={styles.statItem}>
                     <span className={styles.statLabel}>Thấp 24h</span>
-                    <span className={styles.statValue}>{formatPrice(marketData.low24h)}</span>
+                    <span className={styles.statValue}>{formatPrice(marketData?.low24h)}</span>
                 </div>
                 <div className={styles.statItem}>
                     <span className={styles.statLabel}>Khối lượng 24h</span>
-                    <span className={styles.statValue}>{formatVolume(marketData.volume24h)}</span>
+                    <span className={styles.statValue}>{formatVolume(marketData?.volume24h)}</span>
                 </div>
                 <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Lãi suất Funding</span>
-                    <span className={`${styles.statValue} ${marketData.fundingRate >= 0 ? styles.positive : styles.negative}`}>
-                        {(marketData.fundingRate * 100).toFixed(4)}%
+                    <span className={styles.statLabel}>Lãi suất funding / Đếm ngược</span>
+                    <span className={styles.statValue}>
+                        <span className={fundingRate >= 0 ? styles.positive : styles.negative}>
+                            {(fundingRate * 100).toFixed(4)}%
+                        </span>
+                        {' / '}
+                        <span>{countdown}</span>
                     </span>
                 </div>
                 <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Funding tiếp theo</span>
-                    <span className={styles.statValue}>{marketData.nextFundingTime}</span>
-                </div>
-                <div className={styles.statItem}>
                     <span className={styles.statLabel}>Hợp đồng mở</span>
-                    <span className={styles.statValue}>{formatVolume(marketData.openInterest)}</span>
+                    <span className={styles.statValue}>{formatVolume(openInterest)}</span>
+                </div>
+
+                {/* Futures Balance Display */}
+                <div className={styles.statItem} style={{ borderLeft: '1px solid #f0f0f0', paddingLeft: '24px' }}>
+                    <span className={styles.statLabel}>Ví Futures (USDT)</span>
+                    <span className={styles.statValue}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                 </div>
             </div>
         </div>
