@@ -130,7 +130,7 @@ export default function LoginForm() {
 
       setTimeout(() => {
         router.push(redirectUrl);
-      }, 1500);
+      }, 500);
     } catch (err: any) {
       console.error("Login error:", err);
 
