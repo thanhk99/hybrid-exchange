@@ -361,124 +361,50 @@ export default class WalletService {
     }
 
     static async getTransactionHistory(type?: 'deposit' | 'withdraw' | 'transfer'): Promise<Transaction[]> {
-        // Simulate API call - return mock transaction history
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const mockTransactions: Transaction[] = [
-                    {
-                        id: 'tx1',
-                        type: 'deposit',
-                        currency: 'USDT',
-                        amount: 1000,
-                        status: 'completed',
-                        date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-                        network: 'TRC20',
-                        address: 'TXa...b3c',
-                        txHash: '0x123...abc'
-                    },
-                    {
-                        id: 'tx2',
-                        type: 'transfer',
-                        currency: 'BTC',
-                        amount: 0.05,
-                        status: 'completed',
-                        date: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-                        recipient: 'user@example.com'
-                    },
-                    {
-                        id: 'tx3',
-                        type: 'withdraw',
-                        currency: 'ETH',
-                        amount: 2.5,
-                        status: 'pending',
-                        date: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-                        network: 'ERC20',
-                        address: '0xabc...def',
-                        txHash: '0x456...def'
-                    },
-                    {
-                        id: 'tx4',
-                        type: 'deposit',
-                        currency: 'BNB',
-                        amount: 10,
-                        status: 'completed',
-                        date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-                        network: 'BEP20',
-                        address: '0x789...ghi',
-                        txHash: '0x789...ghi'
-                    },
-                    {
-                        id: 'tx5',
-                        type: 'transfer',
-                        currency: 'USDT',
-                        amount: 500,
-                        status: 'completed',
-                        date: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-                        recipient: 'john@example.com'
-                    },
-                    {
-                        id: 'tx6',
-                        type: 'withdraw',
-                        currency: 'BTC',
-                        amount: 0.1,
-                        status: 'failed',
-                        date: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
-                        network: 'Bitcoin',
-                        address: '1A1z...P1e',
-                        txHash: '0xabc...123'
-                    },
-                    {
-                        id: 'tx7',
-                        type: 'deposit',
-                        currency: 'SOL',
-                        amount: 50,
-                        status: 'completed',
-                        date: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
-                        network: 'Solana',
-                        address: 'So1...abc',
-                        txHash: '0xsol...123'
-                    },
-                    {
-                        id: 'tx8',
-                        type: 'transfer',
-                        currency: 'ETH',
-                        amount: 1.2,
-                        status: 'completed',
-                        date: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString(),
-                        recipient: 'alice@example.com'
-                    },
-                    {
-                        id: 'tx9',
-                        type: 'withdraw',
-                        currency: 'USDT',
-                        amount: 2000,
-                        status: 'completed',
-                        date: new Date(Date.now() - 144 * 60 * 60 * 1000).toISOString(),
-                        network: 'TRC20',
-                        address: 'TXb...c4d',
-                        txHash: '0x999...zzz'
-                    },
-                    {
-                        id: 'tx10',
-                        type: 'deposit',
-                        currency: 'ADA',
-                        amount: 1000,
-                        status: 'completed',
-                        date: new Date(Date.now() - 168 * 60 * 60 * 1000).toISOString(),
-                        network: 'Cardano',
-                        address: 'addr1...xyz',
-                        txHash: '0xada...456'
-                    },
-                ];
+        try {
+            const params: any = {};
+            if (type) params.type = type;
 
-                // Filter by type if specified
-                const filtered = type
-                    ? mockTransactions.filter(tx => tx.type === type)
-                    : mockTransactions;
+            const response = await axiosInstance.get<ApiResponse<any[]>>('/api/v1/transactions', { params });
+            const data = response.data.data || [];
 
-                resolve(filtered);
-            }, 800);
-        });
+            return data.map((item: any) => {
+                let txType: 'deposit' | 'withdraw' | 'transfer' = 'transfer';
+                const lowerType = item.type?.toLowerCase() || '';
+
+                if (lowerType.includes('nạp') || lowerType.includes('deposit')) {
+                    txType = 'deposit';
+                } else if (lowerType.includes('rút') || lowerType.includes('withdraw')) {
+                    txType = 'withdraw';
+                }
+
+                // Parse note for address/txHash if possible
+                let address = undefined;
+                let txHash = undefined;
+
+                if (item.note) {
+                    const fromMatch = item.note.match(/from\s+([a-zA-Z0-9]+)/);
+                    if (fromMatch) address = fromMatch[1];
+
+                    const txIdMatch = item.note.match(/TxID:\s*([a-zA-Z0-9]+)/);
+                    if (txIdMatch) txHash = txIdMatch[1];
+                }
+
+                return {
+                    id: String(item.id),
+                    type: txType,
+                    currency: item.asset,
+                    amount: item.amount,
+                    status: 'completed', // Default status for history items
+                    date: item.createDt,
+                    address: address,
+                    txHash: txHash
+                };
+            });
+        } catch (error) {
+            console.error('Get transaction history error', error);
+            return [];
+        }
     }
 
     // Get exchange rate between two currencies
@@ -523,6 +449,17 @@ export default class WalletService {
             return response.data;
         } catch (error) {
             console.error('Send Tron transfer error:', error);
+            throw error;
+        }
+    }
+
+    // Get Tron Balance
+    static async getTronBalance(address: string): Promise<any> {
+        try {
+            const response = await axiosInstance.get(`/api/tron/balance/${address}`);
+            return response.data;
+        } catch (error) {
+            console.error('Get Tron balance error:', error);
             throw error;
         }
     }

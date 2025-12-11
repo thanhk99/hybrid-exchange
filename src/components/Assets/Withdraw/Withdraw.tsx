@@ -19,8 +19,10 @@ import WalletService, { Currency, Network, Transaction } from "@/src/services/wa
 import { Notification } from "../../common/Notification/Notification";
 import TransactionHistory from "../../common/TransactionHistory/TransactionHistory";
 import styles from "./Withdraw.module.css";
+import { useUser } from "@/src/contexts/UserContext";
 
 export default function Withdraw() {
+    const { user } = useUser();
     const [withdrawMethod, setWithdrawMethod] = useState<'onchain' | 'okx'>('onchain');
     const [recipientType, setRecipientType] = useState<'phone' | 'email' | 'uid' | 'sub_account'>('phone');
 
@@ -109,9 +111,9 @@ export default function Withdraw() {
             const currency = currencies.find(c => c.id === currencyId);
             if (!currency) return;
 
-            const spotAssets = assetsData.spot?.assets || [];
+            const fundingAssets = assetsData.funding?.assets || [];
             // Match by currency symbol (e.g. "USDT")
-            const asset = spotAssets.find((a: any) => a.currency === currency.symbol);
+            const asset = fundingAssets.find((a: any) => a.currency === currency.symbol);
 
             if (asset) {
                 setBalance(asset.balance ?? 0);
@@ -189,8 +191,9 @@ export default function Withdraw() {
         setIsWithdrawing(true);
         try {
             if (withdrawMethod === 'onchain' && selectedNetwork?.name.includes('TRC20')) {
-                const userRes = await import("@/src/services/auth").then(m => m.default.checkAuth());
-                const userId = userRes.data?.id || userRes.data?.user?.id;
+                // const userRes = await import("@/src/services/auth").then(m => m.default.checkAuth());
+                // const userId = userRes.data?.id || userRes.data?.user?.id;
+                const userId = user?.uid;
 
                 if (userId) {
                     await WalletService.sendTronTransfer(userId, address, parseFloat(amount));

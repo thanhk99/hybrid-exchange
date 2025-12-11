@@ -5,14 +5,28 @@ export default class TokenService {
   static ACCESS_TOKEN_KEY: string = process.env.NEXT_PUBLIC_ACCESS_TOKEN_KEY || "accessToken";
   static REFRESH_TOKEN_KEY: string = "refreshToken";
 
-  // Lấy access token (Memory)
+  // Lấy access token (Memory -> Cookie)
   static getAccessToken() {
-    return this._accessToken;
+    if (this._accessToken) return this._accessToken;
+
+    // Nếu không có trong memory, thử tìm trong cookie
+    const tokenFromCookie = getCookie(this.ACCESS_TOKEN_KEY);
+    if (tokenFromCookie) {
+      this._accessToken = tokenFromCookie.toString();
+      return this._accessToken;
+    }
+
+    return null;
   }
 
-  // Set access token (Memory)
+  // Set access token (Memory & Cookie)
   static setAccessToken(token: string) {
     this._accessToken = token;
+    setCookie(this.ACCESS_TOKEN_KEY, token, {
+      maxAge: 1 * 60 * 60, // 1 hour (hoặc check payload.exp)
+      path: '/',
+      sameSite: 'lax',
+    });
   }
 
   // Lấy refresh token (Cookie)

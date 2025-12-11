@@ -14,8 +14,10 @@ import { Notification } from "../../common/Notification/Notification";
 import CurrencySelector from "../../common/CurrencySelector/CurrencySelector";
 import TransactionHistory from "../../common/TransactionHistory/TransactionHistory";
 import styles from "./Deposit.module.css";
+import { useUser } from "@/src/contexts/UserContext";
 
 export default function Deposit() {
+    const { user, loading: userLoading } = useUser();
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
     const [selectedNetwork, setSelectedNetwork] = useState<Network | null>(null);
@@ -33,6 +35,8 @@ export default function Deposit() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
     const [historyFilter, setHistoryFilter] = useState<'all' | 'deposit'>('all');
+    const [walletBalance, setWalletBalance] = useState<any>(null);
+    const [isBalanceLoading, setIsBalanceLoading] = useState(false);
 
     useEffect(() => {
         fetchCurrencies();
@@ -61,7 +65,7 @@ export default function Deposit() {
         } else {
             setDepositAddress(null);
         }
-    }, [selectedCurrency, selectedNetwork]);
+    }, [selectedCurrency, selectedNetwork, user, userLoading]);
 
     const fetchCurrencies = async () => {
         setIsLoading(true);
@@ -76,12 +80,14 @@ export default function Deposit() {
     };
 
     const fetchDepositAddress = async (currencyId: string, networkId: string) => {
+        if (userLoading) return;
         setIsAddressLoading(true);
         try {
+            console.log('fetchDepositAddress checking:', { networkId, currencyId, user });
             // Check if TRON network
             if (networkId.toLowerCase().includes('trc20') || networkId.toLowerCase() === 'tron') {
-                const userRes = await import("@/src/services/auth").then(m => m.default.checkAuth());
-                const userId = userRes.data?.id || userRes.data?.user?.id;
+                const userId = user?.uid;
+                console.log('TRC20 detected. UserId:', userId);
 
                 if (userId) {
                     const wallet = await WalletService.getTronWallet(userId);
@@ -94,22 +100,50 @@ export default function Deposit() {
                 }
             }
 
-            // Fallback to mock/default logic for other networks
-            const address = await WalletService.getDepositAddress(currencyId, networkId);
-            setDepositAddress(address);
+            setNotification({
+                isVisible: true,
+                type: 'info',
+                title: 'Thông báo',
+                message: 'Hệ thống đang bảo trì kênh nạp này. Vui lòng quay lại sau.'
+            });
+            setDepositAddress(null);
+
         } catch (error) {
             console.error("Failed to fetch deposit address", error);
-            // Fallback to mock if API fails (for demo purposes) or show error
-            /* 
-           setNotification({
-               isVisible: true,
-               type: 'error',
-               title: 'Lỗi',
-               message: 'Không thể lấy địa chỉ ví'
-           });
-           */
+            setNotification({
+                isVisible: true,
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Không thể lấy địa chỉ ví'
+            });
+            setDepositAddress(null);
         } finally {
             setIsAddressLoading(false);
+        }
+    };
+
+    const checkBalance = async () => {
+        if (!depositAddress?.address) return;
+        setIsBalanceLoading(true);
+        try {
+            const balanceData = await WalletService.getTronBalance(depositAddress.address);
+            setWalletBalance(balanceData);
+            setNotification({
+                isVisible: true,
+                type: 'success',
+                title: 'Thành công',
+                message: 'Đã cập nhật số dư ví'
+            });
+        } catch (error) {
+            console.error('Check balance error', error);
+            setNotification({
+                isVisible: true,
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Không thể kiểm tra số dư'
+            });
+        } finally {
+            setIsBalanceLoading(false);
         }
     };
 
@@ -310,6 +344,50 @@ export default function Deposit() {
                     { value: 'deposit', label: 'Nạp tiền' }
                 ]}
             />
+
+            {/* Tron Balance Section */}
+            {depositAddress?.network === 'TRC20' && (
+                <div className={styles.balanceContainer}>
+                    <div className={styles.balanceHeader}>
+                        <h3>Số dư ví TRON (On-chain)</h3>
+                        <button
+                            className={styles.refreshBtn}
+                            onClick={checkBalance}
+                            disabled={isBalanceLoading}
+                        >
+                            {isBalanceLoading ? <FaSpinner className={styles.spin} /> : 'Kiểm tra ngay'}
+                        </button>
+                    </div>
+
+                    {walletBalance && (
+                        <div className={styles.balanceInfo}>
+                            <div className={styles.balanceItem}>
+                                <span className={styles.balanceLabel}>TRX Balance:</span>
+                                <span className={styles.balanceValue}>{walletBalance.trx || 0} TRX</span>
+                            </div>
+
+                            {/* Display USDT if available in token list */}
+                            {walletBalance.tokens && walletBalance.tokens.length > 0 && (
+                                <div className={styles.tokensList}>
+                                    <h4>Token (TRC20):</h4>
+                                    {walletBalance.tokens.map((token: any, index: number) => (
+                                        <div key={index} className={styles.balanceItem}>
+                                            <span className={styles.balanceLabel}>{token.symbol}:</span>
+                                            <span className={styles.balanceValue}>{token.balance}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {!walletBalance && !isBalanceLoading && (
+                        <div className={styles.balancePlaceholder}>
+                            <p>Nhấn "Kiểm tra ngay" để xem số dư thực tế trên mạng TRON.</p>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
