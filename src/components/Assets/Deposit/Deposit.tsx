@@ -78,10 +78,36 @@ export default function Deposit() {
     const fetchDepositAddress = async (currencyId: string, networkId: string) => {
         setIsAddressLoading(true);
         try {
+            // Check if TRON network
+            if (networkId.toLowerCase().includes('trc20') || networkId.toLowerCase() === 'tron') {
+                const userRes = await import("@/src/services/auth").then(m => m.default.checkAuth());
+                const userId = userRes.data?.id || userRes.data?.user?.id;
+
+                if (userId) {
+                    const wallet = await WalletService.getTronWallet(userId);
+                    setDepositAddress({
+                        address: wallet.address,
+                        network: 'TRC20',
+                        currency: 'USDT'
+                    });
+                    return;
+                }
+            }
+
+            // Fallback to mock/default logic for other networks
             const address = await WalletService.getDepositAddress(currencyId, networkId);
             setDepositAddress(address);
         } catch (error) {
             console.error("Failed to fetch deposit address", error);
+            // Fallback to mock if API fails (for demo purposes) or show error
+            /* 
+           setNotification({
+               isVisible: true,
+               type: 'error',
+               title: 'Lỗi',
+               message: 'Không thể lấy địa chỉ ví'
+           });
+           */
         } finally {
             setIsAddressLoading(false);
         }

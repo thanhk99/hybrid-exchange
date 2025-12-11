@@ -188,17 +188,30 @@ export default function Withdraw() {
     const handleConfirmWithdraw = async () => {
         setIsWithdrawing(true);
         try {
-            // Mock API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            showNotification('success', 'Thành công', `Đã gửi yêu cầu rút ${amount} ${selectedCurrency!.symbol}`);
+            if (withdrawMethod === 'onchain' && selectedNetwork?.name.includes('TRC20')) {
+                const userRes = await import("@/src/services/auth").then(m => m.default.checkAuth());
+                const userId = userRes.data?.id || userRes.data?.user?.id;
+
+                if (userId) {
+                    await WalletService.sendTronTransfer(userId, address, parseFloat(amount));
+                    showNotification('success', 'Thành công', `Đã gửi yêu cầu rút ${amount} ${selectedCurrency!.symbol}`);
+                } else {
+                    throw new Error("User ID not found");
+                }
+            } else {
+                // Mock API call for others
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                showNotification('success', 'Thành công', `Đã gửi yêu cầu rút ${amount} ${selectedCurrency!.symbol}`);
+            }
 
             // Reset form
             setAddress("");
             setRecipientValue("");
             setAmount("");
             setShowConfirmation(false);
-            fetchBalance(selectedCurrency!.id);
+            if (selectedCurrency) fetchBalance(selectedCurrency.id);
         } catch (error) {
+            console.error('Withdraw error:', error);
             showNotification('error', 'Lỗi', 'Rút tiền thất bại. Vui lòng thử lại.');
         } finally {
             setIsWithdrawing(false);

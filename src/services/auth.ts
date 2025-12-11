@@ -169,7 +169,7 @@ export default class AuthService {
   }
 
   // Kiểm tra trạng thái auth
-  async checkAuth(): Promise<any> {
+  static async checkAuth(): Promise<any> {
     try {
       const response = await axiosInstance.get('/auth/me');
       return response;

@@ -199,6 +199,24 @@ const MOCK_CURRENCIES: Currency[] = [
             },
         ]
     },
+    {
+        id: "trx",
+        symbol: "TRX",
+        name: "TRON",
+        icon: "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+        networks: [
+            {
+                id: "trc20",
+                name: "TRON (TRC20)",
+                protocol: "TRON",
+                isDefault: true,
+                fee: "0 TRX",
+                minDeposit: "10 TRX",
+                confirmations: 1,
+                estimatedTime: "1-2 phút"
+            }
+        ]
+    },
 ];
 
 export interface InternalTransferRequest {
@@ -472,6 +490,39 @@ export default class WalletService {
             return response;
         } catch (error) {
             console.error('Get exchange rate error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * TRON Custodial Wallet API
+     */
+
+    // Create/Get Tron Wallet Address
+    static async getTronWallet(userId: string): Promise<{ userId: string; address: string }> {
+        try {
+            const response = await axiosInstance.post<{ userId: string; address: string }>(`/api/tron/wallet`, null, {
+                params: { userId }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Get Tron wallet error:', error);
+            throw error;
+        }
+    }
+
+    // Send TRX (Custodial)
+    static async sendTronTransfer(userId: string, toAddress: string, amount: number): Promise<any> {
+        try {
+            const response = await axiosInstance.post(`/api/tron/transfer`, {
+                type: 'TRX',
+                userId,
+                toAddress,
+                amount
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Send Tron transfer error:', error);
             throw error;
         }
     }
