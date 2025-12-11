@@ -66,9 +66,10 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                 {
                     type: 'inside',
                     xAxisIndex: [0, 1],
-                    start: 50,
+                    start: 90,
                     end: 100,
-                    minSpan: 5, // Prevent zooming out too far (minimum 5% of data visible)
+                    minSpan: 10, // Minimum 1% of data visible
+                    maxSpan: 90, // Maximum 90% of data visible (allows dragging)
                     zoomLock: false
                 }
             ],
@@ -78,7 +79,7 @@ export default function TradingChart({ symbol }: TradingChartProps) {
             xAxis: [
                 {
                     type: 'time',
-                    boundaryGap: false,
+                    boundaryGap: ['0%', '5%'],
                     gridIndex: 0,
                     axisLabel: { show: false },
                     axisLine: { show: false },
@@ -86,7 +87,7 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                 },
                 {
                     type: 'time',
-                    boundaryGap: false,
+                    boundaryGap: ['0%', '1%'],
                     gridIndex: 1,
                     axisLine: { show: false },
                     axisTick: { show: false }
@@ -100,8 +101,19 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                     scale: true,
                     splitLine: { show: false },
                     gridIndex: 0,
-                    min: 'dataMin', // Ensure minimum is based on data
-                    max: 'dataMax', // Ensure maximum is based on data
+                    min: (value: { min: number; max: number }) => {
+                        const diff = value.max - value.min;
+                        // Add 10% padding to the bottom, handle flat line case
+                        return value.min - (diff === 0 ? 1 : diff * 0.1);
+                    },
+                    max: (value: { min: number; max: number }) => {
+                        const diff = value.max - value.min;
+                        // Add 10% padding to the top, handle flat line case
+                        return value.max + (diff === 0 ? 1 : diff * 0.1);
+                    },
+                    axisLabel: {
+                        formatter: (value: number) => value.toFixed(1)
+                    }
                 },
                 // Volume axis (right, bottom pane)
                 {
@@ -145,12 +157,11 @@ export default function TradingChart({ symbol }: TradingChartProps) {
         };
     }, []);
 
-    // ---------- Data fetching (REST) ----------
     const fetchData = useCallback(async () => {
         if (!symbol) return;
         setLoading(true);
         try {
-            const response = await FuturesChartService.getKlineData(symbol, timeframe);
+            const response = await FuturesChartService.getKlineData(symbol, timeframe, 1000);
             if (response.success && response.data) {
                 // Build price data: [timestamp, open, close, low, high]
                 const priceData: any[] = [];
@@ -162,8 +173,9 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                     // Ensure open is previous close for smoothing (except first)
                     const open = i === 0 ? item.openPrice : sorted[i - 1].closePrice;
                     const close = item.closePrice;
-                    const high = item.highPrice;
-                    const low = item.lowPrice;
+                    // Adjust high/low to include the modified open
+                    const high = Math.max(item.highPrice, open);
+                    const low = Math.min(item.lowPrice, open);
                     priceData.push([time, open, close, low, high]);
                     volumeData.push([time, item.volume]);
                 }
@@ -208,7 +220,11 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                 const lastCandle = priceSeries.data?.[priceSeries.data.length - 1] as any[] | undefined;
                 const open = lastCandle ? lastCandle[2] : msg.o; // use previous close if exists
 
-                const newCandle = [time, open, msg.c, msg.l, msg.h];
+                // Adjust high/low to include the modified open
+                const high = Math.max(msg.h, open);
+                const low = Math.min(msg.l, open);
+
+                const newCandle = [time, open, msg.c, low, high];
                 const newVolume = [time, msg.v];
 
                 // Append data
@@ -228,7 +244,6 @@ export default function TradingChart({ symbol }: TradingChartProps) {
         };
     }, [symbol, timeframe]);
 
-    // ---------- Chart initialization ----------
     useEffect(() => {
         if (!chartContainerRef.current) return;
         const chart = echarts.init(chartContainerRef.current);
@@ -247,19 +262,14 @@ export default function TradingChart({ symbol }: TradingChartProps) {
         };
     }, [buildOption]);
 
-    // ---------- React to timeframe change (seconds visibility) ----------
     useEffect(() => {
-        // ECharts automatically shows seconds on time axis; no extra config needed.
-        // We simply refetch data when timeframe changes.
         fetchData();
     }, [timeframe, fetchData]);
 
-    // ---------- Initial data load ----------
     useEffect(() => {
         fetchData();
     }, [fetchData]);
 
-    // ---------- Render ----------
     return (
         <div className={styles.container}>
             <div className={styles.header}>

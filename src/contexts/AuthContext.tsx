@@ -31,7 +31,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      const token = TokenService.getAccessToken();
+      // Try to get access token from memory
+      let token = TokenService.getAccessToken();
+
+      // If no access token in memory, check if we have a refresh token in cookies
+      if (!token) {
+        const refreshToken = TokenService.getRefreshToken();
+        if (refreshToken) {
+          try {
+            // Import AuthService dynamically to avoid circular dependency if any
+            const AuthService = (await import('../services/auth')).default;
+            // Attempt to refresh the token
+            await AuthService.refreshToken();
+            // Get the new token
+            token = TokenService.getAccessToken();
+          } catch (refreshError) {
+            console.error('Failed to refresh token on init:', refreshError);
+            // If refresh fails, clear everything
+            TokenService.clearToken();
+          }
+        }
+      }
+
       if (!token) {
         setUser(null);
         return;
@@ -44,6 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       console.error('Failed to fetch user:', err);
       if (err.response?.status === 401 || err.response?.status === 403) {
+        // Only try to refresh if we haven't just tried (simple check)
+        // ideally we rely on axios interceptor for 401s during API calls, 
+        // but this is initial load.
         setError('Phiên đăng nhập đã hết hạn');
         TokenService.clearToken();
       } else if (err.code === 'NETWORK_ERROR' || !err.response) {
@@ -97,7 +121,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Sync auth state across tabs
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'accessToken' || e.key === 'refreshToken') {
+      // Since accessToken is no longer in local storage, we mostly care about explicit logout signals 
+      // or if logic puts something else in storage. 
+      // But typically with memory + cookie, storage events are less relevant for the access token itself.
+      // We might track 'refreshToken' if we sync it to local storage (we don't anymore),
+      // OR if another tab clears storage.
+      // Let's keep it listening for general clears or custom events if needed.
+      if (e.key === TokenService.REFRESH_TOKEN_KEY) { // Check against the key constant if possible, or just ignore for now as we use cookies
         if (!e.newValue) {
           setUser(null);
         } else {

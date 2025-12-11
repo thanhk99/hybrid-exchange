@@ -16,19 +16,19 @@ export function middleware(request: NextRequest) {
     // Check if the current path is a public route
     const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route));
 
-    // Get the access token from cookies
-    const accessToken = request.cookies.get('accessToken')?.value;
+    // Get the refresh token from cookies (since access token is now memory-only)
+    const refreshToken = request.cookies.get('refreshToken')?.value;
 
-    // If trying to access a protected route without a token
-    if (isProtectedRoute && !accessToken) {
+    // If trying to access a protected route without a valid session (refresh token)
+    if (isProtectedRoute && !refreshToken) {
         // Store the intended destination to redirect back after login
         const loginUrl = new URL('/login', request.url);
         loginUrl.searchParams.set('redirect', pathname);
         return NextResponse.redirect(loginUrl);
     }
 
-    // If logged in and trying to access login/register, redirect to home
-    if (accessToken && (pathname === '/login' || pathname === '/register')) {
+    // If logged in (has refresh token) and trying to access login/register, redirect to home
+    if (refreshToken && (pathname === '/login' || pathname === '/register')) {
         return NextResponse.redirect(new URL('/', request.url));
     }
 

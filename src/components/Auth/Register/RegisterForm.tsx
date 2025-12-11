@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { GlobalOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
 import AuthService from "@/src/services/auth";
+import TokenService from "@/src/services/token";
+import UserService from "@/src/services/user";
+import { loginSuccess } from "@/src/app/store/authSlice";
 import { Notification } from "../../common/Notification/Notification";
 import {
     EyeOutlined,
@@ -38,6 +42,7 @@ export default function RegisterForm() {
     });
 
     const router = useRouter();
+    const dispatch = useDispatch();
     const authService = new AuthService();
 
     const {
@@ -75,11 +80,54 @@ export default function RegisterForm() {
 
         try {
             await authService.register(data);
-            showSuccess("Thành công", "Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...");
+            showSuccess("Thành công", "Đăng ký thành công! Đang tự động đăng nhập...");
 
-            setTimeout(() => {
-                router.push("/login");
-            }, 1500);
+            // Auto Login
+            try {
+                const loginResponse = await AuthService.login({
+                    email: data.email,
+                    password: data.password
+                });
+
+                const payload = loginResponse.data;
+                const accessToken = payload.data?.accessToken || payload.accessToken;
+                const refreshToken = payload.data?.refreshToken || payload.refreshToken;
+
+                if (accessToken) {
+                    TokenService.setToken(accessToken, refreshToken);
+
+                    // Fetch user profile
+                    const userProfile = await UserService.getProfile();
+
+                    if (userProfile && userProfile.data && userProfile.data.data) {
+                        const userData = userProfile.data.data;
+                        dispatch(loginSuccess({
+                            accessToken: accessToken,
+                            refreshToken: refreshToken,
+                            userId: userData.uid,
+                            email: userData.email,
+                            deviceInfo: "browser"
+                        }));
+                    }
+
+                    setTimeout(() => {
+                        router.push("/");
+                    }, 500);
+                } else {
+                    // Fallback if no token
+                    setTimeout(() => {
+                        router.push("/login");
+                    }, 1000);
+                }
+
+            } catch (loginErr) {
+                console.error("Auto login error:", loginErr);
+                showInfo("Thông báo", "Đăng ký thành công. Vui lòng đăng nhập.");
+                setTimeout(() => {
+                    router.push("/login");
+                }, 1500);
+            }
+
         } catch (err: any) {
             console.error("Register error:", err);
             const errorMessage = err.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.";
