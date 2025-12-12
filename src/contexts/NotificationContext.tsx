@@ -181,8 +181,10 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                     const chunk = decoder.decode(value, { stream: true });
                     buffer += chunk;
 
-                    // Split by double newline which separates SSE events
-                    const parts = buffer.split('\n\n');
+                    // Normalize newlines to \n
+                    const normalizedBuffer = buffer.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                    const parts = normalizedBuffer.split('\n\n');
+
                     // Keep the last part in buffer as it might be incomplete
                     buffer = parts.pop() || '';
 
@@ -192,10 +194,20 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                         let data = '';
 
                         for (const line of lines) {
-                            if (line.startsWith('event:')) {
-                                eventType = line.slice(6).trim();
-                            } else if (line.startsWith('data:')) {
-                                data = line.slice(5).trim();
+                            const trimLine = line.trim();
+                            if (!trimLine) continue;
+
+                            // Case insensitive check for event: and data:
+                            if (/^event:/i.test(trimLine)) {
+                                eventType = trimLine.slice(6).trim();
+                            } else if (/^data:/i.test(trimLine)) {
+                                const lineData = trimLine.slice(5).trim();
+                                if (!data) {
+                                    data = lineData;
+                                } else {
+                                    // Handle multi-line data if necessary
+                                    data += '\n' + lineData;
+                                }
                             }
                         }
 

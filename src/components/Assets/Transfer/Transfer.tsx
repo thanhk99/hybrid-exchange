@@ -41,7 +41,7 @@ export default function Transfer() {
 
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-    const [historyFilter, setHistoryFilter] = useState<'all' | 'transfer'>('all');
+    const [historyFilter, setHistoryFilter] = useState<'transfer'>('transfer');
 
     useEffect(() => {
         fetchAssets();
@@ -57,11 +57,11 @@ export default function Transfer() {
         fetchTransactionHistory();
     }, [historyFilter]);
 
-    const fetchTransactionHistory = async () => {
+    const fetchTransactionHistory = async (force: boolean = false) => {
         setIsLoadingHistory(true);
         try {
-            const filter = historyFilter === 'all' ? undefined : 'transfer';
-            const data = await WalletService.getTransactionHistory(filter);
+            const filter = 'transfer';
+            const data = await WalletService.getTransactionHistory(filter, force);
             setTransactions(data);
         } catch (error) {
             console.error("Failed to fetch transaction history", error);
@@ -179,7 +179,7 @@ export default function Transfer() {
             setAmount("");
             setShowConfirmation(false);
             fetchBalance(selectedCurrency!.id);
-            fetchTransactionHistory();
+            fetchTransactionHistory(true);
         } catch (error: any) {
             console.error(error);
             showNotification('error', 'Lỗi', error.message || error.response?.data?.message || 'Giao dịch thất bại. Vui lòng thử lại.');
@@ -395,9 +395,8 @@ export default function Transfer() {
                 transactions={transactions}
                 isLoading={isLoadingHistory}
                 filter={historyFilter}
-                onFilterChange={(filter) => setHistoryFilter(filter as 'all' | 'transfer')}
+                onFilterChange={(filter) => setHistoryFilter(filter as 'transfer')}
                 filterOptions={[
-                    { value: 'all', label: 'Tất cả' },
                     { value: 'transfer', label: 'Chuyển tiền' }
                 ]}
             />

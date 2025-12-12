@@ -409,3 +409,105 @@
         justify-content: center;
     }
 }
+
+/* Balance Section */
+.balanceContainer {
+    margin-top: 24px;
+    padding: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border: 1px solid rgba(229, 231, 235, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.balanceHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.balanceHeader h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.refreshBtn {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 10px;
+    color: var(--blue-600);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.refreshBtn:hover:not(:disabled) {
+    background: var(--blue-50);
+    border-color: var(--blue-200);
+    transform: translateY(-1px);
+}
+
+.refreshBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.balanceInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.balanceItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+}
+
+.balanceLabel {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.balanceValue {
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+}
+
+.tokensList {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tokensList h4 {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 8px 4px;
+}
+
+.balancePlaceholder {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    background: white;
+    border-radius: 12px;
+    border: 1px dashed #e5e7eb;
+}

@@ -15,6 +15,7 @@ import CurrencySelector from "../../common/CurrencySelector/CurrencySelector";
 import TransactionHistory from "../../common/TransactionHistory/TransactionHistory";
 import styles from "./Deposit.module.css";
 import { useUser } from "@/src/contexts/UserContext";
+import { useNotifications } from "@/src/contexts/NotificationContext";
 
 export default function Deposit() {
     const { user, loading: userLoading } = useUser();
@@ -34,9 +35,7 @@ export default function Deposit() {
     });
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-    const [historyFilter, setHistoryFilter] = useState<'all' | 'deposit'>('all');
-    const [walletBalance, setWalletBalance] = useState<any>(null);
-    const [isBalanceLoading, setIsBalanceLoading] = useState(false);
+    const [historyFilter, setHistoryFilter] = useState<'deposit'>('deposit');
 
     useEffect(() => {
         fetchCurrencies();
@@ -49,7 +48,7 @@ export default function Deposit() {
     const fetchTransactionHistory = async () => {
         setIsLoadingHistory(true);
         try {
-            const filter = historyFilter === 'all' ? undefined : 'deposit';
+            const filter = 'deposit';
             const data = await WalletService.getTransactionHistory(filter);
             setTransactions(data);
         } catch (error) {
@@ -87,8 +86,6 @@ export default function Deposit() {
             // Check if TRON network
             if (networkId.toLowerCase().includes('trc20') || networkId.toLowerCase() === 'tron') {
                 const userId = user?.uid;
-                console.log('TRC20 detected. UserId:', userId);
-
                 if (userId) {
                     const wallet = await WalletService.getTronWallet(userId);
                     setDepositAddress({
@@ -122,30 +119,45 @@ export default function Deposit() {
         }
     };
 
-    const checkBalance = async () => {
-        if (!depositAddress?.address) return;
-        setIsBalanceLoading(true);
-        try {
-            const balanceData = await WalletService.getTronBalance(depositAddress.address);
-            setWalletBalance(balanceData);
-            setNotification({
-                isVisible: true,
-                type: 'success',
-                title: 'Thành công',
-                message: 'Đã cập nhật số dư ví'
-            });
-        } catch (error) {
-            console.error('Check balance error', error);
-            setNotification({
-                isVisible: true,
-                type: 'error',
-                title: 'Lỗi',
-                message: 'Không thể kiểm tra số dư'
-            });
-        } finally {
-            setIsBalanceLoading(false);
+    const { notifications } = useNotifications();
+    const [lastNotifId, setLastNotifId] = useState<string | null>(null);
+
+    // Monitor new notifications for real-time updates
+    useEffect(() => {
+        if (notifications.length > 0) {
+            const latest = notifications[0];
+            // Check if it's a new notification we haven't processed
+            if (latest.id !== lastNotifId) {
+                setLastNotifId(latest.id);
+
+                // Only toast if it's RECENT (within 60 seconds) to avoid F5 / Initial load triggers
+                const notifTime = new Date(latest.createdAt).getTime();
+                const now = Date.now();
+                // Check if valid date and recent
+                const isRecent = !isNaN(notifTime) && (now - notifTime) < 10000;
+
+                // If notification is about deposit or transaction success
+                // We'll rely on string matching or if we have a specific 'DEPOSIT' type
+                const isDepositRelated =
+                    latest.type === 'PAYMENT' ||
+                    latest.type === 'DEPOSIT' ||
+                    latest.type === 'INFO' ||
+                    latest.title.toLowerCase().includes('nạp') ||
+                    latest.title.toLowerCase().includes('deposit') ||
+                    latest.message.toLowerCase().includes('success');
+
+                if (isDepositRelated && isRecent) {
+                    fetchTransactionHistory();
+                    setNotification({
+                        isVisible: true,
+                        type: 'success',
+                        title: latest.title,
+                        message: latest.message
+                    });
+                }
+            }
         }
-    };
+    }, [notifications]);
 
     const handleCurrencySelect = (currency: Currency) => {
         setSelectedCurrency(currency);
@@ -338,56 +350,11 @@ export default function Deposit() {
                 transactions={transactions}
                 isLoading={isLoadingHistory}
                 filter={historyFilter}
-                onFilterChange={(filter) => setHistoryFilter(filter as 'all' | 'deposit')}
+                onFilterChange={(filter) => setHistoryFilter(filter as 'deposit')} // Enforce type
                 filterOptions={[
-                    { value: 'all', label: 'Tất cả' },
                     { value: 'deposit', label: 'Nạp tiền' }
                 ]}
             />
-
-            {/* Tron Balance Section */}
-            {depositAddress?.network === 'TRC20' && (
-                <div className={styles.balanceContainer}>
-                    <div className={styles.balanceHeader}>
-                        <h3>Số dư ví TRON (On-chain)</h3>
-                        <button
-                            className={styles.refreshBtn}
-                            onClick={checkBalance}
-                            disabled={isBalanceLoading}
-                        >
-                            {isBalanceLoading ? <FaSpinner className={styles.spin} /> : 'Kiểm tra ngay'}
-                        </button>
-                    </div>
-
-                    {walletBalance && (
-                        <div className={styles.balanceInfo}>
-                            <div className={styles.balanceItem}>
-                                <span className={styles.balanceLabel}>TRX Balance:</span>
-                                <span className={styles.balanceValue}>{walletBalance.trx || 0} TRX</span>
-                            </div>
-
-                            {/* Display USDT if available in token list */}
-                            {walletBalance.tokens && walletBalance.tokens.length > 0 && (
-                                <div className={styles.tokensList}>
-                                    <h4>Token (TRC20):</h4>
-                                    {walletBalance.tokens.map((token: any, index: number) => (
-                                        <div key={index} className={styles.balanceItem}>
-                                            <span className={styles.balanceLabel}>{token.symbol}:</span>
-                                            <span className={styles.balanceValue}>{token.balance}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {!walletBalance && !isBalanceLoading && (
-                        <div className={styles.balancePlaceholder}>
-                            <p>Nhấn "Kiểm tra ngay" để xem số dư thực tế trên mạng TRON.</p>
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     );
 }

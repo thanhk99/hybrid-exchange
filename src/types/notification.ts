@@ -29,7 +29,9 @@ export type NotificationCategory =
   | 'SYSTEM'
   | 'SECURITY'
   | 'PROMOTION'
-  | 'P2P_ORDER_CREATED'; // Added based on backend data
+  | 'P2P_ORDER_CREATED'
+  | 'INFO'
+  | 'DEPOSIT';
 
 export interface NotificationResponse {
   content: Notification[];

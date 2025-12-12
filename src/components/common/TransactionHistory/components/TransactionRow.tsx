@@ -1,5 +1,6 @@
 import React from 'react';
 import { Transaction } from '@/src/services/wallet';
+import TruncatedText from '../../TruncatedText/TruncatedText';
 
 interface TransactionRowProps {
     transaction: Transaction;
@@ -46,9 +47,25 @@ export default function TransactionRow({ transaction, styles }: TransactionRowPr
                     {getTypeLabel(transaction.type)}
                 </div>
                 <div className={styles.historyDetails}>
-                    {transaction.recipient && <span>Đến: {transaction.recipient}</span>}
-                    {transaction.address && <span>Địa chỉ: {transaction.address}</span>}
+                    {transaction.recipient && (
+                        <span>
+                            Đến: <TruncatedText text={transaction.recipient} startLength={6} endLength={6} />
+                        </span>
+                    )}
+                    {transaction.address && (
+                        <span>
+                            Địa chỉ: <TruncatedText text={transaction.address} startLength={6} endLength={6} />
+                        </span>
+                    )}
                     {transaction.network && <span>• {transaction.network}</span>}
+                    {transaction.txHash && (
+                        <span>
+                            • TxID: <TruncatedText text={transaction.txHash} startLength={6} endLength={6} />
+                        </span>
+                    )}
+                    {transaction.fee !== undefined && (
+                        <span> • Phí: {transaction.fee} {transaction.currency}</span>
+                    )}
                 </div>
                 <div className={styles.historyDate}>
                     {new Date(transaction.date).toLocaleString('vi-VN')}

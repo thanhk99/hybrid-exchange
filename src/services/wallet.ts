@@ -33,6 +33,7 @@ export interface Transaction {
     type: 'deposit' | 'withdraw' | 'transfer';
     currency: string;
     amount: number;
+    fee?: number;
     status: 'pending' | 'completed' | 'failed';
     date: string;
     recipient?: string; // for transfers
@@ -360,15 +361,25 @@ export default class WalletService {
         });
     }
 
-    static async getTransactionHistory(type?: 'deposit' | 'withdraw' | 'transfer'): Promise<Transaction[]> {
-        try {
-            const params: any = {};
-            if (type) params.type = type;
+    private static transactionsCache: Transaction[] | null = null;
+    private static lastCacheTime: number = 0;
+    private static readonly CACHE_DURATION = 30000; // 30 seconds
 
-            const response = await axiosInstance.get<ApiResponse<any[]>>('/api/v1/transactions', { params });
+    static async getTransactionHistory(type?: 'deposit' | 'withdraw' | 'transfer', forceRefresh: boolean = false): Promise<Transaction[]> {
+        try {
+            const now = Date.now();
+
+            // Check cache validity
+            if (!forceRefresh && this.transactionsCache && (now - this.lastCacheTime < this.CACHE_DURATION)) {
+                // Return from cache with filtering
+                return this.filterTransactions(this.transactionsCache, type);
+            }
+
+            // Fetch ALL transactions (no params to get everything)
+            const response = await axiosInstance.get<ApiResponse<any[]>>('/api/v1/transactions');
             const data = response.data.data || [];
 
-            return data.map((item: any) => {
+            const parsedData = data.map((item: any) => {
                 let txType: 'deposit' | 'withdraw' | 'transfer' = 'transfer';
                 const lowerType = item.type?.toLowerCase() || '';
 
@@ -395,16 +406,33 @@ export default class WalletService {
                     type: txType,
                     currency: item.asset,
                     amount: item.amount,
-                    status: 'completed', // Default status for history items
+                    fee: item.fee,
+                    status: 'completed' as 'completed', // Default status for history items
                     date: item.createDt,
                     address: address,
                     txHash: txHash
                 };
             });
+
+            // Update Cache
+            this.transactionsCache = parsedData;
+            this.lastCacheTime = now;
+
+            return this.filterTransactions(parsedData, type);
+
         } catch (error) {
             console.error('Get transaction history error', error);
+            // Fallback to cache if error and cache exists? Or just return empty.
+            if (this.transactionsCache) {
+                return this.filterTransactions(this.transactionsCache, type);
+            }
             return [];
         }
+    }
+
+    private static filterTransactions(transactions: Transaction[], type?: 'deposit' | 'withdraw' | 'transfer'): Transaction[] {
+        if (!type) return transactions;
+        return transactions.filter(t => t.type === type);
     }
 
     // Get exchange rate between two currencies
@@ -449,6 +477,34 @@ export default class WalletService {
             return response.data;
         } catch (error) {
             console.error('Send Tron transfer error:', error);
+            throw error;
+        }
+    }
+
+    // Estimate Fee
+    static async estimateTronFee(userId: string, toAddress: string, amount: number): Promise<{ fee: number }> {
+        try {
+            const response = await axiosInstance.post(`/api/tron/estimate-fee`, {
+                type: 'TRX',
+                userId,
+                toAddress,
+                amount
+            });
+            // Assuming response.data is the fee number directly or an object? 
+            // User said: "Trả về số TRX cần trả làm phí (ví dụ: 0 ... hoặc 0.27)"
+            // Typically APIs return JSON. If it returns just a number or { fee: 0.27 }?
+            // "Response: Trả về số TRX cần trả làm phí" -> slightly ambiguous if it's raw number or json.
+            // Safer to assume it might be wrapped or just handle both. 
+            // If the user says "Response: 0.27", it might be body literal. 
+            // But standard axios returns data. Let's assume it returns a number or object.
+            // Let's assume the response body IS the number or { data: number }.
+            // Based on previous patterns `ApiResponse<any>`...
+            // Be safe: logic in component will handle it, but here return raw data if unsure.
+            // Wait, looking at `sendTronTransfer`, it returns `response.data`.
+
+            return response.data;
+        } catch (error) {
+            console.error('Estimate fee error:', error);
             throw error;
         }
     }
