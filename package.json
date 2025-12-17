@@ -18,7 +18,7 @@
     "date-fns": "^4.1.0",
     "echarts": "^6.0.0",
     "lightweight-charts": "^5.0.9",
-    "next": "16.0.3",
+    "next": "16.0.10",
     "qrcode.react": "^4.2.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -34,7 +34,7 @@
     "@types/react-dom": "^19",
     "baseline-browser-mapping": "^2.9.6",
     "eslint": "^9",
-    "eslint-config-next": "16.0.3",
+    "eslint-config-next": "16.0.8",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

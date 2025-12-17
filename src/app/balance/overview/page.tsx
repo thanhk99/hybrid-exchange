@@ -47,9 +47,9 @@ export default function BalanceOverviewPage() {
                         allAssets.push({
                             symbol: asset.currency,
                             name: asset.currency,
-                            balance: asset.balance || 0,
+                            balance: (asset.balance || 0) + (asset.locked || 0), // Total
                             usdValue: asset.valueUsd || 0,
-                            available: (asset.balance || 0) - (asset.locked || 0),
+                            available: asset.balance || 0, // Available
                             locked: asset.locked || 0,
                         });
                     }
@@ -68,9 +68,9 @@ export default function BalanceOverviewPage() {
                             allAssets.push({
                                 symbol: asset.currency,
                                 name: asset.currency,
-                                balance: asset.balance || 0,
+                                balance: (asset.balance || 0) + (asset.locked || 0), // Total
                                 usdValue: asset.valueUsd || 0,
-                                available: (asset.balance || 0) - (asset.locked || 0),
+                                available: asset.balance || 0, // Available
                                 locked: asset.locked || 0,
                             });
                         }

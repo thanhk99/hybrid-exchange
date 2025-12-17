@@ -231,3 +231,70 @@
 .sellBtn:hover {
     background: #e03d52;
 }
+
+/* Login Prompt Styles */
+.loginPrompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    flex: 1;
+    min-height: 300px;
+}
+
+.loginIcon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.loginTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 8px 0;
+}
+
+.loginMessage {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.loginButton {
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #0ECB81 0%, #0db872 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(14, 203, 129, 0.3);
+}
+
+.loginButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(14, 203, 129, 0.4);
+}
+
+.registerPrompt {
+    font-size: 13px;
+    color: #8c8c8c;
+    margin-top: 16px;
+}
+
+.registerLink {
+    color: #0ECB81;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.registerLink:hover {
+    color: #0db872;
+    text-decoration: underline;
+}

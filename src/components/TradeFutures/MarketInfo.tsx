@@ -5,37 +5,36 @@
 import { useState, useEffect, useRef } from 'react';
 import { BarChartOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons';
 import styles from './MarketInfo.module.css';
-import FuturesService from '@/src/services/futures';
-import { StompClient } from '@/src/services/socket';
+import FuturesService from '@/src/services/futures'; // Can be removed if not used elsewhere, but maybe keep for type
+// import { StompClient } from '@/src/services/socket'; // Removed
 import { FuturesCoin } from '@/src/types/futures';
 import { getAssetsOverview } from '@/src/services/balance';
+import { useFuturesMarket } from '@/src/contexts/FuturesMarketContext';
 
 interface MarketInfoProps {
     symbol: string;
 }
 
 export default function MarketInfo({ symbol }: MarketInfoProps) {
-    const [marketData, setMarketData] = useState<FuturesCoin | null>(null);
+    const { marketData } = useFuturesMarket();
+    // const [marketData, setMarketData] = useState<FuturesCoin | null>(null); // From context
     const [balance, setBalance] = useState<number>(0);
     const [countdown, setCountdown] = useState<string>('--:--:--');
-    const stompClientRef = useRef<StompClient | null>(null);
-    const isConnectedRef = useRef(false);
+    // const stompClientRef = useRef<StompClient | null>(null);
+    // const isConnectedRef = useRef(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     // Normalize symbol for comparison (remove hyphens, uppercase)
     const normalizedSymbol = symbol.replace(/-/g, '').toUpperCase();
 
     useEffect(() => {
-        fetchInitialData();
+        // fetchInitialData(); // Handled by context
         fetchBalance();
-        connectWebSocket();
+        // connectWebSocket(); // Handled by context
         startCountdown();
 
         return () => {
-            if (stompClientRef.current && isConnectedRef.current) {
-                stompClientRef.current.disconnect();
-                isConnectedRef.current = false;
-            }
+            // Cleanup handled by context and below
             if (timerRef.current) {
                 clearInterval(timerRef.current);
             }
@@ -43,20 +42,8 @@ export default function MarketInfo({ symbol }: MarketInfoProps) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [normalizedSymbol]);
 
-    const fetchInitialData = async () => {
-        try {
-            const response = await FuturesService.getFuturesCoins();
-            if (response.data && response.data.data) {
-                const coin = response.data.data.find(
-                    c => c.symbol.replace(/-/g, '').toUpperCase() === normalizedSymbol
-                );
-                if (coin) {
-                    setMarketData(coin);
-                }
-            }
-        } catch (e) {
-        }
-    };
+    // fetchInitialData removed
+
 
     const fetchBalance = async () => {
         try {
@@ -95,32 +82,8 @@ export default function MarketInfo({ symbol }: MarketInfoProps) {
         timerRef.current = setInterval(updateTimer, 1000);
     };
 
-    const connectWebSocket = () => {
-        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-        const wsBase = apiUrl.replace(/^http/, 'ws');
-        const finalWsUrl = `${wsBase}/ws/websocket`;
+    // connectWebSocket and handleMarketUpdate removed
 
-        const client = new StompClient(finalWsUrl);
-        client.connect(() => {
-            isConnectedRef.current = true;
-            client.subscribe('/topic/futures/markets', (msg) => handleMarketUpdate(msg));
-        });
-        stompClientRef.current = client;
-    };
-
-    const handleMarketUpdate = (updates: any) => {
-        const updateArray = Array.isArray(updates) ? updates : [updates];
-        const update = updateArray.find(
-            u => u.symbol.replace(/-/g, '').toUpperCase() === normalizedSymbol
-        );
-
-        if (update) {
-            setMarketData(prev => {
-                if (!prev) return update;
-                return { ...prev, ...update };
-            });
-        }
-    };
 
     const formatPrice = (price?: number) => {
         if (price === undefined || price === null) return '-';

@@ -2,7 +2,10 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #fff;
+    background: #0b0e11;
+    border: 1px solid #1f2329;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .header {
@@ -10,68 +13,99 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 16px;
-    border-bottom: 1px solid #f0f0f0;
-    height: 48px;
+    border-bottom: 1px solid #1f2329;
+    min-height: 48px;
+    background: #0b0e11;
+    gap: 16px;
+}
+
+.symbolSection {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.symbolName {
+    font-size: 16px;
+    font-weight: 700;
+    color: #eaecef;
+    letter-spacing: 0.5px;
+}
+
+.symbolType {
+    font-size: 11px;
+    color: #848e9c;
+    background: #1f2329;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 500;
 }
 
 .timeframes {
     display: flex;
-    gap: 4px;
+    gap: 2px;
+    flex: 1;
+    justify-content: center;
 }
 
 .timeframeBtn {
-    padding: 4px 10px;
+    padding: 6px 12px;
     border: none;
     background: transparent;
-    color: #8c8c8c;
-    font-size: 13px;
+    color: #848e9c;
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     border-radius: 4px;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
 }
 
 .timeframeBtn:hover {
-    background: #f5f5f5;
-    color: #1a1a1a;
+    background: #1f2329;
+    color: #eaecef;
 }
 
 .timeframeBtn.active {
-    background: #f5f5f5;
-    color: #1a1a1a;
+    background: rgba(0, 185, 107, 0.15);
+    color: #00b96b;
     font-weight: 600;
 }
 
 .chartTools {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     align-items: center;
 }
 
 .toolBtn {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border: none;
     background: transparent;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
-    color: #555;
+    transition: all 0.15s ease;
+    color: #848e9c;
 }
 
 .toolBtn:hover {
-    background: #f5f5f5;
-    color: #1a1a1a;
+    background: #1f2329;
+    color: #eaecef;
+}
+
+.toolBtn svg {
+    width: 16px;
+    height: 16px;
 }
 
 .chartArea {
     flex: 1;
-    background: #fff;
+    background: #0b0e11;
     position: relative;
+    overflow: hidden;
 }
 
 .chartContainer {
@@ -79,45 +113,136 @@
     height: 100%;
 }
 
+/* OHLCV Legend Overlay */
+.legend {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 5;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-size: 11px;
+    pointer-events: none;
+}
+
+.legendLabel {
+    color: #5c6370;
+    font-weight: 500;
+}
+
+.legendValueUp {
+    color: #00b96b;
+    font-weight: 600;
+}
+
+.legendValueDown {
+    color: #f6465d;
+    font-weight: 600;
+}
+
+.legendVolume {
+    color: #848e9c;
+    font-weight: 600;
+}
+
+.legendChangeUp {
+    color: #00b96b;
+    font-weight: 600;
+    background: rgba(0, 185, 107, 0.1);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+}
+
+.legendChangeDown {
+    color: #f6465d;
+    font-weight: 600;
+    background: rgba(246, 70, 93, 0.1);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+}
+
+/* Loading Overlay */
 .loadingOverlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(11, 14, 17, 0.95);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 12px;
     z-index: 10;
-    color: #1a1a1a;
+    color: #848e9c;
     font-weight: 500;
+    font-size: 13px;
 }
 
-.legend {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 2;
-    left: 10px;
-    font-weight: 900;
-    font-size: 18px;
-    color: #1a1a1a;
-    opacity: 0.8;
-    pointer-events: none;
-    z-index: 5;
-    font-family: 'Trebuchet MS', sans-serif;
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #1f2329;
+    border-top-color: #00b96b;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
 }
 
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
 @media (max-width: 768px) {
+    .container {
+        border-radius: 0;
+        border: none;
+        border-top: 1px solid #1f2329;
+    }
+
+    .header {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .symbolSection {
+        order: 1;
+        width: 100%;
+    }
+
     .timeframes {
+        order: 2;
         overflow-x: auto;
-        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        justify-content: flex-start;
+    }
+
+    .timeframes::-webkit-scrollbar {
+        display: none;
     }
 
     .timeframeBtn {
         padding: 4px 8px;
-        font-size: 12px;
+        font-size: 11px;
         white-space: nowrap;
+    }
+
+    .chartTools {
+        order: 3;
+    }
+
+    .legend {
+        font-size: 10px;
+        gap: 4px;
+        flex-wrap: wrap;
     }
 }
