@@ -19,8 +19,10 @@ import WalletService, { Currency, Network, Transaction } from "@/src/services/wa
 import { Notification } from "../../common/Notification/Notification";
 import TransactionHistory from "../../common/TransactionHistory/TransactionHistory";
 import styles from "./Withdraw.module.css";
+import { useUser } from "@/src/contexts/UserContext";
 
 export default function Withdraw() {
+    const { user } = useUser();
     const [withdrawMethod, setWithdrawMethod] = useState<'onchain' | 'okx'>('onchain');
     const [recipientType, setRecipientType] = useState<'phone' | 'email' | 'uid' | 'sub_account'>('phone');
 
@@ -33,6 +35,7 @@ export default function Withdraw() {
     const [address, setAddress] = useState("");
     const [recipientValue, setRecipientValue] = useState("");
     const [amount, setAmount] = useState("");
+    const [estimatedFee, setEstimatedFee] = useState<number>(0);
 
     const [balance, setBalance] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +55,7 @@ export default function Withdraw() {
 
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-    const [historyFilter, setHistoryFilter] = useState<'all' | 'withdraw'>('all');
+    const [historyFilter, setHistoryFilter] = useState<'withdraw'>('withdraw');
 
     useEffect(() => {
         fetchAssets();
@@ -72,11 +75,11 @@ export default function Withdraw() {
         }
     }, [selectedCurrency]);
 
-    const fetchTransactionHistory = async () => {
+    const fetchTransactionHistory = async (force: boolean = false) => {
         setIsLoadingHistory(true);
         try {
-            const filter = historyFilter === 'all' ? undefined : 'withdraw';
-            const data = await WalletService.getTransactionHistory(filter);
+            const filter = 'withdraw';
+            const data = await WalletService.getTransactionHistory(filter, force);
             setTransactions(data);
         } catch (error) {
             console.error("Failed to fetch transaction history", error);
@@ -109,9 +112,9 @@ export default function Withdraw() {
             const currency = currencies.find(c => c.id === currencyId);
             if (!currency) return;
 
-            const spotAssets = assetsData.spot?.assets || [];
+            const fundingAssets = assetsData.funding?.assets || [];
             // Match by currency symbol (e.g. "USDT")
-            const asset = spotAssets.find((a: any) => a.currency === currency.symbol);
+            const asset = fundingAssets.find((a: any) => a.currency === currency.symbol);
 
             if (asset) {
                 setBalance(asset.balance ?? 0);
@@ -145,7 +148,7 @@ export default function Withdraw() {
         }
     };
 
-    const handleWithdrawClick = () => {
+    const handleWithdrawClick = async () => {
         // Validation
         if (!selectedCurrency) {
             showNotification('error', 'Lỗi', 'Vui lòng chọn loại tiền');
@@ -178,7 +181,47 @@ export default function Withdraw() {
             return;
         }
 
-        setShowConfirmation(true);
+        // Estimate Fee if On-chain TRON
+        if (withdrawMethod === 'onchain' && selectedNetwork?.name.includes('TRC20')) {
+            setIsWithdrawing(true); // Re-use loading state or add new one
+            const userId = user?.uid;
+            if (!userId) {
+                setIsWithdrawing(false);
+                showNotification('error', 'Lỗi', 'Vui lòng đăng nhập lại');
+                return;
+            }
+
+            try {
+                const feeRes: any = await WalletService.estimateTronFee(userId, address, parseFloat(amount));
+                // Assuming feeRes is the number directly or in an object (User said: "Trả về số TRX... 0 hoặc 0.27")
+                // If the API returns valid JSON, axiosInstance parses it.
+                // If it returns raw number, it might be in data.
+                // Let's assume it's like { fee: 0.27 } or just 0.27.
+                // If response.data in service was just returned, check structure.
+                const fee = typeof feeRes === 'number' ? feeRes : (feeRes?.fee || 0);
+
+                setEstimatedFee(fee);
+
+                const total = parseFloat(amount) + fee;
+                if (total > balance) {
+                    showNotification('error', 'Lỗi', `Số dư không đủ thanh toán (Phí: ${fee} ${selectedCurrency.symbol})`);
+                    setIsWithdrawing(false);
+                    return;
+                }
+
+                setIsWithdrawing(false);
+                setShowConfirmation(true);
+            } catch (error) {
+                console.error(error);
+                setIsWithdrawing(false);
+                showNotification('error', 'Lỗi', 'Không thể tính phí giao dịch');
+                return;
+            }
+        } else {
+            // Non-TRON or OKX
+            setEstimatedFee(0);
+            setShowConfirmation(true);
+        }
     };
 
     const showNotification = (type: 'success' | 'error' | 'info', title: string, message: string) => {
@@ -188,17 +231,33 @@ export default function Withdraw() {
     const handleConfirmWithdraw = async () => {
         setIsWithdrawing(true);
         try {
-            // Mock API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            showNotification('success', 'Thành công', `Đã gửi yêu cầu rút ${amount} ${selectedCurrency!.symbol}`);
+            if (withdrawMethod === 'onchain' && selectedNetwork?.name.includes('TRC20')) {
+                // const userRes = await import("@/src/services/auth").then(m => m.default.checkAuth());
+                // const userId = userRes.data?.id || userRes.data?.user?.id;
+                const userId = user?.uid;
+
+                if (userId) {
+                    await WalletService.sendTronTransfer(userId, address, parseFloat(amount));
+                    showNotification('success', 'Thành công', `Đã gửi yêu cầu rút ${amount} ${selectedCurrency!.symbol}`);
+                } else {
+                    throw new Error("User ID not found");
+                }
+            } else {
+                // Mock API call for others
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                showNotification('success', 'Thành công', `Đã gửi yêu cầu rút ${amount} ${selectedCurrency!.symbol}`);
+            }
 
             // Reset form
             setAddress("");
             setRecipientValue("");
             setAmount("");
             setShowConfirmation(false);
-            fetchBalance(selectedCurrency!.id);
+            if (selectedCurrency) fetchBalance(selectedCurrency.id);
+            // Force refresh history to show new withdrawal
+            fetchTransactionHistory(true);
         } catch (error) {
+            console.error('Withdraw error:', error);
             showNotification('error', 'Lỗi', 'Rút tiền thất bại. Vui lòng thử lại.');
         } finally {
             setIsWithdrawing(false);
@@ -502,8 +561,14 @@ export default function Withdraw() {
                                     <span className={styles.confirmValue}>{selectedNetwork?.name}</span>
                                 </div>
                                 <div className={styles.confirmRow}>
-                                    <span className={styles.confirmLabel}>Phí mạng</span>
-                                    <span className={styles.confirmValue}>{selectedNetwork?.fee}</span>
+                                    <span className={styles.confirmLabel}>Phí ước tính</span>
+                                    <span className={styles.confirmValue}>{estimatedFee} {selectedCurrency?.symbol}</span>
+                                </div>
+                                <div className={styles.confirmRow}>
+                                    <span className={styles.confirmLabel} style={{ fontWeight: 'bold' }}>Tổng trừ</span>
+                                    <span className={styles.confirmValue} style={{ fontWeight: 'bold', color: '#ef4444' }}>
+                                        {parseFloat(amount) + estimatedFee} {selectedCurrency?.symbol}
+                                    </span>
                                 </div>
                             </>
                         ) : (
@@ -537,9 +602,8 @@ export default function Withdraw() {
                 transactions={transactions}
                 isLoading={isLoadingHistory}
                 filter={historyFilter}
-                onFilterChange={(filter) => setHistoryFilter(filter as 'all' | 'withdraw')}
+                onFilterChange={(filter) => setHistoryFilter(filter as 'withdraw')}
                 filterOptions={[
-                    { value: 'all', label: 'Tất cả' },
                     { value: 'withdraw', label: 'Rút tiền' }
                 ]}
             />

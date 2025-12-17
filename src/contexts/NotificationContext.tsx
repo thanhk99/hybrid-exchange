@@ -15,14 +15,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const [error, setError] = useState<string | null>(null);
     const { user } = useUser();
 
-    const mapNotification = useCallback((item: any): Notification => {
+    const mapNotification = useCallback((item: any, defaultType?: string): Notification => {
         const notification: Notification = {
-            id: item.id.toString(),
-            title: item.notificationTitle || item.title,
-            message: item.notificationContent || item.message,
-            type: item.notificationType || item.type || 'SYSTEM',
-            isRead: item.read !== undefined ? item.read : item.isRead,
-            createdAt: item.createdAt || item.sentAt,
+            id: item.id?.toString() || Date.now().toString(),
+            title: item.notificationTitle || item.title || 'Thông báo',
+            message: item.notificationContent || item.message || '',
+            type: item.notificationType || item.type || defaultType || 'SYSTEM',
+            isRead: item.read !== undefined ? item.read : (item.isRead || false),
+            createdAt: item.createdAt || item.sentAt || new Date().toISOString(),
             userId: item.userId,
             data: {
                 orderId: item.orderId || item.data?.orderId,
@@ -70,12 +70,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                 const data = notifResponse.data.data;
 
                 if (Array.isArray(data)) {
-                    fetchedNotifications = data.map(mapNotification);
+                    fetchedNotifications = data.map(item => mapNotification(item));
                 } else if (data && 'content' in data) {
-                    fetchedNotifications = (data as NotificationResponse).content.map(mapNotification);
+                    fetchedNotifications = (data as NotificationResponse).content.map(item => mapNotification(item));
                 } else if (data && 'notifications' in data) {
                     // Backend returns { notifications: [], totalItems, totalPages, currentPage }
-                    fetchedNotifications = (data as any).notifications.map(mapNotification);
+                    fetchedNotifications = (data as any).notifications.map((item: any) => mapNotification(item));
                 }
             }
 
@@ -154,6 +154,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
             const url = `${baseUrl}/api/v1/sse/subscribe/${user.uid}?token=${token}`;
 
+            console.log('[SSE] Connecting to:', url);
+
             try {
                 const response = await fetch(url, {
                     headers: {
@@ -166,6 +168,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                     throw new Error(`SSE Connection failed: ${response.status} ${response.statusText}`);
                 }
 
+                console.log('[SSE] Connected successfully');
                 setError(null);
 
                 const reader = response.body?.getReader();
@@ -181,9 +184,10 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                     const chunk = decoder.decode(value, { stream: true });
                     buffer += chunk;
 
-                    // Split by double newline which separates SSE events
-                    const parts = buffer.split('\n\n');
-                    // Keep the last part in buffer as it might be incomplete
+                    // Normalize newlines
+                    const normalizedBuffer = buffer.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                    const parts = normalizedBuffer.split('\n\n');
+
                     buffer = parts.pop() || '';
 
                     for (const part of parts) {
@@ -192,25 +196,34 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                         let data = '';
 
                         for (const line of lines) {
-                            if (line.startsWith('event:')) {
-                                eventType = line.slice(6).trim();
-                            } else if (line.startsWith('data:')) {
-                                data = line.slice(5).trim();
+                            const trimLine = line.trim();
+                            if (!trimLine) continue;
+
+                            if (/^event:/i.test(trimLine)) {
+                                eventType = trimLine.slice(6).trim();
+                            } else if (/^data:/i.test(trimLine)) {
+                                const lineData = trimLine.slice(5).trim();
+                                if (!data) {
+                                    data = lineData;
+                                } else {
+                                    data += '\n' + lineData;
+                                }
                             }
                         }
 
                         if (!data) continue;
 
+                        console.log(`[SSE] Received event: ${eventType}`, data);
+
                         if (eventType === 'connected') {
                             continue;
                         }
 
-
                         try {
-                            // Only attempt to parse if it looks like a JSON object or array
                             if (data.startsWith('{') || data.startsWith('[')) {
                                 const rawNotification = JSON.parse(data);
-                                const newNotification = mapNotification(rawNotification);
+                                // Pass eventType as fallback
+                                const newNotification = mapNotification(rawNotification, eventType);
 
                                 setNotifications(prev => {
                                     if (prev.some(n => n.id === newNotification.id)) {
@@ -220,6 +233,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                                 });
                                 setUnreadCount(prev => prev + 1);
                             } else {
+                                console.log('[SSE] Non-JSON data:', data);
                             }
                         } catch (e) {
                             console.error("[SSE] Error parsing message:", e);
@@ -232,7 +246,6 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                 if (err.name === 'AbortError') return;
 
                 console.error("SSE Error:", err);
-                // Retry connection after 5 seconds
                 retryTimeout = setTimeout(() => {
                     connectSSE();
                 }, 5000);
@@ -248,6 +261,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             }
         };
     }, [user?.uid, mapNotification]);
+
+
 
     const value: NotificationContextType = {
         notifications,

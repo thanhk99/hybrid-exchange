@@ -35,9 +35,9 @@ export default function FundingWalletPage() {
                         fundingAssets.push({
                             symbol: asset.currency,
                             name: asset.currency,
-                            balance: asset.balance || 0,
+                            balance: (asset.balance || 0) + (asset.locked || 0), // Total = Available + Locked
                             usdValue: asset.valueUsd || 0,
-                            available: (asset.balance || 0) - (asset.locked || 0),
+                            available: asset.balance || 0, // API returns Available
                             locked: asset.locked || 0,
                         });
                     }

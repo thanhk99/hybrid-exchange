@@ -14,8 +14,11 @@ import { Notification } from "../../common/Notification/Notification";
 import CurrencySelector from "../../common/CurrencySelector/CurrencySelector";
 import TransactionHistory from "../../common/TransactionHistory/TransactionHistory";
 import styles from "./Deposit.module.css";
+import { useUser } from "@/src/contexts/UserContext";
+import { useNotifications } from "@/src/contexts/NotificationContext";
 
 export default function Deposit() {
+    const { user, loading: userLoading } = useUser();
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
     const [selectedNetwork, setSelectedNetwork] = useState<Network | null>(null);
@@ -32,7 +35,7 @@ export default function Deposit() {
     });
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-    const [historyFilter, setHistoryFilter] = useState<'all' | 'deposit'>('all');
+    const [historyFilter, setHistoryFilter] = useState<'deposit'>('deposit');
 
     useEffect(() => {
         fetchCurrencies();
@@ -45,7 +48,7 @@ export default function Deposit() {
     const fetchTransactionHistory = async () => {
         setIsLoadingHistory(true);
         try {
-            const filter = historyFilter === 'all' ? undefined : 'deposit';
+            const filter = 'deposit';
             const data = await WalletService.getTransactionHistory(filter);
             setTransactions(data);
         } catch (error) {
@@ -61,7 +64,7 @@ export default function Deposit() {
         } else {
             setDepositAddress(null);
         }
-    }, [selectedCurrency, selectedNetwork]);
+    }, [selectedCurrency, selectedNetwork, user, userLoading]);
 
     const fetchCurrencies = async () => {
         setIsLoading(true);
@@ -76,16 +79,85 @@ export default function Deposit() {
     };
 
     const fetchDepositAddress = async (currencyId: string, networkId: string) => {
+        if (userLoading) return;
         setIsAddressLoading(true);
         try {
-            const address = await WalletService.getDepositAddress(currencyId, networkId);
-            setDepositAddress(address);
+            console.log('fetchDepositAddress checking:', { networkId, currencyId, user });
+            // Check if TRON network
+            if (networkId.toLowerCase().includes('trc20') || networkId.toLowerCase() === 'tron') {
+                const userId = user?.uid;
+                if (userId) {
+                    const wallet = await WalletService.getTronWallet(userId);
+                    setDepositAddress({
+                        address: wallet.address,
+                        network: 'TRC20',
+                        currency: 'USDT'
+                    });
+                    return;
+                }
+            }
+
+            setNotification({
+                isVisible: true,
+                type: 'info',
+                title: 'Thông báo',
+                message: 'Hệ thống đang bảo trì kênh nạp này. Vui lòng quay lại sau.'
+            });
+            setDepositAddress(null);
+
         } catch (error) {
             console.error("Failed to fetch deposit address", error);
+            setNotification({
+                isVisible: true,
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Không thể lấy địa chỉ ví'
+            });
+            setDepositAddress(null);
         } finally {
             setIsAddressLoading(false);
         }
     };
+
+    const { notifications } = useNotifications();
+    const [lastNotifId, setLastNotifId] = useState<string | null>(null);
+
+    // Monitor new notifications for real-time updates
+    useEffect(() => {
+        if (notifications.length > 0) {
+            const latest = notifications[0];
+            // Check if it's a new notification we haven't processed
+            if (latest.id !== lastNotifId) {
+                setLastNotifId(latest.id);
+
+                // Only toast if it's RECENT (within 60 seconds) to avoid F5 / Initial load triggers
+                const notifTime = new Date(latest.createdAt).getTime();
+                const now = Date.now();
+                // Check if valid date and recent
+                const isRecent = !isNaN(notifTime) && (now - notifTime) < 10000;
+
+                // If notification is about deposit or transaction success
+                // We'll rely on string matching or if we have a specific 'DEPOSIT' type
+                const isDepositRelated =
+                    latest.type === 'PAYMENT' ||
+                    latest.type === 'DEPOSIT' ||
+                    latest.type === 'INFO' ||
+                    latest.title.toLowerCase().includes('nạp') ||
+                    latest.title.toLowerCase().includes('deposit') ||
+                    latest.message.toLowerCase().includes('success');
+
+                if (isDepositRelated && isRecent) {
+                    fetchTransactionHistory();
+                    setNotification({
+                        isVisible: true,
+                        type: 'success',
+                        title: latest.title,
+                        message: latest.message
+                    });
+                }
+            }
+        }
+    }, [notifications]);
 
     const handleCurrencySelect = (currency: Currency) => {
         setSelectedCurrency(currency);
@@ -278,9 +350,8 @@ export default function Deposit() {
                 transactions={transactions}
                 isLoading={isLoadingHistory}
                 filter={historyFilter}
-                onFilterChange={(filter) => setHistoryFilter(filter as 'all' | 'deposit')}
+                onFilterChange={(filter) => setHistoryFilter(filter as 'deposit')} // Enforce type
                 filterOptions={[
-                    { value: 'all', label: 'Tất cả' },
                     { value: 'deposit', label: 'Nạp tiền' }
                 ]}
             />

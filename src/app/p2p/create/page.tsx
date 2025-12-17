@@ -15,6 +15,7 @@ import { OrderType, PaymentMethod } from '@/src/types/p2p';
 import P2POrderService from '@/src/services/p2pOrder';
 import PaymentMethodService from '@/src/services/paymentMethod';
 import { getAssetsOverview } from '@/src/services/balance';
+import WalletService from '@/src/services/wallet';
 import styles from './page.module.css';
 
 export default function CreateP2POrder() {
@@ -33,10 +34,24 @@ export default function CreateP2POrder() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [availableBalance, setAvailableBalance] = useState<number>(0);
 
-    const currencies = ['USDT', 'BTC', 'ETH', 'BNB'];
+    const [currencies, setCurrencies] = useState<string[]>([]);
     const fiatCurrencies = ['VND'];
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [bankAccounts, setBankAccounts] = useState<PaymentMethod[]>([]);
+
+    useEffect(() => {
+        const loadCurrencies = async () => {
+            try {
+                const currenciesData = await WalletService.getCurrencies();
+                setCurrencies(currenciesData.map(c => c.symbol));
+            } catch (error) {
+                console.error("Failed to fetch currencies", error);
+                setCurrencies(['USDT', 'BTC', 'ETH', 'BNB']); // Fallback
+            }
+        };
+        loadCurrencies();
+    }, []);
+
 
     // Load payment methods and bank accounts from API
     useEffect(() => {

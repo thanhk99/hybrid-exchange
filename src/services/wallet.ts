@@ -33,6 +33,7 @@ export interface Transaction {
     type: 'deposit' | 'withdraw' | 'transfer';
     currency: string;
     amount: number;
+    fee?: number;
     status: 'pending' | 'completed' | 'failed';
     date: string;
     recipient?: string; // for transfers
@@ -199,6 +200,24 @@ const MOCK_CURRENCIES: Currency[] = [
             },
         ]
     },
+    {
+        id: "trx",
+        symbol: "TRX",
+        name: "TRON",
+        icon: "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+        networks: [
+            {
+                id: "trc20",
+                name: "TRON (TRC20)",
+                protocol: "TRON",
+                isDefault: true,
+                fee: "0 TRX",
+                minDeposit: "10 TRX",
+                confirmations: 1,
+                estimatedTime: "1-2 phút"
+            }
+        ]
+    },
 ];
 
 export interface InternalTransferRequest {
@@ -342,125 +361,78 @@ export default class WalletService {
         });
     }
 
-    static async getTransactionHistory(type?: 'deposit' | 'withdraw' | 'transfer'): Promise<Transaction[]> {
-        // Simulate API call - return mock transaction history
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const mockTransactions: Transaction[] = [
-                    {
-                        id: 'tx1',
-                        type: 'deposit',
-                        currency: 'USDT',
-                        amount: 1000,
-                        status: 'completed',
-                        date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-                        network: 'TRC20',
-                        address: 'TXa...b3c',
-                        txHash: '0x123...abc'
-                    },
-                    {
-                        id: 'tx2',
-                        type: 'transfer',
-                        currency: 'BTC',
-                        amount: 0.05,
-                        status: 'completed',
-                        date: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-                        recipient: 'user@example.com'
-                    },
-                    {
-                        id: 'tx3',
-                        type: 'withdraw',
-                        currency: 'ETH',
-                        amount: 2.5,
-                        status: 'pending',
-                        date: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-                        network: 'ERC20',
-                        address: '0xabc...def',
-                        txHash: '0x456...def'
-                    },
-                    {
-                        id: 'tx4',
-                        type: 'deposit',
-                        currency: 'BNB',
-                        amount: 10,
-                        status: 'completed',
-                        date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-                        network: 'BEP20',
-                        address: '0x789...ghi',
-                        txHash: '0x789...ghi'
-                    },
-                    {
-                        id: 'tx5',
-                        type: 'transfer',
-                        currency: 'USDT',
-                        amount: 500,
-                        status: 'completed',
-                        date: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-                        recipient: 'john@example.com'
-                    },
-                    {
-                        id: 'tx6',
-                        type: 'withdraw',
-                        currency: 'BTC',
-                        amount: 0.1,
-                        status: 'failed',
-                        date: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
-                        network: 'Bitcoin',
-                        address: '1A1z...P1e',
-                        txHash: '0xabc...123'
-                    },
-                    {
-                        id: 'tx7',
-                        type: 'deposit',
-                        currency: 'SOL',
-                        amount: 50,
-                        status: 'completed',
-                        date: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
-                        network: 'Solana',
-                        address: 'So1...abc',
-                        txHash: '0xsol...123'
-                    },
-                    {
-                        id: 'tx8',
-                        type: 'transfer',
-                        currency: 'ETH',
-                        amount: 1.2,
-                        status: 'completed',
-                        date: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString(),
-                        recipient: 'alice@example.com'
-                    },
-                    {
-                        id: 'tx9',
-                        type: 'withdraw',
-                        currency: 'USDT',
-                        amount: 2000,
-                        status: 'completed',
-                        date: new Date(Date.now() - 144 * 60 * 60 * 1000).toISOString(),
-                        network: 'TRC20',
-                        address: 'TXb...c4d',
-                        txHash: '0x999...zzz'
-                    },
-                    {
-                        id: 'tx10',
-                        type: 'deposit',
-                        currency: 'ADA',
-                        amount: 1000,
-                        status: 'completed',
-                        date: new Date(Date.now() - 168 * 60 * 60 * 1000).toISOString(),
-                        network: 'Cardano',
-                        address: 'addr1...xyz',
-                        txHash: '0xada...456'
-                    },
-                ];
+    private static transactionsCache: Transaction[] | null = null;
+    private static lastCacheTime: number = 0;
+    private static readonly CACHE_DURATION = 30000; // 30 seconds
 
-                // Filter by type if specified
-                const filtered = type
-                    ? mockTransactions.filter(tx => tx.type === type)
-                    : mockTransactions;
+    static async getTransactionHistory(type?: 'deposit' | 'withdraw' | 'transfer', forceRefresh: boolean = false): Promise<Transaction[]> {
+        try {
+            const now = Date.now();
 
-                resolve(filtered);
-            }, 800);
-        });
+            // Check cache validity
+            if (!forceRefresh && this.transactionsCache && (now - this.lastCacheTime < this.CACHE_DURATION)) {
+                // Return from cache with filtering
+                return this.filterTransactions(this.transactionsCache, type);
+            }
+
+            // Fetch ALL transactions (no params to get everything)
+            const response = await axiosInstance.get<ApiResponse<any[]>>('/api/v1/transactions');
+            const data = response.data.data || [];
+
+            const parsedData = data.map((item: any) => {
+                let txType: 'deposit' | 'withdraw' | 'transfer' = 'transfer';
+                const lowerType = item.type?.toLowerCase() || '';
+
+                if (lowerType.includes('nạp') || lowerType.includes('deposit')) {
+                    txType = 'deposit';
+                } else if (lowerType.includes('rút') || lowerType.includes('withdraw')) {
+                    txType = 'withdraw';
+                }
+
+                // Parse note for address/txHash if possible
+                let address = undefined;
+                let txHash = undefined;
+
+                if (item.note) {
+                    const fromMatch = item.note.match(/from\s+([a-zA-Z0-9]+)/);
+                    if (fromMatch) address = fromMatch[1];
+
+                    const txIdMatch = item.note.match(/TxID:\s*([a-zA-Z0-9]+)/);
+                    if (txIdMatch) txHash = txIdMatch[1];
+                }
+
+                return {
+                    id: String(item.id),
+                    type: txType,
+                    currency: item.asset,
+                    amount: item.amount,
+                    fee: item.fee,
+                    status: 'completed' as 'completed', // Default status for history items
+                    date: item.createDt,
+                    address: address,
+                    txHash: txHash
+                };
+            });
+
+            // Update Cache
+            this.transactionsCache = parsedData;
+            this.lastCacheTime = now;
+
+            return this.filterTransactions(parsedData, type);
+
+        } catch (error) {
+            console.error('Get transaction history error', error);
+            // Fallback to cache if error and cache exists? Or just return empty.
+            if (this.transactionsCache) {
+                return this.filterTransactions(this.transactionsCache, type);
+            }
+            return [];
+        }
+    }
+
+    private static filterTransactions(transactions: Transaction[], type?: 'deposit' | 'withdraw' | 'transfer'): Transaction[] {
+        if (!type) return transactions;
+        return transactions.filter(t => t.type === type);
     }
 
     // Get exchange rate between two currencies
@@ -472,6 +444,78 @@ export default class WalletService {
             return response;
         } catch (error) {
             console.error('Get exchange rate error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * TRON Custodial Wallet API
+     */
+
+    // Create/Get Tron Wallet Address
+    static async getTronWallet(userId: string): Promise<{ userId: string; address: string }> {
+        try {
+            const response = await axiosInstance.post<{ userId: string; address: string }>(`/api/tron/wallet`, null, {
+                params: { userId }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Get Tron wallet error:', error);
+            throw error;
+        }
+    }
+
+    // Send TRX (Custodial)
+    static async sendTronTransfer(userId: string, toAddress: string, amount: number): Promise<any> {
+        try {
+            const response = await axiosInstance.post(`/api/tron/transfer`, {
+                type: 'TRX',
+                userId,
+                toAddress,
+                amount
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Send Tron transfer error:', error);
+            throw error;
+        }
+    }
+
+    // Estimate Fee
+    static async estimateTronFee(userId: string, toAddress: string, amount: number): Promise<{ fee: number }> {
+        try {
+            const response = await axiosInstance.post(`/api/tron/estimate-fee`, {
+                type: 'TRX',
+                userId,
+                toAddress,
+                amount
+            });
+            // Assuming response.data is the fee number directly or an object? 
+            // User said: "Trả về số TRX cần trả làm phí (ví dụ: 0 ... hoặc 0.27)"
+            // Typically APIs return JSON. If it returns just a number or { fee: 0.27 }?
+            // "Response: Trả về số TRX cần trả làm phí" -> slightly ambiguous if it's raw number or json.
+            // Safer to assume it might be wrapped or just handle both. 
+            // If the user says "Response: 0.27", it might be body literal. 
+            // But standard axios returns data. Let's assume it returns a number or object.
+            // Let's assume the response body IS the number or { data: number }.
+            // Based on previous patterns `ApiResponse<any>`...
+            // Be safe: logic in component will handle it, but here return raw data if unsure.
+            // Wait, looking at `sendTronTransfer`, it returns `response.data`.
+
+            return response.data;
+        } catch (error) {
+            console.error('Estimate fee error:', error);
+            throw error;
+        }
+    }
+
+    // Get Tron Balance
+    static async getTronBalance(address: string): Promise<any> {
+        try {
+            const response = await axiosInstance.get(`/api/tron/balance/${address}`);
+            return response.data;
+        } catch (error) {
+            console.error('Get Tron balance error:', error);
             throw error;
         }
     }

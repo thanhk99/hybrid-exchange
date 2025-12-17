@@ -73,8 +73,6 @@ export default class AuthService {
     }
     catch (error) {
       console.error('🔴 Refresh token request failed:', error);
-      // Don't redirect here - let axios interceptor handle it
-      // Just throw the error so interceptor can catch it
       throw error;
     }
   }
@@ -168,14 +166,5 @@ export default class AuthService {
     }
   }
 
-  // Kiểm tra trạng thái auth
-  async checkAuth(): Promise<any> {
-    try {
-      const response = await axiosInstance.get('/auth/me');
-      return response;
-    } catch (error) {
-      console.error('Check auth error:', error);
-      throw error;
-    }
-  }
+
 }

@@ -20,14 +20,35 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      const token = TokenService.getAccessToken();
+      let token = TokenService.getAccessToken();
+      console.log('UserContext: fetchUser called. Token exists:', !!token);
+
+      // Nếu không có access token (F5 trang), thử refresh token
       if (!token) {
+        const refreshToken = TokenService.getRefreshToken();
+        if (refreshToken) {
+          try {
+            console.log('UserContext: Attempting to refresh token...');
+            const AuthService = (await import('../services/auth')).default;
+            await AuthService.refreshToken();
+            token = TokenService.getAccessToken();
+            console.log('UserContext: Token refreshed successfully');
+          } catch (refreshErr) {
+            console.error('UserContext: Failed to refresh token:', refreshErr);
+          }
+        }
+      }
+
+      if (!token) {
+        console.log('UserContext: No token, setting user to null');
         setUser(null);
         return;
       }
 
       const response = await UserService.getProfile();
+      console.log('UserContext: API Response:', response);
       const userData = response?.data?.data ?? response?.data ?? null;
+      console.log('UserContext: Parsed userData:', userData);
       setUser(userData);
     } catch (err: any) {
       console.error('Failed to fetch user:', err);

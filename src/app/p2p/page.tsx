@@ -28,24 +28,34 @@ export default function P2PMarketplace() {
     const [sortBy, setSortBy] = useState('default');
     const [paymentSearchTerm, setPaymentSearchTerm] = useState('');
 
-    const currencies = ['USDT', 'BTC', 'ETH', 'BNB'];
+    const [currencies, setCurrencies] = useState<string[]>([]);
     const fiatCurrencies = ['VND'];
     const [currencyIcons, setCurrencyIcons] = useState<Record<string, string>>({});
     const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
 
     useEffect(() => {
-        // Load currency icons
-        const loadCurrencyIcons = async () => {
-            const currenciesData = await WalletService.getCurrencies();
-            const iconsMap: Record<string, string> = {};
-            currenciesData.forEach(c => {
-                if (c.icon) {
-                    iconsMap[c.symbol] = c.icon;
-                }
-            });
-            setCurrencyIcons(iconsMap);
+        // Load currencies and icons from WalletService
+        const loadCurrencies = async () => {
+            try {
+                const currenciesData = await WalletService.getCurrencies();
+
+                // Set available currencies for dropdown
+                setCurrencies(currenciesData.map(c => c.symbol));
+
+                // Set icons map
+                const iconsMap: Record<string, string> = {};
+                currenciesData.forEach(c => {
+                    if (c.icon) {
+                        iconsMap[c.symbol] = c.icon;
+                    }
+                });
+                setCurrencyIcons(iconsMap);
+            } catch (error) {
+                console.error("Failed to fetch currencies", error);
+                // Fallback if needed, or leave empty
+            }
         };
-        loadCurrencyIcons();
+        loadCurrencies();
 
         // Load payment methods
         const loadPaymentMethods = async () => {

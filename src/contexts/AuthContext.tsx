@@ -1,162 +1,151 @@
-// contexts/AuthContext.tsx
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
-import TokenService from "../services/token";
-import UserService from "../services/user";
-import { UserInfo } from "../types/user";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import AuthService from '../services/auth';
+import TokenService from '../services/token';
+import UserService from '../services/user';
+import { UserInfo } from '../types/user';
+import { LoginData, RegisterData } from '../types/auth';
 
 interface AuthContextType {
   user: UserInfo | null;
-  loading: boolean;
-  error: string | null;
   isAuthenticated: boolean;
-  refreshUser: () => Promise<void>;
-  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  loading: boolean;
+  login: (data: LoginData) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => void;
-  clearError: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const clearError = useCallback(() => setError(null), []);
-
-  const fetchUser = useCallback(async (): Promise<void> => {
+  const fetchUserProfile = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
+      const response = await UserService.getProfile();
+      const userData = response?.data?.data ?? response?.data ?? null;
+      setUser(userData);
+    } catch (error) {
+      console.error('Failed to fetch user profile', error);
+      // If fetching profile fails (likely 401), we might want to logout
+      // but let's leave that to the axios interceptor or logic below
+      setUser(null);
+    }
+  }, []);
 
-      // Try to get access token from memory
+  const initAuth = useCallback(async () => {
+    setLoading(true);
+    try {
       let token = TokenService.getAccessToken();
 
-      // If no access token in memory, check if we have a refresh token in cookies
+      // Nếu có token, kiểm tra xem còn hạn không
+      if (token) {
+        const isExpired = await TokenService.isTokenExpired();
+        if (isExpired) {
+          console.log('UserContext: Token expired, clearing...');
+          token = null;
+        }
+      }
+
       if (!token) {
         const refreshToken = TokenService.getRefreshToken();
         if (refreshToken) {
           try {
-            // Import AuthService dynamically to avoid circular dependency if any
-            const AuthService = (await import('../services/auth')).default;
-            // Attempt to refresh the token
             await AuthService.refreshToken();
-            // Get the new token
             token = TokenService.getAccessToken();
-          } catch (refreshError) {
-            console.error('Failed to refresh token on init:', refreshError);
-            // If refresh fails, clear everything
-            TokenService.clearToken();
+          } catch (err) {
+            console.log('Refresh token failed', err);
           }
         }
       }
 
-      if (!token) {
-        setUser(null);
-        return;
-      }
-
-      const response = await UserService.getProfile();
-      // Assuming API returns { data: UserInfo }
-      const userData = response?.data?.data ?? response?.data ?? null;
-      setUser(userData);
-    } catch (err: any) {
-      console.error('Failed to fetch user:', err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        // Only try to refresh if we haven't just tried (simple check)
-        // ideally we rely on axios interceptor for 401s during API calls, 
-        // but this is initial load.
-        setError('Phiên đăng nhập đã hết hạn');
-        TokenService.clearToken();
-      } else if (err.code === 'NETWORK_ERROR' || !err.response) {
-        setError('Lỗi kết nối mạng');
+      if (token) {
+        await fetchUserProfile();
       } else {
-        setError(err.response?.data?.message || 'Không thể tải thông tin người dùng');
+        setUser(null);
       }
+    } catch (error) {
+      console.error('Auth initialization error', error);
       setUser(null);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fetchUserProfile]);
 
-  const login = useCallback(async (email: string, password: string) => {
+  // Auto-refresh token on mount
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
+
+  const login = async (data: LoginData) => {
     try {
       setLoading(true);
-      setError(null);
-
-      const AuthService = (await import('../services/auth')).default;
-      const response = await AuthService.login({ email, password });
-
+      const response = await AuthService.login(data);
       if (response.data.accessToken) {
-        TokenService.setToken(response.data.accessToken, response.data.refreshToken);
-        await fetchUser();
-        return { success: true, message: 'Đăng nhập thành công' };
+        // Token is already set in AuthService/TokenService inside login method? 
+        // AuthService.login implementation in `services/auth.ts` calls TokenService.setToken
+        // So we just need to fetch user.
+        await fetchUserProfile();
       }
-      throw new Error('No access token received');
-    } catch (err: any) {
-      console.error('Login error:', err);
-      const errorMessage = err.response?.data?.message || err.message || 'Đăng nhập thất bại';
-      setError(errorMessage);
-      return { success: false, message: errorMessage };
+    } catch (error) {
+      throw error;
     } finally {
       setLoading(false);
     }
-  }, [fetchUser]);
+  };
 
-  const logout = useCallback(() => {
-    TokenService.clearToken();
-    setUser(null);
-    setError(null);
-    if (typeof window !== 'undefined') {
+  const register = async (data: RegisterData) => {
+    try {
+      setLoading(true);
+      const authServiceInstance = new AuthService();
+      await new AuthService().register(data);
+
+      // Auto login after register? The snippet did it.
+      // Let's try to login.
+      await login({ email: data.email, password: data.password });
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = useCallback(async () => {
+    try {
+      await new AuthService().logout();
+    } catch (error) {
+      console.error('Logout error', error);
+    } finally {
+      setUser(null);
+      TokenService.clearToken();
       window.location.href = '/login';
     }
   }, []);
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
-
-  // Sync auth state across tabs
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      // Since accessToken is no longer in local storage, we mostly care about explicit logout signals 
-      // or if logic puts something else in storage. 
-      // But typically with memory + cookie, storage events are less relevant for the access token itself.
-      // We might track 'refreshToken' if we sync it to local storage (we don't anymore),
-      // OR if another tab clears storage.
-      // Let's keep it listening for general clears or custom events if needed.
-      if (e.key === TokenService.REFRESH_TOKEN_KEY) { // Check against the key constant if possible, or just ignore for now as we use cookies
-        if (!e.newValue) {
-          setUser(null);
-        } else {
-          fetchUser();
-        }
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [fetchUser]);
-
   const value: AuthContextType = {
     user,
+    isAuthenticated: !!user,
     loading,
-    error,
-    isAuthenticated: !!user && !!TokenService.getAccessToken(),
-    refreshUser: fetchUser,
     login,
+    register,
     logout,
-    clearError,
+    refreshUser: fetchUserProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
