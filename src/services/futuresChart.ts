@@ -30,17 +30,23 @@ const FuturesChartService = {
         try {
             // Normalize symbol: remove hyphens (e.g., BTC-USDT -> BTCUSDT)
             const normalizedSymbol = symbol.replace(/-/g, '');
-            const params: any = { limit };
+
+            // Build query parameters
+            const params: any = {
+                symbol: normalizedSymbol,
+                interval,
+                limit
+            };
+
             if (endTime) {
                 params.endTime = endTime;
             }
 
-            const response = await axios.post(`${API_BASE_URL}/api/v1/futuresKline/symbol`, {
-                symbol: normalizedSymbol,
-                interval
-            }, {
+            // Use GET method with query parameters as per new API spec
+            const response = await axios.get(`${API_BASE_URL}/api/v1/futures/kline`, {
                 params
             });
+
             return response.data;
         } catch (error) {
             console.error('Error fetching futures kline data:', error);

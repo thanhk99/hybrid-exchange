@@ -1,9 +1,43 @@
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { createChart, CandlestickSeries, HistogramSeries, IChartApi, ISeriesApi, CandlestickData, HistogramData, Time } from 'lightweight-charts';
+import { createChart, CandlestickSeries, HistogramSeries, LineSeries, IChartApi, ISeriesApi, CandlestickData, HistogramData, Time } from 'lightweight-charts';
 import FuturesChartService, { KlineData } from '@/src/services/futuresChart';
 import { StompClient } from '@/src/services/socket';
+import { formatTopicSymbol } from '@/src/utils/coinHelpers';
+import {
+    LineOutlined,
+    HighlightOutlined,
+    BarChartOutlined,
+    ExpandOutlined,
+    SettingOutlined,
+    EyeOutlined,
+    DeleteOutlined,
+    AimOutlined,
+    FunctionOutlined,
+    ArrowsAltOutlined,
+    NodeIndexOutlined,
+    DotChartOutlined,
+    BlockOutlined,
+    EditOutlined,
+    FontSizeOutlined,
+    ColumnHeightOutlined,
+    AreaChartOutlined
+} from '@ant-design/icons';
+import { Dropdown, Menu, Tooltip, Divider } from 'antd';
 import styles from './TradingChart.module.css';
+import {
+    DrawingPrimitive,
+    TrendLine,
+    HorizontalLine,
+    VerticalLine,
+    Rectangle,
+    FibonacciRetracement,
+    MultiPointDrawing,
+    TextDrawing,
+    BrushDrawing,
+    MeasurementDrawing,
+    DrawingPoint
+} from './drawings';
 
 // Define available timeframes
 const timeframes = ['1s', '1m', '5m', '15m', '30m', '1h', '4h', '1d'];
@@ -28,6 +62,16 @@ export default function TradingChart({ symbol }: TradingChartProps) {
     // ---------- State & refs ----------
     const [timeframe, setTimeframe] = useState('1m');
     const [loading, setLoading] = useState(true);
+    const [activeIndicators, setActiveIndicators] = useState<string[]>(['MA7', 'MA25']);
+    const [activeTool, setActiveTool] = useState<string | null>(null);
+    const [drawings, setDrawings] = useState<DrawingPrimitive[]>([]);
+    const [selectedDrawingId, setSelectedDrawingId] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStartPos, setDragStartPos] = useState<{ time: number, price: number, logical: number } | null>(null);
+    const [dragInitialPoints, setDragInitialPoints] = useState<DrawingPoint[] | null>(null);
+    const [isHoveringDrawing, setIsHoveringDrawing] = useState(false);
+    const drawingsRef = useRef<DrawingPrimitive[]>([]);
+    const [currentDrawing, setCurrentDrawing] = useState<DrawingPrimitive | null>(null);
     const [currentCandle, setCurrentCandle] = useState<{
         open: number;
         high: number;
@@ -41,11 +85,20 @@ export default function TradingChart({ symbol }: TradingChartProps) {
     const chartRef = useRef<IChartApi | null>(null);
     const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
     const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
+    const ma7SeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
+    const ma25SeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
+    const ma99SeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const stompClientRef = useRef<StompClient | null>(null);
     const resizeObserverRef = useRef<ResizeObserver | null>(null);
     const isFetchingHistoryRef = useRef(false);
     const allDataRef = useRef<KlineData[]>([]); // Store all fetched data to properly merge history
     const hasMoreHistoryRef = useRef(true);
+
+    // Sync drawingsRef with state
+    useEffect(() => {
+        drawingsRef.current = drawings;
+    }, [drawings]);
 
     // Calculate expected interval in milliseconds based on timeframe
     const getIntervalMs = useCallback((tf: string): number => {
@@ -168,26 +221,33 @@ export default function TradingChart({ symbol }: TradingChartProps) {
 
         // Add volume series with OKX styling
         const volumeSeries = chart.addSeries(HistogramSeries, {
-            priceFormat: {
-                type: 'volume',
-            },
+            priceFormat: { type: 'volume' },
             priceScaleId: 'volume',
         });
         volumeSeries.priceScale().applyOptions({
-            scaleMargins: {
-                top: 0.85,
-                bottom: 0,
-            },
+            scaleMargins: { top: 0.85, bottom: 0 },
         });
         volumeSeriesRef.current = volumeSeries;
+
+        // Add MA Series
+        ma7SeriesRef.current = chart.addSeries(LineSeries, { color: '#f0b90b', lineWidth: 1, crosshairMarkerVisible: false, lastValueVisible: false });
+        ma25SeriesRef.current = chart.addSeries(LineSeries, { color: '#e443ff', lineWidth: 1, crosshairMarkerVisible: false, lastValueVisible: false });
+        ma99SeriesRef.current = chart.addSeries(LineSeries, { color: '#4a76ff', lineWidth: 1, crosshairMarkerVisible: false, lastValueVisible: false });
 
         // Handle resize
         const handleResize = () => {
             if (chartContainerRef.current && chartRef.current) {
-                chartRef.current.applyOptions({
-                    width: chartContainerRef.current.clientWidth,
-                    height: chartContainerRef.current.clientHeight,
-                });
+                const width = chartContainerRef.current.clientWidth;
+                const height = chartContainerRef.current.clientHeight;
+
+                chartRef.current.applyOptions({ width, height });
+
+                // Sync canvas size
+                if (canvasRef.current) {
+                    canvasRef.current.width = width;
+                    canvasRef.current.height = height;
+                    requestAnimationFrame(drawAll);
+                }
             }
         };
 
@@ -197,6 +257,32 @@ export default function TradingChart({ symbol }: TradingChartProps) {
 
         // Initial size
         handleResize();
+
+        // Subscibe to crosshair and visible range changes to redraw canvas
+        chart.subscribeCrosshairMove((param) => {
+            requestAnimationFrame(drawAll);
+
+            // Handle hover detection
+            if (param.point && candlestickSeriesRef.current) {
+                const x = param.point.x;
+                const y = param.point.y;
+
+                let isAnyHit = false;
+                // Use Ref to avoid closure stale state
+                for (const drawing of drawingsRef.current) {
+                    if (drawing.hitTest(x, y, chart, candlestickSeriesRef.current)) {
+                        isAnyHit = true;
+                        break;
+                    }
+                }
+                setIsHoveringDrawing(isAnyHit);
+            } else {
+                setIsHoveringDrawing(false);
+            }
+        });
+        chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
+            requestAnimationFrame(drawAll);
+        });
 
         return () => {
             resizeObserverRef.current?.disconnect();
@@ -209,16 +295,14 @@ export default function TradingChart({ symbol }: TradingChartProps) {
     const processDataForChart = useCallback((rawData: KlineData[], timeframeMs: number) => {
         const candleData: CandlestickData[] = [];
         const volumeData: HistogramData[] = [];
+        const ma7Data: any[] = [];
+        const ma25Data: any[] = [];
+        const ma99Data: any[] = [];
 
         for (let i = 0; i < rawData.length; i++) {
             const item = rawData[i];
             const time = Math.floor(item.startTime / 1000) as Time;
-
-            // Check if there's a gap in data (simple smoothing if needed, though usually standard candles should be precise)
-            // Keeping existing logic for consistency, but improved to check previous item in array
             let useSmoothing = false;
-            // logic can be simplified: just use raw values unless smoothing is strictly required by business logic
-            // The previous implementation used smoothing based on time gaps, keeping it simple here:
 
             const open = item.openPrice;
             const close = item.closePrice;
@@ -236,10 +320,24 @@ export default function TradingChart({ symbol }: TradingChartProps) {
             volumeData.push({
                 time,
                 value: item.volume,
-                color: close >= open ? 'rgba(0, 185, 107, 0.5)' : 'rgba(246, 70, 93, 0.5)',
+                color: close >= open ? 'rgba(0, 185, 107, 0.4)' : 'rgba(246, 70, 93, 0.4)',
             });
+
+            // Calculate MAs (Simple implementation)
+            if (i >= 6) {
+                const sum = rawData.slice(i - 6, i + 1).reduce((a, b) => a + b.closePrice, 0);
+                ma7Data.push({ time, value: sum / 7 });
+            }
+            if (i >= 24) {
+                const sum = rawData.slice(i - 24, i + 1).reduce((a, b) => a + b.closePrice, 0);
+                ma25Data.push({ time, value: sum / 25 });
+            }
+            if (i >= 98) {
+                const sum = rawData.slice(i - 98, i + 1).reduce((a, b) => a + b.closePrice, 0);
+                ma99Data.push({ time, value: sum / 99 });
+            }
         }
-        return { candleData, volumeData };
+        return { candleData, volumeData, ma7Data, ma25Data, ma99Data };
     }, []);
 
     // Load history data
@@ -250,12 +348,7 @@ export default function TradingChart({ symbol }: TradingChartProps) {
         isFetchingHistoryRef.current = true;
 
         try {
-            // Get timestamp of the oldest candle we have
             const oldestTime = allDataRef.current[0].startTime;
-
-            // endTime should be slightly less than oldestTime to get strictly older data
-            // But API might treat endTime as inclusive/exclusive. Usually it means "up to this time".
-            // Let's pass oldestTime as endTime.
 
             const response = await FuturesChartService.getKlineData(symbol, timeframe, 500, oldestTime);
 
@@ -273,10 +366,15 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                     allDataRef.current = [...uniqueHistory, ...allDataRef.current];
 
                     const intervalMs = getIntervalMs(timeframe);
-                    const { candleData, volumeData } = processDataForChart(allDataRef.current, intervalMs);
+                    const { candleData, volumeData, ma7Data, ma25Data, ma99Data } = processDataForChart(allDataRef.current, intervalMs);
 
                     candlestickSeriesRef.current?.setData(candleData);
                     volumeSeriesRef.current?.setData(volumeData);
+
+                    // Update MAs in history as well
+                    ma7SeriesRef.current?.setData(activeIndicators.includes('MA7') ? ma7Data : []);
+                    ma25SeriesRef.current?.setData(activeIndicators.includes('MA25') ? ma25Data : []);
+                    ma99SeriesRef.current?.setData(activeIndicators.includes('MA99') ? ma99Data : []);
                 }
             } else {
                 hasMoreHistoryRef.current = false;
@@ -340,10 +438,15 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                 allDataRef.current = uniqueData;
 
                 const intervalMs = getIntervalMs(timeframe);
-                const { candleData, volumeData } = processDataForChart(uniqueData, intervalMs);
+                const { candleData, volumeData, ma7Data, ma25Data, ma99Data } = processDataForChart(uniqueData, intervalMs);
 
                 candlestickSeriesRef.current.setData(candleData);
                 volumeSeriesRef.current.setData(volumeData);
+
+                // Set MA data based on state
+                ma7SeriesRef.current?.setData(activeIndicators.includes('MA7') ? ma7Data : []);
+                ma25SeriesRef.current?.setData(activeIndicators.includes('MA25') ? ma25Data : []);
+                ma99SeriesRef.current?.setData(activeIndicators.includes('MA99') ? ma99Data : []);
 
                 // Update current candle info for legend
                 if (candleData.length > 0 && uniqueData.length > 0) {
@@ -363,18 +466,14 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                     });
                 }
 
-                // Only fit content on initial load, not subsequent history loads
-                // But this IS initial load func.
-                // chartRef.current?.timeScale().fitContent(); 
-                // Better: set visible range to show latest candles
-                chartRef.current?.timeScale().scrollToPosition(0, false); // Scroll to end
+                chartRef.current?.timeScale().scrollToPosition(0, false);
             }
         } catch (e) {
             console.error('Failed to fetch chart data', e);
         } finally {
             setLoading(false);
         }
-    }, [symbol, timeframe, getIntervalMs, processDataForChart]); // processDataForChart added to deps
+    }, [symbol, timeframe, getIntervalMs, processDataForChart, activeIndicators]);
 
 
     // WebSocket real-time updates
@@ -391,9 +490,9 @@ export default function TradingChart({ symbol }: TradingChartProps) {
 
         client.connect(() => {
             console.log('WebSocket Connected for Chart');
-            const normalized = symbol.replace(/-/g, '').toLowerCase();
-            let topic = `/topic/futures/kline/${timeframe}/${normalized}`;
-            if (timeframe === '1s') topic = `/topic/futures/kline/1s/${normalized}`;
+            const topicSymbol = formatTopicSymbol(symbol);
+            let topic = `/topic/spot/kline/${timeframe}/${topicSymbol}`;
+            if (timeframe === '1s') topic = `/topic/spot/kline/1s/${topicSymbol}`;
 
             client.subscribe(topic, (msg: WSKlineData) => {
                 if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return;
@@ -444,6 +543,330 @@ export default function TradingChart({ symbol }: TradingChartProps) {
         fetchData();
     }, [fetchData]);
 
+    // ---------- Drawing Logic ----------
+    const createDrawingTool = (toolType: string): DrawingPrimitive | null => {
+        console.log('[Drawing] Instantiating tool:', toolType);
+        switch (toolType) {
+            case 'line':
+            case 'ray':
+                return new TrendLine();
+            case 'h-line':
+                return new HorizontalLine();
+            case 'v-line':
+                return new VerticalLine();
+            case 'rect':
+                return new Rectangle();
+            case 'fib':
+                return new FibonacciRetracement();
+            case 'xabcd':
+                return new MultiPointDrawing(5, ['X', 'A', 'B', 'C', 'D']);
+            case 'cypher':
+                return new MultiPointDrawing(5, ['X', 'A', 'B', 'C', 'D']);
+            case 'head-shoulders':
+                return new MultiPointDrawing(7, ['L-S', 'N1', 'H', 'N2', 'R-S']);
+            case 'abcd':
+                return new MultiPointDrawing(4, ['A', 'B', 'C', 'D']);
+            case 'triangle':
+                return new MultiPointDrawing(4, ['A', 'B', 'C', 'D']);
+            case 'elliott-impulse':
+                return new MultiPointDrawing(6, ['(0)', '(1)', '(2)', '(3)', '(4)', '(5)']);
+            case 'elliott-abc':
+                return new MultiPointDrawing(4, ['(0)', '(A)', '(B)', '(C)']);
+            case 'fib':
+            case 'fib-ext':
+                return new FibonacciRetracement();
+            case 'brush':
+                return new BrushDrawing();
+            case 'circle':
+                return new MultiPointDrawing(2, ['O', 'R']);
+            case 'rect':
+                return new Rectangle();
+            case 'text':
+            case 'callout':
+                return new TextDrawing(toolType === 'text' ? 'Văn bản' : 'Chú thích');
+            case 'price-range':
+                return new MeasurementDrawing('price');
+            case 'time-range':
+                return new MeasurementDrawing('time');
+            default:
+                console.warn('[Drawing] No class for tool type:', toolType);
+                return null;
+        }
+    };
+
+    const [isCanvasEventsEnabled, setIsCanvasEventsEnabled] = useState(true);
+
+    const handleCanvasMouseDown = (e: React.MouseEvent) => {
+        console.log('[Drawing] Mouse down, activeTool:', activeTool);
+
+        if (!chartRef.current || !candlestickSeriesRef.current || !canvasRef.current) return;
+
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (activeTool === 'cursor' || !activeTool) {
+            // Hit test logic
+            let hit = false;
+            const newDrawings = [...drawings];
+
+            // Loop backwards to hit the topmost drawing first
+            for (let i = newDrawings.length - 1; i >= 0; i--) {
+                const drawing = newDrawings[i];
+                if (!hit && drawing.hitTest(x, y, chartRef.current, candlestickSeriesRef.current)) {
+                    drawing.setSelected(true);
+                    setSelectedDrawingId(drawing.getId());
+
+                    // Start dragging
+                    const time = chartRef.current.timeScale().coordinateToTime(x);
+                    const price = candlestickSeriesRef.current.coordinateToPrice(y);
+                    const logical = chartRef.current.timeScale().coordinateToLogical(x);
+
+                    if (price !== null && logical !== null) {
+                        setIsDragging(true);
+                        setDragStartPos({
+                            time: time ? Number(time) : 0,
+                            price,
+                            logical
+                        });
+                        setDragInitialPoints([...drawing.getPoints()]);
+                        console.log('[Drawing] Start dragging:', drawing.getId());
+                    }
+
+                    hit = true;
+                } else {
+                    drawing.setSelected(false);
+                }
+            }
+
+            if (!hit) {
+                console.log('[Drawing] No hit, allowing chart interaction');
+                setSelectedDrawingId(null);
+                setIsDragging(false);
+                setDragStartPos(null);
+                setDragInitialPoints(null);
+                // Disable canvas events temporarily to let the event pass through to the chart
+                setIsCanvasEventsEnabled(false);
+                setTimeout(() => setIsCanvasEventsEnabled(true), 50);
+            }
+
+            setDrawings(newDrawings);
+            return;
+        }
+
+        if (activeTool === 'delete') {
+            console.log('[Drawing] Clearing all drawings');
+            setDrawings([]);
+            setCurrentDrawing(null);
+            setSelectedDrawingId(null);
+            return;
+        }
+
+        const time = chartRef.current.timeScale().coordinateToTime(x);
+        const price = candlestickSeriesRef.current.coordinateToPrice(y);
+
+        console.log('[Drawing] Coordinates:', { x, y, time, price });
+
+        if (time === null || price === null) return;
+
+        if (currentDrawing && currentDrawing instanceof MultiPointDrawing && !currentDrawing.isComplete()) {
+            currentDrawing.addPoint({ time, price });
+            requestAnimationFrame(drawAll);
+            return;
+        }
+
+        const newDrawing = createDrawingTool(activeTool);
+        if (!newDrawing) {
+            console.error('[Drawing] Failed to create drawing tool');
+            return;
+        }
+
+        newDrawing.addPoint({ time, price });
+        console.log('[Drawing] Drawing created, points:', newDrawing.getPoints());
+        setCurrentDrawing(newDrawing);
+    };
+
+    const drawAll = useCallback(() => {
+        if (!canvasRef.current || !chartRef.current || !candlestickSeriesRef.current) return;
+
+        const ctx = canvasRef.current.getContext('2d');
+        if (!ctx) return;
+
+        const width = canvasRef.current.width;
+        const height = canvasRef.current.height;
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw all completed drawings from Ref (most stable)
+        drawingsRef.current.forEach(drawing => {
+            drawing.draw(ctx, chartRef.current!, candlestickSeriesRef.current!);
+        });
+
+        // Draw current drawing being created
+        if (currentDrawing) {
+            currentDrawing.draw(ctx, chartRef.current!, candlestickSeriesRef.current!);
+        }
+    }, [currentDrawing]);
+
+    const handleCanvasMouseUp = useCallback(() => {
+        setIsDragging(false);
+        setDragStartPos(null);
+        setDragInitialPoints(null);
+        setDrawings([...drawingsRef.current]);
+
+        if (!currentDrawing) return;
+
+        if (currentDrawing.isComplete()) {
+            setDrawings(prev => [...prev, currentDrawing]);
+            setCurrentDrawing(null);
+
+            // Reset tool for single-click tools
+            if (currentDrawing instanceof HorizontalLine || currentDrawing instanceof VerticalLine) {
+                setActiveTool(null);
+            }
+        }
+    }, [currentDrawing]);
+
+    const performMove = useCallback((x: number, y: number) => {
+        if (!chartRef.current || !candlestickSeriesRef.current || !canvasRef.current) return;
+
+        const timeScale = chartRef.current.timeScale();
+        const logical = timeScale.coordinateToLogical(x);
+        const price = candlestickSeriesRef.current.coordinateToPrice(y);
+
+        // Implementation of movement while dragging
+        if (isDragging && selectedDrawingId && dragStartPos && dragInitialPoints) {
+            if (price === null || logical === null) {
+                requestAnimationFrame(drawAll);
+                return;
+            }
+
+            const drawing = drawingsRef.current.find(d => d.getId() === selectedDrawingId);
+            if (drawing) {
+                const deltaPrice = price - dragStartPos.price;
+                const deltaLogical = logical - dragStartPos.logical;
+
+                if (deltaPrice !== 0 || deltaLogical !== 0) {
+                    const newPoints = dragInitialPoints.map(p => {
+                        const pCoord = timeScale.timeToCoordinate(p.time);
+                        const pLogical = pCoord !== null ? timeScale.coordinateToLogical(pCoord) : null;
+
+                        if (pLogical === null) return { ...p, price: p.price + deltaPrice };
+
+                        const targetLogical = pLogical + deltaLogical;
+                        const targetCoord = timeScale.logicalToCoordinate(targetLogical as any);
+                        const targetTime = targetCoord !== null ? timeScale.coordinateToTime(targetCoord) : null;
+
+                        return {
+                            price: p.price + deltaPrice,
+                            time: targetTime || p.time
+                        };
+                    });
+
+                    if (!newPoints.some(p => isNaN(p.price))) {
+                        drawing.setPoints(newPoints);
+                    }
+                }
+                requestAnimationFrame(drawAll);
+                return;
+            }
+        }
+
+        const time = timeScale.coordinateToTime(x);
+        if (time === null || price === null) {
+            requestAnimationFrame(drawAll);
+            return;
+        }
+
+        if (!currentDrawing) {
+            requestAnimationFrame(drawAll);
+            return;
+        }
+
+        if (currentDrawing instanceof HorizontalLine || currentDrawing instanceof VerticalLine) {
+            currentDrawing.updateLastPoint({ time, price });
+        } else if (currentDrawing instanceof BrushDrawing) {
+            currentDrawing.addPoint({ time, price });
+        } else if (currentDrawing instanceof MultiPointDrawing) {
+            currentDrawing.updateLastPoint({ time, price });
+        } else if (currentDrawing) {
+            if (currentDrawing.getPoints().length === 1) {
+                currentDrawing.addPoint({ time, price });
+            } else {
+                currentDrawing.updateLastPoint({ time, price });
+            }
+        }
+
+        requestAnimationFrame(drawAll);
+    }, [isDragging, selectedDrawingId, dragStartPos, dragInitialPoints, currentDrawing, drawAll]);
+
+    const handleCanvasMouseMove = (e: React.MouseEvent) => {
+        if (!canvasRef.current) return;
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        performMove(x, y);
+    };
+
+    // Global drag handling to ensure smoothness and robustness
+    useEffect(() => {
+        if (!isDragging) return;
+
+        const handleGlobalMouseMove = (e: MouseEvent) => {
+            if (!canvasRef.current) return;
+            const rect = canvasRef.current.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            performMove(x, y);
+        };
+
+        const handleGlobalMouseUp = () => {
+            handleCanvasMouseUp();
+        };
+
+        window.addEventListener('mousemove', handleGlobalMouseMove);
+        window.addEventListener('mouseup', handleGlobalMouseUp);
+
+        return () => {
+            window.removeEventListener('mousemove', handleGlobalMouseMove);
+            window.removeEventListener('mouseup', handleGlobalMouseUp);
+        };
+    }, [isDragging, performMove, handleCanvasMouseUp]);
+
+    // Redraw when tool or selection changes
+    useEffect(() => {
+        requestAnimationFrame(drawAll);
+    }, [activeTool, selectedDrawingId, drawAll]);
+
+    // Cleanup unfinished drawings when tool changes
+    useEffect(() => {
+        if (currentDrawing && !currentDrawing.isComplete()) {
+            setCurrentDrawing(null);
+            requestAnimationFrame(drawAll);
+        }
+    }, [activeTool]);
+
+    // Keep drawingsRef in sync
+    useEffect(() => {
+        drawingsRef.current = drawings;
+        requestAnimationFrame(drawAll);
+    }, [drawings, drawAll]);
+
+    // Handle Delete key
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.key === 'Delete' || e.key === 'Backspace') && selectedDrawingId) {
+                // Check if user is typing in an input first
+                if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+                    return;
+                }
+                setDrawings(prev => prev.filter(d => d.getId() !== selectedDrawingId));
+                setSelectedDrawingId(null);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedDrawingId]);
+
     // Format number with commas
     const formatPrice = (price: number) => {
         return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -452,17 +875,127 @@ export default function TradingChart({ symbol }: TradingChartProps) {
     const formatVolume = (vol: number) => {
         if (vol >= 1000000) return (vol / 1000000).toFixed(2) + 'M';
         if (vol >= 1000) return (vol / 1000).toFixed(2) + 'K';
-        return vol.toFixed(4);
+        return vol.toFixed(2);
+    };
+
+    const toggleIndicator = (name: string) => {
+        setActiveIndicators(prev =>
+            prev.includes(name) ? prev.filter(i => i !== name) : [...prev, name]
+        );
+    };
+
+    const indicatorItems = [
+        {
+            key: 'MA7',
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100px' }}>
+                    <span>MA 7</span>
+                    {activeIndicators.includes('MA7') && <EyeOutlined style={{ color: '#0ecb81' }} />}
+                </div>
+            ),
+            onClick: () => toggleIndicator('MA7')
+        },
+        {
+            key: 'MA25',
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100px' }}>
+                    <span>MA 25</span>
+                    {activeIndicators.includes('MA25') && <EyeOutlined style={{ color: '#0ecb81' }} />}
+                </div>
+            ),
+            onClick: () => toggleIndicator('MA25')
+        },
+        {
+            key: 'MA99',
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100px' }}>
+                    <span>MA 99</span>
+                    {activeIndicators.includes('MA99') && <EyeOutlined style={{ color: '#0ecb81' }} />}
+                </div>
+            ),
+            onClick: () => toggleIndicator('MA99')
+        },
+        { type: 'divider' as const },
+        { key: 'BOLL', label: 'Bollinger Bands', disabled: true },
+        { key: 'VOL', label: 'Volume', disabled: true },
+    ];
+
+    // Category-based drawing tools (OKX Style - Reorganized by User)
+    const toolCategories = [
+        {
+            key: 'lines',
+            title: 'Đường',
+            icon: <LineOutlined />,
+            items: [
+                { key: 'line', label: 'Đường xu hướng', icon: <LineOutlined />, disabled: false },
+                { key: 'ray', label: 'Tia', icon: <LineOutlined />, disabled: false },
+                { key: 'h-line', label: 'Đường nằm ngang', icon: <ArrowsAltOutlined style={{ transform: 'rotate(90deg)' }} />, disabled: false },
+                { key: 'v-line', label: 'Đường thẳng đứng', icon: <ArrowsAltOutlined />, disabled: false },
+            ]
+        },
+        {
+            key: 'patterns',
+            title: 'Các mẫu hình',
+            icon: <NodeIndexOutlined />,
+            items: [
+                { key: 'xabcd', label: 'Mẫu hình XABCD', icon: <NodeIndexOutlined />, disabled: false },
+                { key: 'cypher', label: 'Mẫu hình Cypher', icon: <NodeIndexOutlined />, disabled: false },
+                { key: 'head-shoulders', label: 'Vai Đầu Vai', icon: <NodeIndexOutlined />, disabled: false },
+                { key: 'abcd', label: 'Mẫu hình ABCD', icon: <NodeIndexOutlined />, disabled: false },
+                { key: 'elliott-impulse', label: 'Sóng Đẩy Elliott (12345)', icon: <DotChartOutlined />, disabled: false },
+                { key: 'elliott-abc', label: 'Sóng Điều Chỉnh Elliott (ABC)', icon: <DotChartOutlined />, disabled: false },
+            ]
+        },
+        {
+            key: 'projections',
+            title: 'Phép chiếu',
+            icon: <FunctionOutlined />,
+            items: [
+                { key: 'fib', label: 'Fibonacci Thoái lui', icon: <FunctionOutlined />, disabled: false },
+                { key: 'fib-ext', label: 'Fibonacci Mở rộng', icon: <FunctionOutlined />, disabled: false },
+            ]
+        },
+        {
+            key: 'brush',
+            title: 'Cọ',
+            icon: <EditOutlined />,
+            items: [
+                { key: 'brush', label: 'Cọ vẽ', icon: <EditOutlined />, disabled: false },
+                { key: 'rect', label: 'Hình chữ nhật', icon: <HighlightOutlined />, disabled: false },
+                { key: 'circle', label: 'Hình tròn', icon: <BlockOutlined />, disabled: false },
+            ]
+        },
+        {
+            key: 'annotations',
+            title: 'Văn bản chú thích',
+            icon: <FontSizeOutlined />,
+            items: [
+                { key: 'text', label: 'Văn bản', icon: <FontSizeOutlined />, disabled: false },
+                { key: 'callout', label: 'Chú thích', icon: <FontSizeOutlined />, disabled: false },
+            ]
+        },
+        {
+            key: 'measurement',
+            title: 'Đo lường',
+            icon: <AreaChartOutlined />,
+            items: [
+                { key: 'price-range', label: 'Khoảng giá', icon: <ColumnHeightOutlined />, disabled: false },
+                { key: 'time-range', label: 'Khoảng thời gian', icon: <ArrowsAltOutlined />, disabled: false },
+            ]
+        }
+    ];
+
+    // Helper to get active tool's icon or category default
+    const getCategoryIcon = (cat: any) => {
+        if (!cat || !cat.items) return null;
+        const activeItem = cat.items.find((it: any) => it.key === activeTool);
+        return activeItem ? activeItem.icon : cat.icon;
     };
 
     return (
         <div className={styles.container}>
-            {/* Header with symbol and timeframes */}
+            {/* Header with timeframes - Symbol removed as it is in MarketInfo */}
             <div className={styles.header}>
-                <div className={styles.symbolSection}>
-                    <span className={styles.symbolName}>{symbol.toUpperCase().replace('-', '/')}</span>
-                    <span className={styles.symbolType}>Perpetual</span>
-                </div>
                 <div className={styles.timeframes}>
                     {timeframes.map((tf) => (
                         <button
@@ -475,59 +1008,204 @@ export default function TradingChart({ symbol }: TradingChartProps) {
                     ))}
                 </div>
                 <div className={styles.chartTools}>
-                    <button className={styles.toolBtn} title="Chỉ báo">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
-                        </svg>
+                    <Dropdown
+                        menu={{ items: indicatorItems, theme: 'dark' }}
+                        trigger={['click']}
+                        placement="bottomRight"
+                    >
+                        <button className={styles.toolBtn} title="Chỉ báo">
+                            <BarChartOutlined />
+                        </button>
+                    </Dropdown>
+                    <button className={styles.toolBtn} title="Cài đặt">
+                        <SettingOutlined />
                     </button>
                     <button className={styles.toolBtn} title="Toàn màn hình">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-                        </svg>
-                    </button>
-                    <button className={styles.toolBtn} title="Cài đặt">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                        </svg>
+                        <ExpandOutlined />
                     </button>
                 </div>
             </div>
 
-            {/* Chart area with OHLCV legend overlay */}
-            <div className={styles.chartArea}>
-                {/* OHLCV Legend */}
-                {currentCandle && (
-                    <div className={styles.legend}>
-                        <span className={styles.legendLabel}>O</span>
-                        <span className={currentCandle.close >= currentCandle.open ? styles.legendValueUp : styles.legendValueDown}>
-                            {formatPrice(currentCandle.open)}
-                        </span>
-                        <span className={styles.legendLabel}>H</span>
-                        <span className={currentCandle.close >= currentCandle.open ? styles.legendValueUp : styles.legendValueDown}>
-                            {formatPrice(currentCandle.high)}
-                        </span>
-                        <span className={styles.legendLabel}>L</span>
-                        <span className={currentCandle.close >= currentCandle.open ? styles.legendValueUp : styles.legendValueDown}>
-                            {formatPrice(currentCandle.low)}
-                        </span>
-                        <span className={styles.legendLabel}>C</span>
-                        <span className={currentCandle.close >= currentCandle.open ? styles.legendValueUp : styles.legendValueDown}>
-                            {formatPrice(currentCandle.close)}
-                        </span>
-                        <span className={styles.legendLabel}>Vol</span>
-                        <span className={styles.legendVolume}>{formatVolume(currentCandle.volume)}</span>
-                        <span className={currentCandle.change >= 0 ? styles.legendChangeUp : styles.legendChangeDown}>
-                            {currentCandle.change >= 0 ? '+' : ''}{formatPrice(currentCandle.change)} ({currentCandle.changePercent >= 0 ? '+' : ''}{currentCandle.changePercent.toFixed(2)}%)
-                        </span>
+            <div className={styles.mainArea}>
+                {/* Left Sidebar Toolbar */}
+                <div className={styles.sidebar}>
+                    <Tooltip title="Cursor" placement="right">
+                        <button
+                            className={`${styles.sidebarBtn} ${activeTool === 'cursor' || !activeTool ? styles.active : ''}`}
+                            onClick={() => setActiveTool('cursor')}
+                        >
+                            <AimOutlined />
+                        </button>
+                    </Tooltip>
+
+                    <Divider className={styles.sidebarDivider} />
+
+                    {toolCategories.map(cat => (
+                        <Dropdown
+                            key={cat.key}
+                            trigger={['click']}
+                            placement="bottomRight"
+                            overlayClassName={styles.sidebarDropdown}
+                            menu={{
+                                items: cat.items.map(item => ({
+                                    key: item.key,
+                                    label: item.label,
+                                    icon: item.icon,
+                                    disabled: item.disabled,
+                                    onClick: () => {
+                                        console.log('[Drawing] Selected tool:', item.key);
+                                        setActiveTool(item.key);
+                                    }
+                                })),
+                                theme: 'dark'
+                            }}
+                        >
+                            <Tooltip title={cat.title} placement="right">
+                                <button className={`${styles.sidebarBtn} ${cat.items.some(it => it.key === activeTool) ? styles.active : ''}`}>
+                                    {getCategoryIcon(cat)}
+                                    <span className={styles.dropdownCorner}></span>
+                                </button>
+                            </Tooltip>
+                        </Dropdown>
+                    ))}
+
+                    <Divider className={styles.sidebarDivider} />
+
+                    <Tooltip title="Delete All" placement="right">
+                        <button className={styles.sidebarBtn} onClick={() => {
+                            setDrawings([]);
+                            setCurrentDrawing(null);
+                        }}>
+                            <DeleteOutlined />
+                        </button>
+                    </Tooltip>
+
+                    <Tooltip title="Hide/Show" placement="right">
+                        <button className={styles.sidebarBtn}><EyeOutlined /></button>
+                    </Tooltip>
+                </div>
+
+                {/* Chart area with OHLCV legend overlay */}
+                <div className={styles.chartArea}>
+                    {/* OHLCV Legend */}
+                    {currentCandle && (
+                        <div className={styles.legend}>
+                            <div className={styles.legendOhlc}>
+                                <span className={styles.legendLabel}>O</span>
+                                <span className={currentCandle.close >= currentCandle.open ? styles.legendValueUp : styles.legendValueDown}>
+                                    {formatPrice(currentCandle.open)}
+                                </span>
+                                <span className={styles.legendLabel}>H</span>
+                                <span className={currentCandle.close >= currentCandle.open ? styles.legendValueUp : styles.legendValueDown}>
+                                    {formatPrice(currentCandle.high)}
+                                </span>
+                                <span className={styles.legendLabel}>L</span>
+                                <span className={currentCandle.close >= currentCandle.open ? styles.legendValueUp : styles.legendValueDown}>
+                                    {formatPrice(currentCandle.low)}
+                                </span>
+                                <span className={styles.legendLabel}>C</span>
+                                <span className={currentCandle.close >= currentCandle.open ? styles.legendValueUp : styles.legendValueDown}>
+                                    {formatPrice(currentCandle.close)}
+                                </span>
+                                <span className={currentCandle.change >= 0 ? styles.legendChangeUp : styles.legendChangeDown}>
+                                    {currentCandle.change >= 0 ? '+' : ''}{formatPrice(currentCandle.change)} ({currentCandle.changePercent >= 0 ? '+' : ''}{currentCandle.changePercent.toFixed(2)}%)
+                                </span>
+                            </div>
+                            <div className={styles.legendIndicators}>
+                                {activeIndicators.map(ind => (
+                                    <span key={ind} className={styles.indicatorValue} style={{ color: ind === 'MA7' ? '#f0b90b' : ind === 'MA25' ? '#e443ff' : '#4a76ff' }}>
+                                        {ind}: {currentCandle.close.toFixed(1)}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    <div ref={chartContainerRef} className={styles.chartContainer}>
+                        <canvas
+                            ref={canvasRef}
+                            className={styles.drawingCanvas}
+                            onMouseDown={handleCanvasMouseDown}
+                            onMouseMove={handleCanvasMouseMove}
+                            onMouseUp={handleCanvasMouseUp}
+                            onMouseLeave={handleCanvasMouseUp}
+                            style={{
+                                cursor: isDragging ? 'grabbing' : (isHoveringDrawing ? 'pointer' : (activeTool && activeTool !== 'cursor' ? 'crosshair' : 'default')),
+                                pointerEvents: (activeTool && activeTool !== 'cursor') || isHoveringDrawing || isDragging ? 'all' : 'none',
+                                zIndex: 10
+                            }}
+                        />
+
+                        {/* Selected Text Editing Overlay */}
+                        {selectedDrawingId && drawings.find(d => d.getId() === selectedDrawingId) instanceof TextDrawing && (
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    bottom: '30px',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    background: '#1e2329',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #363c4e',
+                                    boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '10px',
+                                    zIndex: 1001,
+                                    width: '240px'
+                                }}
+                            >
+                                <div style={{ color: '#848e9c', fontSize: '12px' }}>Sửa nội dung văn bản:</div>
+                                <input
+                                    autoFocus
+                                    defaultValue={(drawings.find(d => d.getId() === selectedDrawingId) as TextDrawing).getText()}
+                                    style={{
+                                        background: '#0b0e11',
+                                        border: '1px solid #363c4e',
+                                        color: 'white',
+                                        padding: '6px 10px',
+                                        borderRadius: '4px',
+                                        outline: 'none',
+                                        fontSize: '14px'
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            const newText = (e.target as HTMLInputElement).value;
+                                            const d = drawings.find(d => d.getId() === selectedDrawingId) as TextDrawing;
+                                            d.setText(newText);
+                                            setSelectedDrawingId(null);
+                                            requestAnimationFrame(drawAll);
+                                        }
+                                        if (e.key === 'Escape') setSelectedDrawingId(null);
+                                    }}
+                                />
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <button
+                                        onClick={() => {
+                                            setDrawings(prev => prev.filter(d => d.getId() !== selectedDrawingId));
+                                            setSelectedDrawingId(null);
+                                        }}
+                                        style={{ background: '#f6465d', border: 'none', color: 'white', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                    >
+                                        Xóa
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedDrawingId(null)}
+                                        style={{ background: '#f0b90b', border: 'none', color: '#000', padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
+                                    >
+                                        Lưu
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-                <div ref={chartContainerRef} className={styles.chartContainer} />
-                {loading && (
-                    <div className={styles.loadingOverlay}>
-                        <div className={styles.spinner}></div>
-                        <span>Đang tải...</span>
-                    </div>
-                )}
+                    {loading && (
+                        <div className={styles.loadingOverlay}>
+                            <div className={styles.spinner}></div>
+                            <span>Đang tải...</span>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

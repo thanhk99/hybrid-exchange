@@ -1,15 +1,13 @@
 "use client";
 
-"use client";
-
 import { useState, useEffect, useRef } from 'react';
-import { BarChartOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons';
+import { BarChartOutlined, EditOutlined, SettingOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import styles from './MarketInfo.module.css';
-import FuturesService from '@/src/services/futures'; // Can be removed if not used elsewhere, but maybe keep for type
-// import { StompClient } from '@/src/services/socket'; // Removed
+import FuturesService from '@/src/services/futures';
 import { FuturesCoin } from '@/src/types/futures';
 import { getAssetsOverview } from '@/src/services/balance';
 import { useFuturesMarket } from '@/src/contexts/FuturesMarketContext';
+import TokenService from '@/src/services/token';
 
 interface MarketInfoProps {
     symbol: string;
@@ -46,14 +44,19 @@ export default function MarketInfo({ symbol }: MarketInfoProps) {
 
 
     const fetchBalance = async () => {
+        const token = TokenService.getAccessToken();
+        if (!token) {
+            setBalance(0);
+            return;
+        }
+
         try {
             const data = await getAssetsOverview();
-            // Futures wallet has 'asset' (singular), not 'assets' (plural)
             const futuresAsset = (data as any).futures?.asset;
-            // Use availableBalance for trading
             const availableBalance = futuresAsset?.availableBalance || futuresAsset?.balance || 0;
             setBalance(availableBalance);
         } catch (e) {
+            console.error('Failed to fetch balance in MarketInfo', e);
         }
     };
 
@@ -110,11 +113,6 @@ export default function MarketInfo({ symbol }: MarketInfoProps) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <h1 className={styles.symbol}>{symbol}</h1>
                     <span className={styles.badge}>Vĩnh cửu</span>
-                </div>
-                <div style={{ display: 'flex', gap: '12px', marginLeft: '12px', color: '#8c8c8c', fontSize: '16px' }}>
-                    <BarChartOutlined style={{ cursor: 'pointer' }} />
-                    <EditOutlined style={{ cursor: 'pointer' }} />
-                    <SettingOutlined style={{ cursor: 'pointer' }} />
                 </div>
             </div>
 

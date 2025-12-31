@@ -9,13 +9,20 @@ import { Notification } from '@/src/components/common/Notification/Notification'
 import { getAssetsOverview } from '@/src/services/balance';
 import TokenService from '@/src/services/token';
 import { useFuturesMarket } from '@/src/contexts/FuturesMarketContext';
+import { LockOutlined, InfoCircleOutlined, SwapOutlined } from '@ant-design/icons';
 
 interface TradingFormProps {
     symbol: string;
 }
 
 export default function TradingForm({ symbol }: TradingFormProps) {
-    const { marketData, error } = useFuturesMarket();
+    const { marketData, error, selectedPrice } = useFuturesMarket();
+
+    useEffect(() => {
+        if (selectedPrice !== null) {
+            setPrice(selectedPrice.toString());
+        }
+    }, [selectedPrice]);
 
     useEffect(() => {
         if (marketData && !price && orderType === 'limit') {
@@ -55,6 +62,12 @@ export default function TradingForm({ symbol }: TradingFormProps) {
 
 
     const fetchBalance = async () => {
+        const token = TokenService.getAccessToken();
+        if (!token) {
+            setBalance({ usdt: 0, coin: 0 });
+            return;
+        }
+
         try {
             const data = await getAssetsOverview();
 
@@ -72,7 +85,7 @@ export default function TradingForm({ symbol }: TradingFormProps) {
 
             setBalance({ usdt: usdtBalance, coin: coinBalance });
         } catch (e) {
-            console.error('Failed to fetch balance', e);
+            console.error('Failed to fetch balance in TradingForm', e);
         }
     };
 
@@ -139,7 +152,9 @@ export default function TradingForm({ symbol }: TradingFormProps) {
             {/* Login Prompt for Unauthenticated Users */}
             {!isAuthenticated ? (
                 <div className={styles.loginPrompt}>
-                    <div className={styles.loginIcon}>🔒</div>
+                    <div className={styles.loginIcon}>
+                        <LockOutlined />
+                    </div>
                     <h4 className={styles.loginTitle}>Đăng nhập để giao dịch</h4>
                     <p className={styles.loginMessage}>
                         Bạn cần đăng nhập để thực hiện giao dịch futures

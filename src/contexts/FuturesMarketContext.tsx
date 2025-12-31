@@ -12,6 +12,8 @@ interface FuturesMarketContextType {
     error: string | null;
     currentSymbol: string;
     setCurrentSymbol: (symbol: string) => void;
+    selectedPrice: number | null;
+    setSelectedPrice: (price: number | null) => void;
 }
 
 const FuturesMarketContext = createContext<FuturesMarketContextType | undefined>(undefined);
@@ -35,6 +37,7 @@ export const FuturesMarketProvider: React.FC<FuturesMarketProviderProps> = ({ ch
     const [currentSymbol, setCurrentSymbol] = useState(initialSymbol);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
 
     const stompClientRef = useRef<StompClient | null>(null);
     const isConnectedRef = useRef(false);
@@ -138,6 +141,8 @@ export const FuturesMarketProvider: React.FC<FuturesMarketProviderProps> = ({ ch
         error,
         currentSymbol,
         setCurrentSymbol,
+        selectedPrice,
+        setSelectedPrice,
     };
 
     return (

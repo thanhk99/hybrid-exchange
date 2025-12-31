@@ -47,3 +47,23 @@ export const formatMarketCap = (value: number): string => {
         return formatCurrency(value);
     }
 };
+
+/**
+ * Chuẩn hóa symbol sang định dạng có dấu gạch ngang (DASH) dùng cho WebSocket topics
+ * Ví dụ: BTC/USDT -> BTC-USDT, BTCUSDT -> BTC-USDT
+ */
+export const formatTopicSymbol = (symbol: string): string => {
+    if (!symbol) return '';
+
+    // Nếu có gạch chéo, thay bằng gạch ngang
+    if (symbol.includes('/')) {
+        return symbol.replace(/\//g, '-').toUpperCase();
+    }
+
+    // Nếu là dạng BTCUSDT (không có phân tách), chèn gạch ngang trước USDT
+    if (symbol.endsWith('USDT') && !symbol.includes('-')) {
+        return symbol.replace('USDT', '-USDT').toUpperCase();
+    }
+
+    return symbol.toUpperCase();
+};

@@ -2,18 +2,19 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    color: #f0f0f0;
 }
 
 .header {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #2b2f36;
 }
 
 .title {
     font-size: 14px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #f0f0f0;
     margin: 0;
 }
 
@@ -23,98 +24,100 @@
 
 .label {
     display: block;
-    font-size: 12px;
-    color: #8c8c8c;
-    margin-bottom: 8px;
+    font-size: 11px;
+    color: #848e9c;
+    margin-bottom: 6px;
 }
 
 .leverageControl {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    background: #f5f5f5;
-    border-radius: 6px;
+    gap: 8px;
+    padding: 6px 10px;
+    background: #2b2f36;
+    border-radius: 4px;
 }
 
 .leverageBtn {
-    width: 28px;
-    height: 28px;
-    border: 1px solid #e0e0e0;
-    background: #fff;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: #363c4e;
+    color: #f0f0f0;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: background 0.2s;
 }
 
 .leverageBtn:hover {
-    border-color: #1a1a1a;
+    background: #4a5264;
 }
 
 .leverageValue {
     flex: 1;
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #f0f0f0;
 }
 
 .sideTabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 1px;
+    background: #2b2f36;
+    border-radius: 4px;
+    padding: 1px;
     margin-bottom: 16px;
 }
 
 .sideTab {
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    background: #fff;
-    border-radius: 6px;
-    font-size: 14px;
+    padding: 8px;
+    border: none;
+    background: transparent;
+    color: #848e9c;
+    border-radius: 4px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .sideTab.buyActive {
-    background: #0ECB81;
-    border-color: #0ECB81;
+    background: #0ecb81;
     color: #fff;
 }
 
 .sideTab.sellActive {
-    background: #F6465D;
-    border-color: #F6465D;
+    background: #f6465d;
     color: #fff;
 }
 
 .orderTypeTabs {
     display: flex;
-    gap: 8px;
+    gap: 16px;
     margin-bottom: 16px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #2b2f36;
 }
 
 .orderTypeTab {
-    padding: 8px 16px;
+    padding: 6px 0;
     border: none;
     background: transparent;
-    color: #8c8c8c;
+    color: #848e9c;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     position: relative;
-    transition: all 0.2s;
+    transition: color 0.2s;
 }
 
 .orderTypeTab.active {
-    color: #1a1a1a;
+    color: #f0f0f0;
 }
 
 .orderTypeTab.active::after {
@@ -124,13 +127,13 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: #1a1a1a;
+    background: #f0b90b;
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .inputGroup {
@@ -139,97 +142,95 @@
 
 .input {
     width: 100%;
-    padding: 10px 60px 10px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 14px;
+    padding: 8px 60px 8px 10px;
+    background: #2b2f36;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #f0f0f0;
+    font-size: 13px;
     font-family: 'Roboto Mono', monospace;
-    transition: all 0.2s;
+    transition: border-color 0.2s;
 }
 
 .input:focus {
     outline: none;
-    border-color: #1a1a1a;
+    border-color: #f0b90b;
 }
 
 .inputSuffix {
     position: absolute;
-    right: 12px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 12px;
-    color: #8c8c8c;
+    font-size: 11px;
+    color: #848e9c;
     font-weight: 600;
 }
 
 .percentageButtons {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
+    gap: 4px;
 }
 
 .percentageBtn {
-    padding: 6px;
-    border: 1px solid #e0e0e0;
-    background: #fff;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 4px;
+    border: none;
+    background: #2b2f36;
+    border-radius: 2px;
+    font-size: 10px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #848e9c;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .percentageBtn:hover {
-    border-color: #1a1a1a;
-    background: #f9f9f9;
+    background: #363c4e;
+    color: #f0f0f0;
 }
 
 .balanceInfo {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
-    font-size: 12px;
+    padding: 4px 0;
+    font-size: 11px;
 }
 
 .balanceLabel {
-    color: #8c8c8c;
+    color: #848e9c;
 }
 
 .balanceValue {
-    color: #1a1a1a;
+    color: #f0f0f0;
     font-weight: 600;
     font-family: 'Roboto Mono', monospace;
 }
 
 .submitBtn {
-    padding: 14px;
+    padding: 12px;
     border: none;
-    border-radius: 6px;
-    font-size: 15px;
+    border-radius: 4px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 8px;
+    transition: opacity 0.2s;
+    margin-top: 4px;
+}
+
+.submitBtn:hover {
+    opacity: 0.9;
 }
 
 .buyBtn {
-    background: #0ECB81;
+    background: #0ecb81;
     color: #fff;
-}
-
-.buyBtn:hover {
-    background: #0db872;
 }
 
 .sellBtn {
-    background: #F6465D;
+    background: #f6465d;
     color: #fff;
-}
-
-.sellBtn:hover {
-    background: #e03d52;
 }
 
 /* Login Prompt Styles */
@@ -238,63 +239,60 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 40px 16px;
     text-align: center;
     flex: 1;
-    min-height: 300px;
 }
 
 .loginIcon {
-    font-size: 48px;
+    font-size: 40px;
+    color: #848e9c;
     margin-bottom: 16px;
 }
 
 .loginTitle {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #f0f0f0;
     margin: 0 0 8px 0;
 }
 
 .loginMessage {
-    font-size: 14px;
-    color: #8c8c8c;
+    font-size: 13px;
+    color: #848e9c;
     margin: 0 0 24px 0;
     line-height: 1.5;
 }
 
 .loginButton {
-    padding: 12px 32px;
-    background: linear-gradient(135deg, #0ECB81 0%, #0db872 100%);
-    color: #fff;
+    width: 100%;
+    padding: 12px;
+    background: #f0b90b;
+    color: #000;
     border: none;
-    border-radius: 8px;
-    font-size: 15px;
+    border-radius: 4px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 12px rgba(14, 203, 129, 0.3);
+    transition: background 0.2s;
 }
 
 .loginButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(14, 203, 129, 0.4);
+    background: #e1aa0a;
 }
 
 .registerPrompt {
-    font-size: 13px;
-    color: #8c8c8c;
+    font-size: 12px;
+    color: #848e9c;
     margin-top: 16px;
 }
 
 .registerLink {
-    color: #0ECB81;
+    color: #f0b90b;
     font-weight: 600;
     cursor: pointer;
-    transition: color 0.2s;
 }
 
 .registerLink:hover {
-    color: #0db872;
     text-decoration: underline;
 }

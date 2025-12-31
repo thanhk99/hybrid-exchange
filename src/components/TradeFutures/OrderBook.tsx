@@ -4,6 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './OrderBook.module.css';
 import FuturesService from '@/src/services/futures';
 import { StompClient } from '@/src/services/socket';
+import { formatTopicSymbol } from '@/src/utils/coinHelpers';
+import { useFuturesMarket } from '@/src/contexts/FuturesMarketContext';
+import {
+    AlignLeftOutlined,
+    VerticalAlignBottomOutlined,
+    VerticalAlignTopOutlined,
+    SettingOutlined
+} from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 interface OrderBookProps {
     symbol: string;
@@ -16,8 +25,10 @@ interface OrderBookEntry {
 }
 
 export default function OrderBook({ symbol }: OrderBookProps) {
+    const { setSelectedPrice } = useFuturesMarket();
     const [bids, setBids] = useState<OrderBookEntry[]>([]);
     const [asks, setAsks] = useState<OrderBookEntry[]>([]);
+    const [displayMode, setDisplayMode] = useState<'all' | 'buy' | 'sell'>('all');
     const stompClientRef = useRef<StompClient | null>(null);
     const isConnectedRef = useRef(false);
 
@@ -96,8 +107,14 @@ export default function OrderBook({ symbol }: OrderBookProps) {
         const client = new StompClient(finalWsUrl);
         client.connect(() => {
             isConnectedRef.current = true;
-            // Subscribe to order book updates
-            client.subscribe(`/topic/futures/orderbook/${normalizedSymbol.toLowerCase()}`, (msg) => {
+
+            // Topic format: /topic/spot/orderbook/{SYMBOL-WITH-DASH}
+            const topicSymbol = formatTopicSymbol(symbol);
+            const topic = `/topic/spot/orderbook/${topicSymbol}`;
+
+            console.log(`Subscribing to orderbook topic: ${topic}`);
+
+            client.subscribe(topic, (msg) => {
                 if (msg && msg.bids && msg.asks) {
                     processOrderBookData(msg.bids, msg.asks);
                 }
@@ -122,7 +139,37 @@ export default function OrderBook({ symbol }: OrderBookProps) {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h3 className={styles.title}>Sổ lệnh</h3>
+                <h3 className={styles.title}>
+                    Sổ lệnh
+                </h3>
+                <div className={styles.headerActions}>
+                    <div className={styles.displayModes}>
+                        <Tooltip title="Chế độ mặc định">
+                            <button
+                                className={`${styles.modeBtn} ${displayMode === 'all' ? styles.active : ''}`}
+                                onClick={() => setDisplayMode('all')}
+                            >
+                                <AlignLeftOutlined />
+                            </button>
+                        </Tooltip>
+                        <Tooltip title="Chỉ lệnh mua">
+                            <button
+                                className={`${styles.modeBtn} ${displayMode === 'buy' ? styles.active : ''}`}
+                                onClick={() => setDisplayMode('buy')}
+                            >
+                                <VerticalAlignTopOutlined style={{ color: '#0ecb81' }} />
+                            </button>
+                        </Tooltip>
+                        <Tooltip title="Chỉ lệnh bán">
+                            <button
+                                className={`${styles.modeBtn} ${displayMode === 'sell' ? styles.active : ''}`}
+                                onClick={() => setDisplayMode('sell')}
+                            >
+                                <VerticalAlignBottomOutlined style={{ color: '#f6465d' }} />
+                            </button>
+                        </Tooltip>
+                    </div>
+                </div>
             </div>
 
             {/* Column Headers */}
@@ -133,46 +180,58 @@ export default function OrderBook({ symbol }: OrderBookProps) {
             </div>
 
             {/* Asks (Sell orders) - displayed in reverse order */}
-            <div className={styles.orderList}>
-                {[...asks].reverse().map((ask, idx) => (
-                    <div key={`ask-${idx}`} className={styles.orderRow}>
-                        <span className={`${styles.price} ${styles.ask}`}>{formatPrice(ask.price)}</span>
-                        <span className={styles.amount}>{formatAmount(ask.amount)}</span>
-                        <span className={styles.total}>{formatAmount(ask.total)}</span>
+            {(displayMode === 'all' || displayMode === 'sell') && (
+                <div className={styles.orderList}>
+                    {[...asks].reverse().slice(displayMode === 'sell' ? 0 : 7).map((ask, idx) => (
                         <div
-                            className={styles.depthBar}
-                            style={{
-                                width: `${(ask.amount / maxAskAmount) * 100}%`,
-                                background: 'rgba(246, 70, 93, 0.1)'
-                            }}
-                        />
-                    </div>
-                ))}
-            </div>
+                            key={`ask-${idx}`}
+                            className={styles.orderRow}
+                            onClick={() => setSelectedPrice(ask.price)}
+                        >
+                            <span className={`${styles.price} ${styles.ask}`}>{formatPrice(ask.price)}</span>
+                            <span className={styles.amount}>{formatAmount(ask.amount)}</span>
+                            <span className={styles.total}>{formatAmount(ask.total)}</span>
+                            <div
+                                className={styles.depthBar}
+                                style={{
+                                    width: `${(ask.amount / maxAskAmount) * 100}%`,
+                                    background: 'rgba(246, 70, 93, 0.12)'
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Spread */}
             <div className={styles.spread}>
-                <span className={styles.spreadPrice}>{formatPrice(bestAsk)}</span>
-                <span className={styles.spreadLabel}>Spread: {spread.toFixed(2)} ({spreadPercent}%)</span>
+                <span className={styles.spreadPrice}>{formatPrice(bestAsk || bestBid)}</span>
+                <span className={styles.spreadLabel}>Spread: {spread.toFixed(1)} ({spreadPercent}%)</span>
             </div>
 
             {/* Bids (Buy orders) */}
-            <div className={styles.orderList}>
-                {bids.map((bid, idx) => (
-                    <div key={`bid-${idx}`} className={styles.orderRow}>
-                        <span className={`${styles.price} ${styles.bid}`}>{formatPrice(bid.price)}</span>
-                        <span className={styles.amount}>{formatAmount(bid.amount)}</span>
-                        <span className={styles.total}>{formatAmount(bid.total)}</span>
+            {(displayMode === 'all' || displayMode === 'buy') && (
+                <div className={styles.orderList}>
+                    {bids.slice(0, displayMode === 'buy' ? 15 : 8).map((bid, idx) => (
                         <div
-                            className={styles.depthBar}
-                            style={{
-                                width: `${(bid.amount / maxBidAmount) * 100}%`,
-                                background: 'rgba(14, 203, 129, 0.1)'
-                            }}
-                        />
-                    </div>
-                ))}
-            </div>
+                            key={`bid-${idx}`}
+                            className={styles.orderRow}
+                            onClick={() => setSelectedPrice(bid.price)}
+                        >
+                            <span className={`${styles.price} ${styles.bid}`}>{formatPrice(bid.price)}</span>
+                            <span className={styles.amount}>{formatAmount(bid.amount)}</span>
+                            <span className={styles.total}>{formatAmount(bid.total)}</span>
+                            <div
+                                className={styles.depthBar}
+                                style={{
+                                    width: `${(bid.amount / maxBidAmount) * 100}%`,
+                                    background: 'rgba(14, 203, 129, 0.12)'
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
