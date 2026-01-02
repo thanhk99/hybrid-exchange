@@ -80,19 +80,26 @@ export const FuturesMarketProvider: React.FC<FuturesMarketProviderProps> = ({ ch
         const client = new StompClient(finalWsUrl);
         client.connect(() => {
             isConnectedRef.current = true;
-            client.subscribe('/topic/futures/markets', (updates: any) => {
+            client.subscribe('/topic/spot-prices', (updates: any) => {
                 const updateArray = Array.isArray(updates) ? updates : [updates];
 
                 // Update all coins
                 setAllCoins(prevCoins => {
                     const updatedCoins = [...prevCoins];
                     updateArray.forEach(update => {
+                        const normalizedUpdateSymbol = update.symbol.replace(/[\/-]/g, '').toUpperCase();
                         const index = updatedCoins.findIndex(
-                            c => c.symbol.replace(/-/g, '').toUpperCase() ===
-                                update.symbol.replace(/-/g, '').toUpperCase()
+                            c => c.symbol.replace(/[\/-]/g, '').toUpperCase() === normalizedUpdateSymbol
                         );
                         if (index >= 0) {
-                            updatedCoins[index] = { ...updatedCoins[index], ...update };
+                            // Map new field names if necessary
+                            const mappedUpdate = {
+                                ...update,
+                                markPrice: update.price ? Number(update.price) : undefined,
+                                lastPrice: update.price ? Number(update.price) : undefined,
+                                priceChange24h: update.changePercent ? Number(update.changePercent) : undefined,
+                            };
+                            updatedCoins[index] = { ...updatedCoins[index], ...mappedUpdate };
                         }
                     });
                     return updatedCoins;
@@ -100,10 +107,16 @@ export const FuturesMarketProvider: React.FC<FuturesMarketProviderProps> = ({ ch
 
                 // Update current symbol's market data
                 const update = updateArray.find(
-                    u => u.symbol.replace(/-/g, '').toUpperCase() === normalizedSymbol
+                    u => u.symbol.replace(/[\/-]/g, '').toUpperCase() === normalizedSymbol
                 );
                 if (update) {
-                    setMarketData(prev => prev ? { ...prev, ...update } : update);
+                    const mappedUpdate = {
+                        ...update,
+                        markPrice: update.price ? Number(update.price) : undefined,
+                        lastPrice: update.price ? Number(update.price) : undefined,
+                        priceChange24h: update.changePercent ? Number(update.changePercent) : undefined,
+                    };
+                    setMarketData(prev => prev ? { ...prev, ...mappedUpdate } : mappedUpdate);
                 }
             });
         });

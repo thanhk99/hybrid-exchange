@@ -1,68 +1,84 @@
 .balanceCard {
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: var(--balance-bg-card);
+    border: 1px solid var(--balance-border);
     border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 24px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .balanceHeader {
-    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .balanceLabel {
-    font-size: 0.875rem;
-    color: #6b7280;
+    font-size: 14px;
+    color: var(--balance-text-secondary);
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .balanceAmount {
     display: flex;
     align-items: baseline;
-    margin-bottom: 1.25rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f3f4f6;
+    gap: 8px;
 }
 
 .currency {
-    font-size: 1.5rem;
+    font-size: 32px;
     font-weight: 600;
-    color: #111827;
-    margin-right: 0.25rem;
+    color: var(--balance-text-primary);
 }
 
 .amount {
-    font-size: 2.25rem;
+    font-size: 48px;
     font-weight: 700;
-    color: #111827;
+    color: var(--balance-text-primary);
+    line-height: 1;
+}
+
+.btcValue {
+    font-size: 16px;
+    color: var(--balance-text-secondary);
+    margin-left: 12px;
 }
 
 .balanceActions {
     display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
 }
 
 .actionButton {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: var(--balance-bg-card-hover);
+    border: none;
     border-radius: 8px;
-    padding: 0.625rem 1.25rem;
-    color: #374151;
-    font-size: 0.875rem;
+    padding: 10px 24px;
+    color: var(--balance-text-primary);
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.actionButton.primary {
+    background: var(--balance-primary);
+    color: white;
+}
+
+.actionButton.primary:hover {
+    background: var(--balance-primary-hover);
 }
 
 .actionButton:hover {
-    background: #f3f4f6;
-    border-color: #d1d5db;
-    color: #111827;
+    background: #363c45;
 }
 
 .actionButton:active {
-    transform: scale(0.98);
+    transform: translateY(1px);
 }

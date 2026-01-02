@@ -32,13 +32,14 @@ export default function TotalBalanceCard({
             <div className={styles.balanceAmount}>
                 <span className={styles.currency}>$</span>
                 <span className={styles.amount}>{formatBalance(totalBalance)}</span>
+                <span className={styles.btcValue}>≈ {(totalBalance / 95000).toFixed(4)} BTC</span>
             </div>
             {actions.length > 0 && (
                 <div className={styles.balanceActions}>
                     {actions.map((action, index) => (
                         <button
                             key={index}
-                            className={styles.actionButton}
+                            className={`${styles.actionButton} ${index === 0 ? styles.primary : ''}`}
                             onClick={action.onClick}
                         >
                             {action.label}

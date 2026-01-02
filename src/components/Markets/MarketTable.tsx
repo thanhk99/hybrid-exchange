@@ -20,7 +20,11 @@ const SUPPORTED_COINS = [
     'ALGOUSDT', 'ICPUSDT', 'SHIBUSDT', 'TONUSDT', 'ETCUSDT',
 ];
 
-export default function MarketTable() {
+interface MarketTableProps {
+    onSymbolSelect?: (symbol: string) => void;
+}
+
+export default function MarketTable({ onSymbolSelect }: MarketTableProps = {}) {
     const router = useRouter();
     const [markets, setMarkets] = useState<MarketCoin[]>([]);
     const [loading, setLoading] = useState(true);
@@ -70,6 +74,16 @@ export default function MarketTable() {
             client.subscribe('/topic/spot-prices', (msg) => handlePriceUpdate(msg));
         });
         stompClientRef.current = client;
+    };
+
+    const handleRowClick = (symbol: string) => {
+        if (onSymbolSelect) {
+            // If callback is provided, use it (for chart integration)
+            onSymbolSelect(symbol);
+        } else {
+            // Otherwise, navigate to trade page
+            router.push(`/trade/${symbol}`);
+        }
     };
 
     const handlePriceUpdate = (update: any) => {
@@ -204,7 +218,10 @@ export default function MarketTable() {
                                     </div>
                                 </td>
                                 <td>
-                                    <button className={styles.actionButton} onClick={() => router.push(`/trade/${coin.symbol}`)}>
+                                    <button
+                                        className={styles.tradeBtn}
+                                        onClick={() => handleRowClick(coin.symbol)}
+                                    >
                                         Giao dịch
                                     </button>
                                 </td>

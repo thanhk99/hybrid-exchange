@@ -1,0 +1,18 @@
+:root {
+    --balance-bg-main: #12161C;
+    --balance-bg-card: #1E2329;
+    --balance-bg-card-hover: #2B3139;
+    --balance-text-primary: #EAECEF;
+    --balance-text-secondary: #848E9C;
+    --balance-text-accent: #F0B90B;
+    --balance-border: #2B3139;
+    --balance-primary: #2962FF;
+    --balance-primary-hover: #1E4BD1;
+    --balance-success: #0ECB81;
+    --balance-danger: #F6465D;
+}
+
+body {
+    background-color: var(--balance-bg-main);
+    color: var(--balance-text-primary);
+}

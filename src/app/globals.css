@@ -3,36 +3,39 @@
 /* Reset globals.css */
 :root {
   /* Primary Colors - Blue */
-  --blue-50: #eff6ff;
-  --blue-100: #dbeafe;
-  --blue-500: #3b82f6;
-  --blue-600: #2563eb;
+  --blue-50: #0f172a;
+  --blue-100: #1e293b;
+  --blue-500: #2962FF;
+  --blue-600: #2962FF;
 
   /* Success Colors - Green */
-  --green-50: #f0fdf4;
-  --green-100: #dcfce7;
-  --green-200: #bbf7d0;
-  --green-500: #22c55e;
-  --green-600: #16a34a;
+  --green-50: #064e3b;
+  --green-100: #065f46;
+  --green-200: #047857;
+  --green-500: #0ECB81;
+  --green-600: #059669;
 
   /* Error/Danger Colors - Red */
-  --red-50: #fef2f2;
-  --red-100: #fee2e2;
-  --red-200: #fecaca;
-  --red-500: #ef4444;
-  --red-600: #dc2626;
+  --red-50: #450a0a;
+  --red-100: #7f1d1d;
+  --red-200: #991b1b;
+  --red-500: #F6465D;
+  --red-600: #F6465D;
 
   /* Background Colors */
-  --bg-white: #ffffff;
-  --bg-zinc-50: #fafafa;
-  --bg-zinc-100: #f4f4f5;
+  --bg-white: #1E2329;
+  /* Card background */
+  --bg-zinc-50: #12161C;
+  /* Main background */
+  --bg-zinc-100: #2B3139;
+  /* Hover/Border */
 
   /* Text Colors */
-  --text-primary: #171717;
-  --text-secondary: #52525b;
-  --text-tertiary: #a1a1aa;
+  --text-primary: #EAECEF;
+  --text-secondary: #848E9C;
+  --text-tertiary: #5E6673;
 
-  --background: var(--bg-white);
+  --background: var(--bg-zinc-50);
   --foreground: var(--text-primary);
 }
 
@@ -45,8 +48,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #12161C;
+    --foreground: #EAECEF;
   }
 }
 
@@ -57,10 +60,7 @@
 }
 
 body {
-  background-color: var(--bg-zinc-50);
-  background-image: linear-gradient(rgba(224, 224, 224, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(224, 224, 224, 0.3) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-color: var(--background);
   color: var(--foreground);
   font-family: "Be Vietnam Pro", sans-serif;
   margin: 0;

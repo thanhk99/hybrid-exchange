@@ -1,10 +1,6 @@
 /* CompanyServices.module.css */
 .container {
-  background: var(--bg-white);
-  background-image:
-    linear-gradient(rgba(224, 224, 224, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(224, 224, 224, 0.3) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background: var(--bg-zinc-50);
   padding: 80px 40px;
   margin: 0 auto;
   max-width: 1400px;
@@ -38,8 +34,8 @@
 }
 
 .serviceCard {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-white);
+  border: 1px solid var(--bg-zinc-100);
   border-radius: 16px;
   padding: 32px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -54,15 +50,15 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--accent-color);
+  background: var(--blue-500);
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
 
 .serviceCard:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  border-color: var(--accent-color);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-color: var(--blue-500);
 }
 
 .serviceCard:hover::before {
@@ -79,19 +75,19 @@
 .iconWrapper {
   width: 60px;
   height: 60px;
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(41, 98, 255, 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  color: var(--accent-color);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--blue-500);
+  border: 1px solid rgba(41, 98, 255, 0.2);
   transition: all 0.3s ease;
 }
 
 .serviceCard:hover .iconWrapper {
-  background: var(--accent-color);
+  background: var(--blue-500);
   color: white;
   transform: scale(1.1);
 }
@@ -128,7 +124,7 @@
 .featureDot {
   width: 6px;
   height: 6px;
-  background: var(--accent-color);
+  background: var(--blue-500);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -139,7 +135,7 @@
   gap: 8px;
   background: none;
   border: none;
-  color: var(--accent-color);
+  color: var(--blue-500);
   font-weight: 600;
   cursor: pointer;
   padding: 8px 0;
@@ -154,10 +150,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 40px;
-  background: var(--bg-zinc-50);
+  background: var(--bg-zinc-100);
   padding: 40px;
   border-radius: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--bg-zinc-100);
 }
 
 .statItem {

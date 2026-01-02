@@ -6,15 +6,25 @@ import styles from './MarketInfo.module.css';
 import FuturesService from '@/src/services/futures';
 import { FuturesCoin } from '@/src/types/futures';
 import { getAssetsOverview } from '@/src/services/balance';
-import { useFuturesMarket } from '@/src/contexts/FuturesMarketContext';
+import { useMarket } from '@/src/contexts/MarketContext';
 import TokenService from '@/src/services/token';
 
 interface MarketInfoProps {
     symbol: string;
+    isSpot?: boolean;
 }
 
-export default function MarketInfo({ symbol }: MarketInfoProps) {
-    const { marketData } = useFuturesMarket();
+export default function MarketInfo({ symbol, isSpot = false }: MarketInfoProps) {
+    const market = useMarket();
+    const marketData = market.marketData;
+    const isFutures = market.marketType === 'futures';
+
+    // Map MarketCoin to FuturesCoin-like structure for spot
+    const normalizedMarketData = market.marketType === 'spot' && marketData ? {
+        ...marketData,
+        lastPrice: (marketData as any).currentPrice,
+        markPrice: (marketData as any).currentPrice,
+    } : marketData;
     // const [marketData, setMarketData] = useState<FuturesCoin | null>(null); // From context
     const [balance, setBalance] = useState<number>(0);
     const [countdown, setCountdown] = useState<string>('--:--:--');
@@ -52,9 +62,17 @@ export default function MarketInfo({ symbol }: MarketInfoProps) {
 
         try {
             const data = await getAssetsOverview();
-            const futuresAsset = (data as any).futures?.asset;
-            const availableBalance = futuresAsset?.availableBalance || futuresAsset?.balance || 0;
-            setBalance(availableBalance);
+            if (isSpot) {
+                // USDT Balance from Spot wallet
+                const spotAsset = (data as any).spot?.assets?.find((a: any) => a.currency === 'USDT');
+                const availableBalance = spotAsset?.availableBalance || spotAsset?.balance || 0;
+                setBalance(availableBalance);
+            } else {
+                // USDT Balance from Futures wallet
+                const futuresAsset = (data as any).futures?.asset;
+                const availableBalance = futuresAsset?.availableBalance || futuresAsset?.balance || 0;
+                setBalance(availableBalance);
+            }
         } catch (e) {
             console.error('Failed to fetch balance in MarketInfo', e);
         }
@@ -100,25 +118,25 @@ export default function MarketInfo({ symbol }: MarketInfoProps) {
         return `$${vol.toLocaleString()}`;
     };
 
-    const priceChange = marketData?.priceChange24h ?? 0;
+    const priceChange = (normalizedMarketData as any)?.priceChange24h ?? 0;
     const isPositive = priceChange >= 0;
 
-    // Derived values with fallbacks
-    const openInterest = marketData?.openInterest || (marketData?.volume24h ? marketData.volume24h * 0.8 : 0);
-    const fundingRate = marketData?.fundingRate ?? 0;
+    // Derived values with fallbacks (only for futures)
+    const openInterest = isFutures ? ((normalizedMarketData as any)?.openInterest || ((normalizedMarketData as any)?.volume24h ? (normalizedMarketData as any).volume24h * 0.8 : 0)) : 0;
+    const fundingRate = isFutures ? ((normalizedMarketData as any)?.fundingRate ?? 0) : 0;
 
     return (
         <div className={styles.container}>
             <div className={styles.symbolSection}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <h1 className={styles.symbol}>{symbol}</h1>
-                    <span className={styles.badge}>Vĩnh cửu</span>
+                    {isFutures && <span className={styles.badge}>Vĩnh cửu</span>}
                 </div>
             </div>
 
             <div className={styles.priceSection}>
                 <div className={styles.mainPrice}>
-                    <span className={styles.price}>{formatPrice(marketData?.lastPrice || marketData?.markPrice)}</span>
+                    <span className={styles.price}>{formatPrice((normalizedMarketData as any)?.lastPrice || (normalizedMarketData as any)?.markPrice)}</span>
                     <span className={isPositive ? styles.positive : styles.negative}>
                         {isPositive ? '+' : ''}{priceChange.toFixed(2)}%
                     </span>
@@ -128,34 +146,38 @@ export default function MarketInfo({ symbol }: MarketInfoProps) {
             <div className={styles.statsGrid}>
                 <div className={styles.statItem}>
                     <span className={styles.statLabel}>Cao 24h</span>
-                    <span className={styles.statValue}>{formatPrice(marketData?.high24h)}</span>
+                    <span className={styles.statValue}>{formatPrice((normalizedMarketData as any)?.high24h)}</span>
                 </div>
                 <div className={styles.statItem}>
                     <span className={styles.statLabel}>Thấp 24h</span>
-                    <span className={styles.statValue}>{formatPrice(marketData?.low24h)}</span>
+                    <span className={styles.statValue}>{formatPrice((normalizedMarketData as any)?.low24h)}</span>
                 </div>
                 <div className={styles.statItem}>
                     <span className={styles.statLabel}>Khối lượng 24h</span>
-                    <span className={styles.statValue}>{formatVolume(marketData?.volume24h)}</span>
+                    <span className={styles.statValue}>{formatVolume((normalizedMarketData as any)?.volume24h)}</span>
                 </div>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Lãi suất funding / Đếm ngược</span>
-                    <span className={styles.statValue}>
-                        <span className={fundingRate >= 0 ? styles.positive : styles.negative}>
-                            {(fundingRate * 100).toFixed(4)}%
-                        </span>
-                        {' / '}
-                        <span>{countdown}</span>
-                    </span>
-                </div>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Hợp đồng mở</span>
-                    <span className={styles.statValue}>{formatVolume(openInterest)}</span>
-                </div>
+                {isFutures && (
+                    <>
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>Lãi suất funding / Đếm ngược</span>
+                            <span className={styles.statValue}>
+                                <span className={fundingRate >= 0 ? styles.positive : styles.negative}>
+                                    {(fundingRate * 100).toFixed(4)}%
+                                </span>
+                                {' / '}
+                                <span>{countdown}</span>
+                            </span>
+                        </div>
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>Hợp đồng mở</span>
+                            <span className={styles.statValue}>{formatVolume(openInterest)}</span>
+                        </div>
+                    </>
+                )}
 
                 {/* Futures Balance Display */}
                 <div className={styles.statItem} style={{ borderLeft: '1px solid #f0f0f0', paddingLeft: '24px' }}>
-                    <span className={styles.statLabel}>Ví Futures (USDT)</span>
+                    <span className={styles.statLabel}>{isSpot ? 'Ví Spot (USDT)' : 'Ví Futures (USDT)'}</span>
                     <span className={styles.statValue}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                 </div>
             </div>

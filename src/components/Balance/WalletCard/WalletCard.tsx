@@ -9,6 +9,7 @@ interface WalletCardProps {
     description: string;
     hideBalance: boolean;
     onClick: () => void;
+    icon?: React.ReactNode;
 }
 
 export default function WalletCard({
@@ -16,7 +17,8 @@ export default function WalletCard({
     balance,
     description,
     hideBalance,
-    onClick
+    onClick,
+    icon
 }: WalletCardProps) {
     const formatBalance = (value: number) => {
         return hideBalance ? '****' : value.toLocaleString('en-US', {
@@ -28,7 +30,10 @@ export default function WalletCard({
     return (
         <div className={styles.walletCard} onClick={onClick}>
             <div className={styles.walletHeader}>
-                <h3>{title}</h3>
+                <div className={styles.titleWithIcon}>
+                    {icon && <div className={styles.walletIcon}>{icon}</div>}
+                    <h3>{title}</h3>
+                </div>
                 <span className={styles.arrow}>→</span>
             </div>
             <div className={styles.walletBalance}>${formatBalance(balance)}</div>

@@ -1,0 +1,87 @@
+.container {
+    background: #0b0e11;
+    /* OKX Dark theme background */
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+}
+
+.mainContent {
+    display: grid;
+    grid-template-columns: 1fr 300px 320px;
+    gap: 1px;
+    background: #2b2f36;
+    /* Better border color */
+    flex: 1;
+    min-height: 650px;
+}
+
+.chartSection {
+    background: #161a1e;
+    display: flex;
+    flex-direction: column;
+}
+
+.marketDataSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: #2b2f36;
+    height: 100%;
+}
+
+.orderBookSection {
+    background: #161a1e;
+    flex: 3;
+    /* More space for orderbook */
+    min-height: 350px;
+    overflow-y: hidden;
+}
+
+.recentTradesSection {
+    background: #161a1e;
+    flex: 2;
+    /* Less space for recent trades */
+    min-height: 250px;
+    overflow-y: hidden;
+}
+
+.tradingFormSection {
+    background: #161a1e;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.bottomPanelRoot {
+    background: #161a1e;
+    border-top: 1px solid #2b2f36;
+    min-height: 300px;
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+    .mainContent {
+        grid-template-columns: 1fr 260px 300px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .mainContent {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
+    .orderBookSection,
+    .tradingFormSection {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .chartSection,
+    .orderBookSection,
+    .tradingFormSection {
+        padding: 8px;
+    }
+}

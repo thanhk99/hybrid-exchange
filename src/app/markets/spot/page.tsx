@@ -1,7 +1,12 @@
+"use client";
+
+import MarketTable from '@/src/components/Markets/MarketTable';
+import styles from './page.module.css';
+
 export default function SpotPage() {
     return (
-        <div style={{ color: '#888', textAlign: 'center', padding: '40px' }}>
-            Tính năng Spot đang được phát triển
+        <div className={styles.container}>
+            <MarketTable />
         </div>
     );
 }

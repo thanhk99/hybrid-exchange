@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './OrderBook.module.css';
 import FuturesService from '@/src/services/futures';
+import SpotService from '@/src/services/spot';
 import { StompClient } from '@/src/services/socket';
 import { formatTopicSymbol } from '@/src/utils/coinHelpers';
-import { useFuturesMarket } from '@/src/contexts/FuturesMarketContext';
+import { useMarket } from '@/src/contexts/MarketContext';
 import {
     AlignLeftOutlined,
     VerticalAlignBottomOutlined,
@@ -16,6 +17,7 @@ import { Tooltip } from 'antd';
 
 interface OrderBookProps {
     symbol: string;
+    isSpot?: boolean;
 }
 
 interface OrderBookEntry {
@@ -24,8 +26,9 @@ interface OrderBookEntry {
     total: number;
 }
 
-export default function OrderBook({ symbol }: OrderBookProps) {
-    const { setSelectedPrice } = useFuturesMarket();
+export default function OrderBook({ symbol, isSpot = false }: OrderBookProps) {
+    const market = useMarket();
+    const setSelectedPrice = market.setSelectedPrice;
     const [bids, setBids] = useState<OrderBookEntry[]>([]);
     const [asks, setAsks] = useState<OrderBookEntry[]>([]);
     const [displayMode, setDisplayMode] = useState<'all' | 'buy' | 'sell'>('all');
@@ -50,19 +53,29 @@ export default function OrderBook({ symbol }: OrderBookProps) {
 
     const fetchOrderBook = async () => {
         try {
-            console.log('Fetching order book for:', normalizedSymbol);
-            const response = await FuturesService.getOrderBook(normalizedSymbol);
-            console.log('Order book response:', response.data);
-            // The backend returns the order book directly in response.data
-            const data = response.data.data;
-            if (data && data.bids && data.asks) {
-                console.log('Order book data:', data);
-                processOrderBookData(data.bids, data.asks);
+            let response;
+            if (market.marketType === 'spot') {
+                response = await SpotService.getOrderBook(normalizedSymbol);
             } else {
-                console.warn('Order book payload missing bids/asks');
+                response = await FuturesService.getOrderBook(normalizedSymbol);
             }
-        } catch (e) {
-            console.error('Failed to fetch order book', e);
+
+            if (response.data && response.data.data) {
+                const data = response.data.data;
+                // Check if data is already in OrderBookEntry[] format or needs processing
+                if (Array.isArray(data.bids) && data.bids.length > 0) {
+                    if (typeof data.bids[0] === 'object' && 'price' in data.bids[0]) {
+                        // Already processed format
+                        setBids(data.bids as OrderBookEntry[]);
+                        setAsks(data.asks as OrderBookEntry[]);
+                    } else {
+                        // Raw format [price, amount][]
+                        processOrderBookData(data.bids as [string, string][], data.asks as [string, string][]);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch order book:', error);
         }
     };
 

@@ -10,7 +10,7 @@ interface OrderBookResponse {
 
 const FuturesService = {
     async getFuturesCoins() {
-        return axiosInstance.get<{ message: string; data: FuturesCoin[] }>('/api/v1/futures/coins');
+        return axiosInstance.get<{ message: string; data: FuturesCoin[] }>('/api/v1/public/futures/coins');
     },
 
     async getOrderBook(symbol: string) {
@@ -22,11 +22,11 @@ const FuturesService = {
     },
 
     async closePosition(data: ClosePositionRequest) {
-        return axiosInstance.post('/api/v1/futures/position/close', data);
+        return axiosInstance.post('/api/v1/futures/positions/close', data);
     },
 
     async adjustLeverage(data: AdjustLeverageRequest) {
-        return axiosInstance.post('/api/v1/futures/leverage', data);
+        return axiosInstance.post('/api/v1/futures/positions/leverage', data);
     },
 };
 

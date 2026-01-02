@@ -2,6 +2,9 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createChart, CandlestickSeries, HistogramSeries, LineSeries, IChartApi, ISeriesApi, CandlestickData, HistogramData, Time } from 'lightweight-charts';
 import FuturesChartService, { KlineData } from '@/src/services/futuresChart';
+import SpotChartService, { KlineData as SpotKlineData } from '@/src/services/spotChart';
+// Removed useMarket from MarketContext to avoid re-renders
+// import { useMarket } from '@/src/contexts/MarketContext';
 import { StompClient } from '@/src/services/socket';
 import { formatTopicSymbol } from '@/src/utils/coinHelpers';
 import {
@@ -44,21 +47,24 @@ const timeframes = ['1s', '1m', '5m', '15m', '30m', '1h', '4h', '1d'];
 
 interface TradingChartProps {
     symbol: string;
+    isSpot?: boolean;
 }
 
 // WebSocket payload shape
 interface WSKlineData {
-    s: string; // Symbol
-    o: number; // Open
-    c: number; // Close
-    h: number; // High
-    l: number; // Low
-    v: number; // Volume
-    t: number; // Timestamp (ms)
-    i: string; // Interval
+    symbol: string;
+    openPrice: string | number;
+    closePrice: string | number;
+    highPrice: string | number;
+    lowPrice: string | number;
+    volume: string | number;
+    startTime: number;
+    closeTime: number;
+    interval: string;
+    closed: boolean;
 }
 
-export default function TradingChart({ symbol }: TradingChartProps) {
+export default function TradingChart({ symbol, isSpot = false }: TradingChartProps) {
     // ---------- State & refs ----------
     const [timeframe, setTimeframe] = useState('1m');
     const [loading, setLoading] = useState(true);
@@ -92,7 +98,7 @@ export default function TradingChart({ symbol }: TradingChartProps) {
     const stompClientRef = useRef<StompClient | null>(null);
     const resizeObserverRef = useRef<ResizeObserver | null>(null);
     const isFetchingHistoryRef = useRef(false);
-    const allDataRef = useRef<KlineData[]>([]); // Store all fetched data to properly merge history
+    const allDataRef = useRef<(KlineData | SpotKlineData)[]>([]);
     const hasMoreHistoryRef = useRef(true);
 
     // Sync drawingsRef with state
@@ -292,7 +298,7 @@ export default function TradingChart({ symbol }: TradingChartProps) {
     }, []);
 
     // Helper to process raw data into chart friendly format
-    const processDataForChart = useCallback((rawData: KlineData[], timeframeMs: number) => {
+    const processDataForChart = useCallback((rawData: (KlineData | SpotKlineData)[], timeframeMs: number) => {
         const candleData: CandlestickData[] = [];
         const volumeData: HistogramData[] = [];
         const ma7Data: any[] = [];
@@ -301,13 +307,28 @@ export default function TradingChart({ symbol }: TradingChartProps) {
 
         for (let i = 0; i < rawData.length; i++) {
             const item = rawData[i];
-            const time = Math.floor(item.startTime / 1000) as Time;
-            let useSmoothing = false;
+            let time: Time;
+            let open: number;
+            let close: number;
+            let high: number;
+            let low: number;
 
-            const open = item.openPrice;
-            const close = item.closePrice;
-            const high = item.highPrice;
-            const low = item.lowPrice;
+            // Type guard to distinguish between Futures and Spot data
+            if ('openPrice' in item) {
+                // Futures Data
+                time = Math.floor(item.startTime / 1000) as Time;
+                open = Number(item.openPrice);
+                close = Number(item.closePrice);
+                high = Number(item.highPrice);
+                low = Number(item.lowPrice);
+            } else {
+                // Spot Data
+                time = Math.floor(item.time) as Time;
+                open = Number(item.open);
+                close = Number(item.close);
+                high = Number(item.high);
+                low = Number(item.low);
+            }
 
             candleData.push({
                 time,
@@ -324,16 +345,21 @@ export default function TradingChart({ symbol }: TradingChartProps) {
             });
 
             // Calculate MAs (Simple implementation)
+            const getItemClose = (item: KlineData | SpotKlineData) => {
+                if ('closePrice' in item) return Number(item.closePrice);
+                return Number(item.close);
+            };
+
             if (i >= 6) {
-                const sum = rawData.slice(i - 6, i + 1).reduce((a, b) => a + b.closePrice, 0);
+                const sum = rawData.slice(i - 6, i + 1).reduce((a, b) => a + getItemClose(b), 0);
                 ma7Data.push({ time, value: sum / 7 });
             }
             if (i >= 24) {
-                const sum = rawData.slice(i - 24, i + 1).reduce((a, b) => a + b.closePrice, 0);
+                const sum = rawData.slice(i - 24, i + 1).reduce((a, b) => a + getItemClose(b), 0);
                 ma25Data.push({ time, value: sum / 25 });
             }
             if (i >= 98) {
-                const sum = rawData.slice(i - 98, i + 1).reduce((a, b) => a + b.closePrice, 0);
+                const sum = rawData.slice(i - 98, i + 1).reduce((a, b) => a + getItemClose(b), 0);
                 ma99Data.push({ time, value: sum / 99 });
             }
         }
@@ -348,7 +374,12 @@ export default function TradingChart({ symbol }: TradingChartProps) {
         isFetchingHistoryRef.current = true;
 
         try {
-            const oldestTime = allDataRef.current[0].startTime;
+            const getItemTime = (item: KlineData | SpotKlineData) => {
+                if ('startTime' in item) return item.startTime;
+                return (item as any).time * 1000;
+            }
+
+            const oldestTime = getItemTime(allDataRef.current[0]);
 
             const response = await FuturesChartService.getKlineData(symbol, timeframe, 500, oldestTime);
 
@@ -418,20 +449,44 @@ export default function TradingChart({ symbol }: TradingChartProps) {
         allDataRef.current = []; // Reset data store
 
         try {
-            const response = await FuturesChartService.getKlineData(symbol, timeframe, 500);
-            if (response.success && response.data) {
+            const normalizedSymbol = symbol.replace(/-/g, '').toUpperCase();
+            let data: (KlineData | SpotKlineData)[];
+            if (isSpot) {
+                if (timeframe === '1s') {
+                    // Use realtime endpoint for 1s data (RingBuffer)
+                    const response = await SpotChartService.getRealtimeKlineData(normalizedSymbol);
+                    data = response.data || [];
+                } else {
+                    const response = await SpotChartService.getKlineData({
+                        symbol: normalizedSymbol,
+                        interval: timeframe
+                    });
+                    data = response.data || [];
+                }
+            } else {
+                const response = await FuturesChartService.getKlineData(normalizedSymbol, timeframe, 500);
+                data = response.data || [];
+            }
+
+            if (data) {
                 // Sort by time
-                const sorted = [...response.data].sort((a: KlineData, b: KlineData) => a.startTime - b.startTime);
+                const sorted = [...data].sort((a: any, b: any) => {
+                    const timeA = a.startTime !== undefined ? a.startTime : a.time * 1000;
+                    const timeB = b.startTime !== undefined ? b.startTime : b.time * 1000;
+                    return timeA - timeB;
+                });
 
                 // Deduplicate
-                const uniqueData: KlineData[] = [];
+                const uniqueData: (KlineData | SpotKlineData)[] = [];
                 const seenTimes = new Set<number>();
                 for (let i = sorted.length - 1; i >= 0; i--) {
                     // Keep latest if dupes exist
-                    const timeKey = Math.floor(sorted[i].startTime / 1000);
+                    const item = sorted[i];
+                    const startTime = (item as any).startTime !== undefined ? (item as any).startTime : (item as any).time * 1000;
+                    const timeKey = Math.floor(startTime / 1000);
                     if (!seenTimes.has(timeKey)) {
                         seenTimes.add(timeKey);
-                        uniqueData.unshift(sorted[i]);
+                        uniqueData.unshift(item);
                     }
                 }
 
@@ -490,46 +545,81 @@ export default function TradingChart({ symbol }: TradingChartProps) {
 
         client.connect(() => {
             console.log('WebSocket Connected for Chart');
-            const topicSymbol = formatTopicSymbol(symbol);
-            let topic = `/topic/spot/kline/${timeframe}/${topicSymbol}`;
-            if (timeframe === '1s') topic = `/topic/spot/kline/1s/${topicSymbol}`;
+            const topic = `/topic/kline-data`;
 
             client.subscribe(topic, (msg: WSKlineData) => {
                 if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return;
 
-                const time = Math.floor(msg.t / 1000) as Time;
+                // Filter by symbol and interval
+                // Filter by symbol
+                const msgSymbol = msg.symbol.replace(/-/g, '').toUpperCase();
+                const currentSymbolNormalized = symbol.replace(/-/g, '').toUpperCase();
 
-                // Get the last candle to check for gap
-                const lastCandle = candlestickSeriesRef.current.data?.()[
-                    candlestickSeriesRef.current.data().length - 1
-                ] as CandlestickData | undefined;
-
-                let useSmoothing = false;
-                if (lastCandle) {
-                    const lastTime = (lastCandle.time as number) * 1000;
-                    const timeDiff = msg.t - lastTime;
-                    useSmoothing = timeDiff <= expectedInterval * 2;
+                if (msgSymbol !== currentSymbolNormalized) {
+                    return;
                 }
 
-                const open = (lastCandle && useSmoothing) ? lastCandle.close : msg.o;
-                const high = useSmoothing ? Math.max(msg.h, open) : msg.h;
-                const low = useSmoothing ? Math.min(msg.l, open) : msg.l;
+                // If socket sends specific interval data matching our timeframe, use it directly (if backend supports it)
+                // If socket sends 1s data ('1s' or '1m' but usually '1s' from documentation), we aggregate it.
+                // Assuming /topic/kline-data is 1s stream as per docs.
 
-                // Update candle
-                candlestickSeriesRef.current.update({
-                    time,
-                    open,
-                    high,
-                    low,
-                    close: msg.c,
-                });
+                const expectedInterval = getIntervalMs(timeframe);
+                const msgStartTime = Number(msg.startTime);
+                // Align start time to our timeframe bucket
+                const alignedStartTime = Math.floor(msgStartTime / expectedInterval) * expectedInterval;
 
-                // Update volume
-                volumeSeriesRef.current.update({
-                    time,
-                    value: msg.v,
-                    color: msg.c >= open ? 'rgba(14, 203, 129, 0.5)' : 'rgba(246, 70, 93, 0.5)',
-                });
+                const time = Math.floor(alignedStartTime / 1000) as Time;
+
+                const open = msg.openPrice !== undefined ? Number(msg.openPrice) : Number((msg as any).open);
+                const close = msg.closePrice !== undefined ? Number(msg.closePrice) : Number((msg as any).close);
+                const high = msg.highPrice !== undefined ? Number(msg.highPrice) : Number((msg as any).high);
+                const low = msg.lowPrice !== undefined ? Number(msg.lowPrice) : Number((msg as any).low);
+                const volume = Number(msg.volume);
+
+                // Get the last candle from the chart to aggregate or append
+                const data = candlestickSeriesRef.current.data();
+                const lastCandle = data.length > 0 ? data[data.length - 1] as CandlestickData : undefined;
+
+                if (!lastCandle) return;
+
+                const lastCandleTime = lastCandle.time as number;
+
+                if (time === lastCandleTime) {
+                    // Update current candle (Aggregate)
+                    candlestickSeriesRef.current.update({
+                        time,
+                        open: lastCandle.open, // Open price of larger timeframe doesn't change
+                        high: Math.max(lastCandle.high, high),
+                        low: Math.min(lastCandle.low, low),
+                        close: close,
+                    });
+
+                    const volData = volumeSeriesRef.current.data();
+                    const lastVolBar = volData.length > 0 ? volData[volData.length - 1] as HistogramData : undefined;
+
+                    if (lastVolBar && (lastVolBar.time as number) === time) {
+                        volumeSeriesRef.current.update({
+                            time,
+                            value: lastVolBar.value + volume, // Accumulate
+                            color: close >= lastCandle.open ? 'rgba(14, 203, 129, 0.5)' : 'rgba(246, 70, 93, 0.5)',
+                        });
+                    }
+                } else if ((time as number) > lastCandleTime) {
+                    // New candle started
+                    candlestickSeriesRef.current.update({
+                        time,
+                        open: open, // Open of the first 1s is Open of the new 1m
+                        high: high,
+                        low: low,
+                        close: close,
+                    });
+
+                    volumeSeriesRef.current.update({
+                        time,
+                        value: volume,
+                        color: close >= open ? 'rgba(14, 203, 129, 0.5)' : 'rgba(246, 70, 93, 0.5)',
+                    });
+                }
             });
         });
 

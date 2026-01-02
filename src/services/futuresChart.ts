@@ -42,10 +42,8 @@ const FuturesChartService = {
                 params.endTime = endTime;
             }
 
-            // Use GET method with query parameters as per new API spec
-            const response = await axios.get(`${API_BASE_URL}/api/v1/futures/kline`, {
-                params
-            });
+            // Use POST method as per new documentation
+            const response = await axios.post(`${API_BASE_URL}/api/v1/public/futures/kline`, params);
 
             return response.data;
         } catch (error) {

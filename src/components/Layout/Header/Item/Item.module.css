@@ -14,7 +14,7 @@
 .label p {
   font-size: 14px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
   letter-spacing: 0.2px;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -22,7 +22,7 @@
 
 .itemIcon {
   font-size: 12px;
-  color: #2c3e50;
+  color: var(--text-primary);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -44,11 +44,11 @@
 
 .headerItem:hover .itemIcon {
   /* transform: rotate(180deg); REMOVED ROTATION */
-  color: #667eea;
+  color: var(--blue-500);
 }
 
 .headerItem:hover .label p {
-  color: #667eea;
+  color: var(--blue-500);
 }
 
 @keyframes slideIn {
@@ -67,9 +67,9 @@
   position: absolute;
   top: 100%;
   left: -205px;
-  background: #fff;
+  background: var(--bg-white);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   padding: 8px 0;
   min-width: 280px;
   z-index: 999;
@@ -80,7 +80,7 @@
   transform: translateY(10px);
   pointer-events: none;
   transition: opacity 0.25s ease, transform 0.25s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--bg-zinc-100);
 }
 
 .childrens.active {
@@ -94,7 +94,7 @@
   width: 100%;
   padding: 0;
   /* REMOVED PADDING */
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--bg-zinc-100);
   margin-bottom: 4px;
 }
 
@@ -112,13 +112,13 @@
 }
 
 .childrensContainer:hover {
-  background: #f8f9fa;
+  background: var(--bg-zinc-100);
   transform: translateX(2px);
 }
 
 .childrensContainerLeft {
   font-size: 20px;
-  color: #667eea;
+  color: var(--blue-500);
   display: flex;
   align-items: center;
   min-width: 24px;
@@ -134,7 +134,7 @@
 .containerLabel {
   font-size: 14px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
   letter-spacing: 0.1px;
   line-height: 1.4;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -142,7 +142,7 @@
 
 .containerContent {
   font-size: 13px;
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.3;
   letter-spacing: 0.1px;
   font-weight: 400;
@@ -162,12 +162,12 @@
 }
 
 .headerItem.mobile .childrensContainer:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(41, 98, 255, 0.1);
 }
 
 /* Mobile childrens styles */
 .mobileChildrens {
-  background: rgba(102, 126, 234, 0.05) !important;
+  background: rgba(41, 98, 255, 0.05) !important;
   border-radius: 0 !important;
   position: static !important;
   width: 100% !important;
@@ -178,10 +178,10 @@
 .mobileChildrens .childrensContainer {
   padding: 10px 20px 10px 52px !important;
   border: none !important;
-  color: #666 !important;
+  color: var(--text-secondary) !important;
 }
 
 .mobileChildrens .childrensContainer:hover {
-  background: rgba(102, 126, 234, 0.15) !important;
-  color: #667eea !important;
+  background: rgba(41, 98, 255, 0.15) !important;
+  color: var(--blue-500) !important;
 }

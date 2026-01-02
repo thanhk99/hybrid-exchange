@@ -1,53 +1,74 @@
 .walletCard {
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: var(--balance-bg-card);
+    border: 1px solid var(--balance-border);
     border-radius: 12px;
-    padding: 1.25rem;
+    padding: 24px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 160px;
 }
 
 .walletCard:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: var(--balance-bg-card-hover);
+    border-color: var(--balance-primary);
     transform: translateY(-2px);
 }
 
 .walletHeader {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.titleWithIcon {
+    display: flex;
     align-items: center;
-    margin-bottom: 1rem;
+    gap: 12px;
 }
 
 .walletHeader h3 {
-    font-size: 1rem;
+    font-size: 16px;
     font-weight: 600;
-    color: #111827;
+    color: var(--balance-text-primary);
     margin: 0;
 }
 
+.walletIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--balance-bg-main);
+    color: var(--balance-primary);
+    font-size: 16px;
+}
+
 .arrow {
-    font-size: 1.25rem;
-    color: #9ca3af;
+    font-size: 20px;
+    color: var(--balance-text-secondary);
     transition: all 0.2s ease;
 }
 
 .walletCard:hover .arrow {
     transform: translateX(4px);
-    color: #3b82f6;
+    color: var(--balance-primary);
 }
 
 .walletBalance {
-    font-size: 1.75rem;
+    font-size: 28px;
     font-weight: 700;
-    color: #111827;
-    margin-bottom: 0.5rem;
+    color: var(--balance-text-primary);
+    margin-bottom: 8px;
 }
 
 .walletDescription {
-    font-size: 0.875rem;
-    color: #6b7280;
-    line-height: 1.4;
+    font-size: 13px;
+    color: var(--balance-text-secondary);
+    line-height: 1.5;
 }

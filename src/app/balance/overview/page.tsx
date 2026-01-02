@@ -8,6 +8,7 @@ import BalanceHeader from '@/src/components/Balance/BalanceHeader/BalanceHeader'
 import TotalBalanceCard from '@/src/components/Balance/TotalBalanceCard/TotalBalanceCard';
 import WalletCard from '@/src/components/Balance/WalletCard/WalletCard';
 import AssetsList from '@/src/components/Balance/AssetsList/AssetsList';
+import { DollarOutlined, LineChartOutlined, FundOutlined, RiseOutlined } from '@ant-design/icons';
 import styles from './page.module.css';
 
 export default function BalanceOverviewPage() {
@@ -171,6 +172,7 @@ export default function BalanceOverviewPage() {
                     description="Ví chính để nạp, rút và chuyển tiền"
                     hideBalance={hideBalance}
                     onClick={() => router.push('/balance/funding')}
+                    icon={<DollarOutlined />}
                 />
                 <WalletCard
                     title="Ví Spot"
@@ -178,6 +180,7 @@ export default function BalanceOverviewPage() {
                     description="Giao dịch spot và chuyển đổi crypto"
                     hideBalance={hideBalance}
                     onClick={() => router.push('/balance/spot')}
+                    icon={<LineChartOutlined />}
                 />
                 <WalletCard
                     title="Ví Futures"
@@ -185,6 +188,7 @@ export default function BalanceOverviewPage() {
                     description="Giao dịch hợp đồng tương lai"
                     hideBalance={hideBalance}
                     onClick={() => router.push('/balance/futures')}
+                    icon={<FundOutlined />}
                 />
                 <WalletCard
                     title="Ví Earn"
@@ -192,6 +196,7 @@ export default function BalanceOverviewPage() {
                     description="Kiếm lợi nhuận từ tiền gửi và staking"
                     hideBalance={hideBalance}
                     onClick={() => router.push('/balance/earn')}
+                    icon={<RiseOutlined />}
                 />
             </div>
 

@@ -50,7 +50,7 @@ export default function FuturesTable() {
         client.connect(() => {
             console.log('Connected to Futures WebSocket');
             isConnectedRef.current = true;
-            client.subscribe('/topic/futures/markets', (msg) => handleMarketUpdate(msg));
+            client.subscribe('/topic/spot-prices', (msg) => handleMarketUpdate(msg));
         });
         stompClientRef.current = client;
     };
@@ -64,17 +64,27 @@ export default function FuturesTable() {
             let hasChanges = false;
 
             updateArray.forEach(update => {
-                const idx = newCoins.findIndex(c => c.symbol === update.symbol);
+                const normalizedUpdateSymbol = update.symbol.replace(/[\/-]/g, '').toUpperCase();
+                const idx = newCoins.findIndex(c => c.symbol.replace(/[\/-]/g, '').toUpperCase() === normalizedUpdateSymbol);
                 if (idx !== -1) {
                     const oldCoin = newCoins[idx];
+
+                    // Map new field names from documentation
+                    const markPrice = update.price ? Number(update.price) : oldCoin.markPrice;
+                    const lastPrice = update.price ? Number(update.price) : oldCoin.lastPrice;
+                    const priceChange24h = update.changePercent ? Number(update.changePercent) : oldCoin.priceChange24h;
+
                     if (
-                        oldCoin.markPrice !== update.markPrice ||
-                        oldCoin.lastPrice !== update.lastPrice ||
-                        oldCoin.priceChange24h !== update.priceChange24h
+                        oldCoin.markPrice !== markPrice ||
+                        oldCoin.lastPrice !== lastPrice ||
+                        oldCoin.priceChange24h !== priceChange24h
                     ) {
                         newCoins[idx] = {
                             ...oldCoin,
-                            ...update, // Update all fields
+                            ...update,
+                            markPrice,
+                            lastPrice,
+                            priceChange24h,
                         };
                         hasChanges = true;
                     }

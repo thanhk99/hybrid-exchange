@@ -4,31 +4,25 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './TradingForm.module.css';
 import FuturesService from '@/src/services/futures';
+import SpotService from '@/src/services/spot';
 import { FuturesOrderRequest } from '@/src/types/futures';
 import { Notification } from '@/src/components/common/Notification/Notification';
 import { getAssetsOverview } from '@/src/services/balance';
 import TokenService from '@/src/services/token';
-import { useFuturesMarket } from '@/src/contexts/FuturesMarketContext';
+import { useMarket } from '@/src/contexts/MarketContext';
 import { LockOutlined, InfoCircleOutlined, SwapOutlined } from '@ant-design/icons';
 
 interface TradingFormProps {
     symbol: string;
+    isSpot?: boolean;
 }
 
-export default function TradingForm({ symbol }: TradingFormProps) {
-    const { marketData, error, selectedPrice } = useFuturesMarket();
-
-    useEffect(() => {
-        if (selectedPrice !== null) {
-            setPrice(selectedPrice.toString());
-        }
-    }, [selectedPrice]);
-
-    useEffect(() => {
-        if (marketData && !price && orderType === 'limit') {
-            setPrice(marketData.lastPrice.toString());
-        }
-    }, [marketData]);
+export default function TradingForm({ symbol, isSpot = false }: TradingFormProps) {
+    const market = useMarket();
+    const marketData = market.marketData;
+    const error = market.error;
+    const selectedPrice = market.selectedPrice;
+    const isFutures = market.marketType === 'futures';
 
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -44,6 +38,23 @@ export default function TradingForm({ symbol }: TradingFormProps) {
         message: '',
         isVisible: false
     });
+
+    useEffect(() => {
+        if (selectedPrice !== null && selectedPrice !== undefined) {
+            setPrice(selectedPrice.toString());
+        }
+    }, [selectedPrice]);
+
+    useEffect(() => {
+        if (marketData && !price && orderType === 'limit') {
+            const currentPrice = isSpot
+                ? (marketData as any).currentPrice
+                : (marketData as any).lastPrice;
+            if (currentPrice) {
+                setPrice(currentPrice.toString());
+            }
+        }
+    }, [marketData, price, orderType, isSpot]);
 
     useEffect(() => {
         // Check authentication status
@@ -71,9 +82,17 @@ export default function TradingForm({ symbol }: TradingFormProps) {
         try {
             const data = await getAssetsOverview();
 
-            // USDT Balance from Futures wallet
-            const futuresAsset = (data as any).futures?.asset;
-            const usdtBalance = futuresAsset?.availableBalance || futuresAsset?.balance || 0;
+            let usdtBalance = 0;
+            if (isSpot) {
+                // USDT Balance from Spot wallet
+                const spotAsset = (data as any).spot?.assets?.find((a: any) => a.currency === 'USDT');
+                usdtBalance = spotAsset?.availableBalance || spotAsset?.balance || 0;
+            } else {
+                // USDT Balance from Futures wallet
+                const futuresAsset = (data as any).futures?.asset;
+                usdtBalance = futuresAsset?.availableBalance || futuresAsset?.balance || 0;
+            }
+
             const coinSymbol = symbol.split('-')[0];
             let coinBalance = 0;
             if (data.spot?.assets && Array.isArray(data.spot.assets)) {
@@ -112,18 +131,32 @@ export default function TradingForm({ symbol }: TradingFormProps) {
 
         setLoading(true);
         try {
-            const orderData: FuturesOrderRequest = {
-                symbol,
-                side: side === 'buy' ? 'BUY' : 'SELL',
-                positionSide: side === 'buy' ? 'LONG' : 'SHORT',
-                type: orderType === 'limit' ? 'LIMIT' : 'MARKET',
-                quantity: parseFloat(amount),
-                leverage,
-                price: orderType === 'limit' ? parseFloat(price) : undefined
-            };
+            if (isFutures) {
+                const orderData: FuturesOrderRequest = {
+                    symbol,
+                    side: side === 'buy' ? 'BUY' : 'SELL',
+                    positionSide: side === 'buy' ? 'LONG' : 'SHORT',
+                    type: orderType === 'limit' ? 'LIMIT' : 'MARKET',
+                    quantity: parseFloat(amount),
+                    leverage,
+                    price: orderType === 'limit' ? parseFloat(price) : undefined
+                };
 
-            await FuturesService.placeFuturesOrder(orderData);
-            showNotification('success', 'Đặt lệnh thành công');
+                await FuturesService.placeFuturesOrder(orderData);
+                showNotification('success', 'Đặt lệnh thành công');
+            } else {
+                // Spot order
+                const orderData = {
+                    symbol,
+                    side: side === 'buy' ? 'BUY' : 'SELL' as 'BUY' | 'SELL',
+                    type: orderType === 'limit' ? 'LIMIT' : 'MARKET' as 'LIMIT' | 'MARKET',
+                    quantity: parseFloat(amount),
+                    price: orderType === 'limit' ? parseFloat(price) : undefined
+                };
+
+                await SpotService.createOrder(orderData);
+                showNotification('success', 'Đặt lệnh thành công');
+            }
 
             // Reset form (optional, keep leverage/price)
             setAmount('');
@@ -157,7 +190,7 @@ export default function TradingForm({ symbol }: TradingFormProps) {
                     </div>
                     <h4 className={styles.loginTitle}>Đăng nhập để giao dịch</h4>
                     <p className={styles.loginMessage}>
-                        Bạn cần đăng nhập để thực hiện giao dịch futures
+                        Bạn cần đăng nhập để thực hiện giao dịch {isSpot ? 'spot' : 'futures'}
                     </p>
                     <button
                         className={styles.loginButton}
@@ -183,25 +216,27 @@ export default function TradingForm({ symbol }: TradingFormProps) {
                 </div>
             ) : (
                 <>
-                    {/* Leverage Selector */}
-                    <div className={styles.leverageSection}>
-                        <label className={styles.label}>Đòn bẩy</label>
-                        <div className={styles.leverageControl}>
-                            <button
-                                className={styles.leverageBtn}
-                                onClick={() => setLeverage(Math.max(1, leverage - 1))}
-                            >
-                                -
-                            </button>
-                            <span className={styles.leverageValue}>{leverage}x</span>
-                            <button
-                                className={styles.leverageBtn}
-                                onClick={() => setLeverage(Math.min(125, leverage + 1))}
-                            >
-                                +
-                            </button>
+                    {/* Leverage Selector - Hide for Spot */}
+                    {isFutures && (
+                        <div className={styles.leverageSection}>
+                            <label className={styles.label}>Đòn bẩy</label>
+                            <div className={styles.leverageControl}>
+                                <button
+                                    className={styles.leverageBtn}
+                                    onClick={() => setLeverage(Math.max(1, leverage - 1))}
+                                >
+                                    -
+                                </button>
+                                <span className={styles.leverageValue}>{leverage}x</span>
+                                <button
+                                    className={styles.leverageBtn}
+                                    onClick={() => setLeverage(Math.min(125, leverage + 1))}
+                                >
+                                    +
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Side Tabs */}
                     <div className={styles.sideTabs}>
@@ -209,13 +244,13 @@ export default function TradingForm({ symbol }: TradingFormProps) {
                             className={`${styles.sideTab} ${side === 'buy' ? styles.buyActive : ''}`}
                             onClick={() => setSide('buy')}
                         >
-                            Mua/Long
+                            {isSpot ? 'Mua' : 'Mua/Long'}
                         </button>
                         <button
                             className={`${styles.sideTab} ${side === 'sell' ? styles.sellActive : ''}`}
                             onClick={() => setSide('sell')}
                         >
-                            Bán/Short
+                            {isSpot ? 'Bán' : 'Bán/Short'}
                         </button>
                     </div>
 
@@ -295,7 +330,7 @@ export default function TradingForm({ symbol }: TradingFormProps) {
                             disabled={loading}
                             className={`${styles.submitBtn} ${side === 'buy' ? styles.buyBtn : styles.sellBtn}`}
                         >
-                            {loading ? 'Đang xử lý...' : (side === 'buy' ? 'Mua/Long' : 'Bán/Short')}
+                            {loading ? 'Đang xử lý...' : (side === 'buy' ? (isSpot ? 'Mua' : 'Mua/Long') : (isSpot ? 'Bán' : 'Bán/Short'))}
                         </button>
                     </form>
                 </>
