@@ -1,7 +1,7 @@
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
 .header {
@@ -11,7 +11,7 @@
 .title {
     font-size: 24px;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -23,30 +23,30 @@
 
 .filterButton {
     padding: 8px 20px;
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: #2b3139;
+    border: 1px solid #2b3139;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .filterButton:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #363c46;
+    border-color: #474d57;
 }
 
 .filterButtonActive {
-    background: #111827;
+    background: #2962ff;
     color: white;
-    border-color: #111827;
+    border-color: #2962ff;
 }
 
 .content {
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: #1e2329;
+    border: 1px solid #2b3139;
     border-radius: 12px;
     overflow: hidden;
 }
@@ -61,7 +61,7 @@
 }
 
 .table thead {
-    background: #f9fafb;
+    background: #1e2329;
 }
 
 .table th {
@@ -69,17 +69,18 @@
     text-align: left;
     font-size: 12px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #2b3139;
     white-space: nowrap;
 }
 
 .table td {
     padding: 16px;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #2b3139;
     font-size: 14px;
+    color: var(--text-primary);
 }
 
 .row {
@@ -87,12 +88,12 @@
 }
 
 .row:hover {
-    background: #f9fafb;
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .tdId {
     font-family: monospace;
-    color: #6b7280;
+    color: var(--text-tertiary);
     font-size: 13px;
 }
 
@@ -109,24 +110,24 @@
 }
 
 .typeBuy {
-    background: #d1fae5;
-    color: #065f46;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
 }
 
 .typeSell {
-    background: #fee2e2;
-    color: #991b1b;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
 }
 
 .tdCrypto {
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .tdAmount,
 .tdTotal {
     font-weight: 600;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .tdPayment {
@@ -135,7 +136,7 @@
 
 .tdCounterparty {
     font-weight: 500;
-    color: #374151;
+    color: var(--text-secondary);
 }
 
 .tdStatus {
@@ -143,7 +144,7 @@
 }
 
 .tdTime {
-    color: #6b7280;
+    color: var(--text-tertiary);
     font-size: 13px;
     white-space: nowrap;
 }
@@ -154,19 +155,19 @@
 
 .viewButton {
     padding: 6px 16px;
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: #2b3139;
+    border: 1px solid #2b3139;
     border-radius: 6px;
     font-size: 13px;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-primary);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .viewButton:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #363c46;
+    border-color: #474d57;
 }
 
 .loading,
@@ -182,8 +183,8 @@
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid #f3f4f6;
-    border-top-color: #111827;
+    border: 3px solid #2b3139;
+    border-top-color: #2962ff;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -196,7 +197,7 @@
 
 .empty p {
     font-size: 16px;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
 }
 

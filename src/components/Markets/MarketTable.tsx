@@ -184,17 +184,25 @@ export default function MarketTable({ onSymbolSelect }: MarketTableProps = {}) {
                             <th className={styles.desktopOnly}>Vốn hoá thị trường</th>
                             <th className={styles.desktopOnly}>Thay đổi 24h</th>
                             <th className={styles.desktopOnly}>Phạm vi 24h</th>
-                            <th className={styles.mobileOnly} style={{ textAlign: 'right' }}>Giá | Thay đổi</th>
-                            <th>Thao tác</th>
+                            <th className={styles.desktopOnly} style={{ textAlign: 'right' }}>Giá | Thay đổi</th>
                         </tr>
                     </thead>
                     <tbody>
                         {paginatedMarkets.map(coin => (
-                            <tr key={coin.symbol}>
+                            <tr
+                                key={coin.symbol}
+                                onClick={() => handleRowClick(coin.symbol)}
+                                className={styles.clickableRow}
+                            >
                                 <td>
                                     <div className={styles.coinInfo}>
                                         {coin.logoUrl && (
-                                            <img src={coin.logoUrl} alt={coin.symbol} className={styles.coinLogo} onError={e => { e.currentTarget.style.display = 'none'; }} />
+                                            <img
+                                                src={coin.logoUrl}
+                                                alt={coin.symbol}
+                                                className={styles.coinLogo}
+                                                onError={e => { e.currentTarget.style.display = 'none'; }}
+                                            />
                                         )}
                                         <div>
                                             <div className={styles.symbol}>{coin.symbol.replace('USDT', '')}</div>
@@ -202,9 +210,15 @@ export default function MarketTable({ onSymbolSelect }: MarketTableProps = {}) {
                                         </div>
                                     </div>
                                 </td>
-                                <td className={`${styles.price} ${styles.desktopOnly}`}>{formatPrice(coin.currentPrice)}</td>
-                                <td className={`${styles.price} ${styles.desktopOnly}`}>{formatMarketCap((coin as any).marketCap || 0)}</td>
-                                <td className={`${Number(coin.priceChange24h) >= 0 ? styles.positive : styles.negative} ${styles.desktopOnly}`}>{formatPercent(coin.priceChange24h)}</td>
+                                <td className={`${styles.price} ${styles.desktopOnly}`}>
+                                    {formatPrice(coin.currentPrice)}
+                                </td>
+                                <td className={`${styles.price} ${styles.desktopOnly}`}>
+                                    {formatMarketCap((coin as any).marketCap || 0)}
+                                </td>
+                                <td className={`${Number(coin.priceChange24h) >= 0 ? styles.positive : styles.negative} ${styles.desktopOnly}`}>
+                                    {formatPercent(coin.priceChange24h)}
+                                </td>
                                 <td className={styles.desktopOnly}>
                                     {coin.low24h && coin.high24h ? (
                                         <PriceRangeChart low={coin.low24h} high={coin.high24h} current={coin.currentPrice} />
@@ -217,35 +231,29 @@ export default function MarketTable({ onSymbolSelect }: MarketTableProps = {}) {
                                         {formatPercent(coin.priceChange24h)}
                                     </div>
                                 </td>
-                                <td>
-                                    <button
-                                        className={styles.tradeBtn}
-                                        onClick={() => handleRowClick(coin.symbol)}
-                                    >
-                                        Giao dịch
-                                    </button>
-                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
 
-            {totalPages > 1 && (
-                <div className={styles.pagination}>
-                    <button className={styles.pageBtn} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
-                        <LeftOutlined />
-                    </button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                        <button key={page} className={`${styles.pageBtn} ${currentPage === page ? styles.active : ''}`} onClick={() => setCurrentPage(page)}>
-                            {page}
+            {
+                totalPages > 1 && (
+                    <div className={styles.pagination}>
+                        <button className={styles.pageBtn} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+                            <LeftOutlined />
                         </button>
-                    ))}
-                    <button className={styles.pageBtn} disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
-                        <RightOutlined />
-                    </button>
-                </div>
-            )}
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                            <button key={page} className={`${styles.pageBtn} ${currentPage === page ? styles.active : ''}`} onClick={() => setCurrentPage(page)}>
+                                {page}
+                            </button>
+                        ))}
+                        <button className={styles.pageBtn} disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
+                            <RightOutlined />
+                        </button>
+                    </div>
+                )
+            }
 
             <FilterModal isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} onApply={setFilters} currentFilters={filters} />
         </div>

@@ -1,84 +1,252 @@
-.balanceCard {
-    background: var(--balance-bg-card);
-    border: 1px solid var(--balance-border);
-    border-radius: 12px;
-    padding: 24px 32px;
-    margin-bottom: 24px;
+.container {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    margin-bottom: 32px;
 }
 
-.balanceHeader {
+.bankCard {
+    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+    border-radius: 20px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    min-height: 240px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cardOverlay {
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(41, 98, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.cardContent {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+/* Chip Design */
+.chip {
+    width: 50px;
+    height: 36px;
+    background: linear-gradient(135deg, #e0b045 0%, #f7d678 50%, #b38827 100%);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.chipLine {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.chipLine:nth-child(1) {
+    left: 0;
+    right: 0;
+    top: 12px;
+    height: 1px;
+    width: 100%;
+    border-left: none;
+    border-right: none;
+}
+
+.chipLine:nth-child(2) {
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    height: 1px;
+    width: 100%;
+    border-left: none;
+    border-right: none;
+}
+
+.chipLine:nth-child(3) {
+    top: 0;
+    bottom: 0;
+    left: 16px;
+    width: 1px;
+    height: 100%;
+    border-top: none;
+    border-bottom: none;
+}
+
+.chipLine:nth-child(4) {
+    top: 0;
+    bottom: 0;
+    right: 16px;
+    width: 1px;
+    height: 100%;
+    border-top: none;
+    border-bottom: none;
+}
+
+.cardLogo {
     display: flex;
     align-items: center;
     gap: 8px;
+    opacity: 0.8;
 }
 
-.balanceLabel {
-    font-size: 14px;
-    color: var(--balance-text-secondary);
-    font-weight: 500;
+.cardLogo img {
+    height: 24px;
+    filter: brightness(0) invert(1);
+}
+
+.cardLogo span {
+    font-weight: 700;
+    font-size: 16px;
+    color: white;
+    letter-spacing: 2px;
+}
+
+.balanceSection {
+    margin-top: auto;
+    margin-bottom: 24px;
+}
+
+.label {
+    font-size: 12px;
+    color: var(--text-secondary);
     text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
 }
 
-.balanceAmount {
+.balanceRow {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: 4px;
 }
 
-.currency {
-    font-size: 32px;
-    font-weight: 600;
-    color: var(--balance-text-primary);
+.currencySymbol {
+    font-size: 24px;
+    color: white;
+    font-weight: 300;
 }
 
-.amount {
-    font-size: 48px;
+.balanceValue {
+    font-size: 42px;
+    color: white;
     font-weight: 700;
-    color: var(--balance-text-primary);
-    line-height: 1;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    font-family: 'Roboto Mono', monospace;
+    letter-spacing: -1px;
 }
 
 .btcValue {
-    font-size: 16px;
-    color: var(--balance-text-secondary);
-    margin-left: 12px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 4px;
 }
 
-.balanceActions {
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.cardNumber {
     display: flex;
     gap: 12px;
-    margin-top: 8px;
+    font-family: 'Roboto Mono', monospace;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    letter-spacing: 2px;
 }
 
-.actionButton {
-    background: var(--balance-bg-card-hover);
-    border: none;
-    border-radius: 8px;
-    padding: 10px 24px;
-    color: var(--balance-text-primary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 100px;
-}
-
-.actionButton.primary {
-    background: var(--balance-primary);
+.lastDigits {
     color: white;
 }
 
-.actionButton.primary:hover {
-    background: var(--balance-primary-hover);
+.cardHolder {
+    text-align: right;
+}
+
+.holderLabel {
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.holderName {
+    font-size: 12px;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Actions Grid */
+.actionsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.actionButton {
+    background: var(--bg-zinc-100);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .actionButton:hover {
-    background: #363c45;
+    background: #252525;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-color: var(--blue-500);
+    color: var(--blue-500);
 }
 
 .actionButton:active {
-    transform: translateY(1px);
+    transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+    .actionsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .balanceValue {
+        font-size: 32px;
+    }
+
+    .bankCard {
+        min-height: 200px;
+        padding: 24px;
+    }
 }

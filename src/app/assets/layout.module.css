@@ -1,16 +1,15 @@
 .assetsLayout {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     min-height: calc(100vh - 70px);
-    background: #f9fafb;
+    background: var(--background);
 }
 
 .assetsContent {
     flex: 1;
     padding: 32px;
-    max-width: 1200px;
-    margin: 0 auto;
     width: 100%;
+    overflow-x: hidden;
 }
 
 @media (max-width: 768px) {

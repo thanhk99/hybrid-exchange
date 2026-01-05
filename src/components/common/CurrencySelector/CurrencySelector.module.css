@@ -5,8 +5,8 @@
 .button {
     width: 100%;
     padding: 16px;
-    background: white;
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -17,8 +17,8 @@
 }
 
 .button:hover {
-    border-color: var(--blue-200);
-    background: var(--bg-zinc-50);
+    border-color: var(--blue-500);
+    background: #333;
 }
 
 .selectedText {
@@ -46,10 +46,10 @@
     top: calc(100% + 8px);
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     z-index: 1000;
     max-height: 320px;
     overflow-y: auto;
@@ -67,7 +67,7 @@
 }
 
 .item:hover {
-    background: var(--bg-zinc-50);
+    background: #333;
 }
 
 .info {

@@ -1,30 +1,29 @@
 .container {
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
 .label {
     display: block;
     font-size: 14px;
-    font-weight: 500;
-    color: #1a1a1a;
+    color: #848e9c;
     margin-bottom: 12px;
 }
 
 .row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 20px;
 }
 
 .field {
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
 .fieldLabel {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 8px;
+    font-size: 14px;
+    color: #848e9c;
 }
 
 .inputGroup {
@@ -34,23 +33,37 @@
 }
 
 .input {
-    flex: 1;
-    padding: 10px 60px 10px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 14px;
-    outline: none;
+    width: 100%;
+    padding: 14px 16px;
+    padding-right: 60px;
+    background: #2b3139;
+    border: 1px solid #2b3139;
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
     transition: border-color 0.2s;
 }
 
 .input:focus {
-    border-color: #1890ff;
+    outline: none;
+    border-color: #0068ff;
+}
+
+.input::placeholder {
+    color: #474d57;
 }
 
 .suffix {
     position: absolute;
-    right: 12px;
-    font-size: 13px;
-    color: #999;
-    pointer-events: none;
+    right: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #848e9c;
+}
+
+@media (max-width: 600px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
 }

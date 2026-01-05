@@ -5,6 +5,8 @@ import { Notification, NotificationContextType, NotificationResponse } from '../
 import NotificationService from '../services/notification';
 import TokenService from '../services/token';
 import { useUser } from './UserContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/store/store';
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
@@ -14,6 +16,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const { user } = useUser();
+    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
 
     const mapNotification = useCallback((item: any, defaultType?: string): Notification => {
         const notification: Notification = {
@@ -144,123 +147,66 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     useEffect(() => {
         if (!user?.uid) return;
 
-        let retryTimeout: NodeJS.Timeout;
-        const controller = new AbortController();
-
-        const connectSSE = async () => {
-            const token = TokenService.getAccessToken();
+        const connectSSE = () => {
+            const token = accessToken || TokenService.getAccessToken();
             if (!token) return;
 
             const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
             const url = `${baseUrl}/api/v1/sse/subscribe/${user.uid}?token=${token}`;
 
-            console.log('[SSE] Connecting to:', url);
+            console.log('🔌 [SSE] Connecting to:', url);
 
-            try {
-                const response = await fetch(url, {
-                    headers: {
-                        Accept: 'text/event-stream',
-                    },
-                    signal: controller.signal,
-                });
+            const es = new EventSource(url);
 
-                if (!response.ok) {
-                    throw new Error(`SSE Connection failed: ${response.status} ${response.statusText}`);
-                }
-
-                console.log('[SSE] Connected successfully');
+            // Kiểm tra trạng thái kết nối
+            es.onopen = () => {
+                console.log("✅ [SSE] Connection opened");
                 setError(null);
+            };
 
-                const reader = response.body?.getReader();
-                const decoder = new TextDecoder();
-                let buffer = '';
+            es.onerror = (err) => {
+                console.error("❌ [SSE] Connection failed/lost, browser will auto-reconnect:", err);
+            };
 
-                if (!reader) return;
+            // 1. Lắng nghe sự kiện kết nối thành công
+            es.addEventListener("connected", (event) => {
+                console.log("👋 [SSE] Server says:", event.data);
+            });
 
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
+            // 2. Lắng nghe thông báo (Chính)
+            es.addEventListener("notification", (event) => {
+                console.log("🔔 [SSE] New notification received:", event.data);
+                try {
+                    if (event.data) {
+                        const rawNotification = JSON.parse(event.data);
+                        const newNotification = mapNotification(rawNotification, 'notification');
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    buffer += chunk;
-
-                    // Normalize newlines
-                    const normalizedBuffer = buffer.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                    const parts = normalizedBuffer.split('\n\n');
-
-                    buffer = parts.pop() || '';
-
-                    for (const part of parts) {
-                        const lines = part.split('\n');
-                        let eventType = 'message';
-                        let data = '';
-
-                        for (const line of lines) {
-                            const trimLine = line.trim();
-                            if (!trimLine) continue;
-
-                            if (/^event:/i.test(trimLine)) {
-                                eventType = trimLine.slice(6).trim();
-                            } else if (/^data:/i.test(trimLine)) {
-                                const lineData = trimLine.slice(5).trim();
-                                if (!data) {
-                                    data = lineData;
-                                } else {
-                                    data += '\n' + lineData;
-                                }
+                        setNotifications(prev => {
+                            if (prev.some(n => n.id === newNotification.id)) {
+                                return prev;
                             }
-                        }
-
-                        if (!data) continue;
-
-                        console.log(`[SSE] Received event: ${eventType}`, data);
-
-                        if (eventType === 'connected') {
-                            continue;
-                        }
-
-                        try {
-                            if (data.startsWith('{') || data.startsWith('[')) {
-                                const rawNotification = JSON.parse(data);
-                                // Pass eventType as fallback
-                                const newNotification = mapNotification(rawNotification, eventType);
-
-                                setNotifications(prev => {
-                                    if (prev.some(n => n.id === newNotification.id)) {
-                                        return prev;
-                                    }
-                                    return [newNotification, ...prev];
-                                });
-                                setUnreadCount(prev => prev + 1);
-                            } else {
-                                console.log('[SSE] Non-JSON data:', data);
-                            }
-                        } catch (e) {
-                            console.error("[SSE] Error parsing message:", e);
-                            console.error("[SSE] Raw data:", data);
-                        }
+                            return [newNotification, ...prev];
+                        });
+                        setUnreadCount(prev => prev + 1);
                     }
+                } catch (e) {
+                    console.error("[SSE] Error parsing notification:", e);
+                    console.error("[SSE] Raw data:", event.data);
                 }
+            });
 
-            } catch (err: any) {
-                if (err.name === 'AbortError') return;
-
-                console.error("SSE Error:", err);
-                retryTimeout = setTimeout(() => {
-                    connectSSE();
-                }, 5000);
-            }
+            return es;
         };
 
-        connectSSE();
+        const eventSource = connectSSE();
 
         return () => {
-            controller.abort();
-            if (retryTimeout) {
-                clearTimeout(retryTimeout);
+            if (eventSource) {
+                eventSource.close();
+                console.log("🔌 [SSE] Connection closed");
             }
         };
-    }, [user?.uid, mapNotification]);
+    }, [user?.uid, accessToken, mapNotification]);
 
 
 

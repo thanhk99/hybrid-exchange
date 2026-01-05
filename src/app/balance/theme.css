@@ -1,15 +1,14 @@
 :root {
-    --balance-bg-main: #12161C;
-    --balance-bg-card: #1E2329;
-    --balance-bg-card-hover: #2B3139;
-    --balance-text-primary: #EAECEF;
-    --balance-text-secondary: #848E9C;
-    --balance-text-accent: #F0B90B;
-    --balance-border: #2B3139;
-    --balance-primary: #2962FF;
-    --balance-primary-hover: #1E4BD1;
-    --balance-success: #0ECB81;
-    --balance-danger: #F6465D;
+    --balance-bg-main: #000000;
+    --balance-bg-card: #050505;
+    --balance-bg-card-hover: #0a0a0a;
+    --balance-text-primary: #ffffff;
+    --balance-text-secondary: #888888;
+    --balance-border: #1a1a1a;
+    --balance-primary: #2962ff;
+    --balance-primary-hover: #1e4bd8;
+    --balance-success: #10b981;
+    --balance-danger: #ef4444;
 }
 
 body {

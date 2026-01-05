@@ -23,18 +23,17 @@
   --red-600: #F6465D;
 
   /* Background Colors */
-  --bg-white: #1E2329;
-  /* Card background */
-  --bg-zinc-50: #12161C;
-  /* Main background */
-  --bg-zinc-100: #2B3139;
+  --background: #000000;
+  --foreground: #ededed;
+  --bg-zinc-50: #000000;
+  --bg-white: #050505;
+  --bg-zinc-100: #0a0a0a;
+  --bg-zinc-200: #1a1a1a;
   /* Hover/Border */
-
   /* Text Colors */
   --text-primary: #EAECEF;
   --text-secondary: #848E9C;
   --text-tertiary: #5E6673;
-
   --background: var(--bg-zinc-50);
   --foreground: var(--text-primary);
 }
@@ -48,7 +47,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #12161C;
+    --background: #000000;
     --foreground: #EAECEF;
   }
 }

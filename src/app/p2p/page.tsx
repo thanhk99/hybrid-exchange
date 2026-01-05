@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { PlusOutlined, SearchOutlined, CheckOutlined, DownOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, CheckOutlined, DownOutlined, ReloadOutlined, SafetyCertificateOutlined, ThunderboltOutlined, CustomerServiceOutlined } from '@ant-design/icons';
 import UserRating from '@/src/components/P2P/UserRating/UserRating';
 import PaymentMethodBadge from '@/src/components/P2P/PaymentMethodBadge/PaymentMethodBadge';
 import TradeModal from '@/src/components/P2P/TradeModal/TradeModal';
@@ -27,6 +27,7 @@ export default function P2PMarketplace() {
     const [showSortMenu, setShowSortMenu] = useState(false);
     const [sortBy, setSortBy] = useState('default');
     const [paymentSearchTerm, setPaymentSearchTerm] = useState('');
+    const [amount, setAmount] = useState('');
 
     const [currencies, setCurrencies] = useState<string[]>([]);
     const fiatCurrencies = ['VND'];
@@ -174,20 +175,28 @@ export default function P2PMarketplace() {
         return sortOptions.find(opt => opt.value === sortBy)?.label || 'Sắp xếp theo';
     };
 
+    const getPaymentColor = (name: string) => {
+        const lowerName = name.toLowerCase();
+        if (lowerName.includes('ngân hàng') || lowerName.includes('bank')) return '#f3ba2f';
+        if (lowerName.includes('momo')) return '#d82d8b';
+        if (lowerName.includes('zalopay')) return '#0068ff';
+        return '#848e9c';
+    };
+
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <div className={styles.headerLeft}>
-                    <h1 className={styles.title}>P2P</h1>
-                    <div className={styles.tabs}>
+            <div className={styles.topHeader}>
+                <div className={styles.headerTitleSection}>
+                    <h1 className={styles.mainTitle}>P2P</h1>
+                    <div className={styles.orderTypeTabs}>
                         <button
-                            className={`${styles.tab} ${orderType === 'buy' ? styles.tabActive : ''}`}
+                            className={`${styles.orderTypeTab} ${orderType === 'buy' ? styles.orderTypeTabActive : ''}`}
                             onClick={() => setOrderType('buy')}
                         >
                             Mua
                         </button>
                         <button
-                            className={`${styles.tab} ${orderType === 'sell' ? styles.tabActive : ''}`}
+                            className={`${styles.orderTypeTab} ${orderType === 'sell' ? styles.orderTypeTabActive : ''}`}
                             onClick={() => setOrderType('sell')}
                         >
                             Bán
@@ -195,7 +204,7 @@ export default function P2PMarketplace() {
                     </div>
                 </div>
                 <button
-                    className={styles.createButton}
+                    className={styles.createAdButton}
                     onClick={() => router.push('/p2p/create')}
                 >
                     <PlusOutlined /> Tạo quảng cáo
@@ -206,30 +215,47 @@ export default function P2PMarketplace() {
                 {/* Filters Bar */}
                 <div className={styles.filtersBar}>
                     <div className={styles.filterGroup}>
-                        <div className={styles.currencySelect}>
-                            {currencyIcons[currency] && (
-                                <img src={currencyIcons[currency]} alt={currency} className={styles.currencyIcon} />
-                            )}
-                            <select
-                                className={styles.select}
-                                value={currency}
-                                onChange={(e) => setCurrency(e.target.value)}
-                            >
-                                {currencies.map(c => (
-                                    <option key={c} value={c}>{c}</option>
-                                ))}
-                            </select>
+                        <div className={styles.assetSelector}>
+                            <div className={styles.currencySelect}>
+                                {currencyIcons[currency] && (
+                                    <img src={currencyIcons[currency]} alt={currency} className={styles.currencyIcon} />
+                                )}
+                                <select
+                                    className={styles.assetSelect}
+                                    value={currency}
+                                    onChange={(e) => setCurrency(e.target.value)}
+                                >
+                                    {currencies.map(c => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
+                                </select>
+                                <DownOutlined className={styles.selectArrow} />
+                            </div>
+
+                            <div className={styles.fiatSelectWrapper}>
+                                <select
+                                    className={styles.fiatSelect}
+                                    value={fiatCurrency}
+                                    onChange={(e) => setFiatCurrency(e.target.value)}
+                                >
+                                    {fiatCurrencies.map(c => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
+                                </select>
+                                <DownOutlined className={styles.selectArrow} />
+                            </div>
                         </div>
 
-                        <select
-                            className={styles.select}
-                            value={fiatCurrency}
-                            onChange={(e) => setFiatCurrency(e.target.value)}
-                        >
-                            {fiatCurrencies.map(c => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
+                        <div className={styles.amountInputWrapper}>
+                            <input
+                                type="text"
+                                placeholder="Nhập số tiền"
+                                className={styles.amountInput}
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                            />
+                            <span className={styles.amountUnit}>{fiatCurrency}</span>
+                        </div>
 
                         <div className={styles.paymentFilterWrapper}>
                             <button
@@ -273,6 +299,10 @@ export default function P2PMarketplace() {
                                 </div>
                             )}
                         </div>
+
+                        <button className={styles.refreshButton} onClick={fetchOrders}>
+                            <ReloadOutlined />
+                        </button>
                     </div>
 
                     <div className={styles.sortGroup}>
@@ -281,8 +311,8 @@ export default function P2PMarketplace() {
                                 className={styles.sortButton}
                                 onClick={() => setShowSortMenu(!showSortMenu)}
                             >
-                                <span className={styles.sortLabel}>Sắp xếp theo</span>
-                                <span className={styles.sortValue}>{getSelectedSortLabel()}</span>
+                                <span className={styles.sortLabelText}>Sắp xếp theo</span>
+                                <span className={styles.sortCurrentValue}>{getSelectedSortLabel()}</span>
                                 <DownOutlined className={styles.dropdownIcon} />
                             </button>
 
@@ -309,96 +339,90 @@ export default function P2PMarketplace() {
 
                 {/* Table */}
                 <div className={styles.tableContainer}>
-                    <table className={styles.table}>
+                    <table className={styles.adsTable}>
                         <thead>
                             <tr>
-                                <th className={styles.thMerchant}>Nhà quảng cáo</th>
-                                <th className={styles.thPrice}>Đơn giá</th>
-                                <th className={styles.thLimit}>Giới hạn/Khả dụng</th>
-                                <th className={styles.thPayment}>Phương thức thanh toán</th>
-                                <th className={styles.thAction}>Khối lượng</th>
-                                <th className={styles.thAction}></th>
+                                <th className={styles.thAdMerchant}>Nhà quảng cáo</th>
+                                <th className={styles.thAdPrice}>Đơn giá <span className={styles.unit}>{fiatCurrency}</span></th>
+                                <th className={styles.thAdLimit}>Giới hạn/Khả dụng</th>
+                                <th className={styles.thAdPayment}>Phương thức thanh toán</th>
+                                <th className={styles.thAdAction}>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={6} className={styles.loading}>
-                                        <div className={styles.spinner}></div>
-                                        <p>Đang tải...</p>
+                                    <td colSpan={5} className={styles.loadingCell}>
+                                        <div className={styles.loadingSpinner}></div>
+                                        <p>Đang tải dữ liệu...</p>
                                     </td>
                                 </tr>
                             ) : orders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className={styles.empty}>
-                                        Không tìm thấy đơn hàng
+                                    <td colSpan={5} className={styles.emptyCell}>
+                                        Không tìm thấy quảng cáo phù hợp
                                     </td>
                                 </tr>
                             ) : (
                                 orders.map(order => (
-                                    <tr key={order.id} className={styles.row}>
-                                        <td className={styles.tdMerchant}>
-                                            <div className={styles.merchantInfo}>
-                                                <div className={styles.merchantName}>
-                                                    {order.merchantName}
-                                                    {order.merchantCompletedTrades > 100 && (
-                                                        <span className={styles.badge}>⭐ Ưu tú</span>
-                                                    )}
+                                    <tr key={order.id} className={styles.adRow}>
+                                        <td className={styles.tdAdMerchant}>
+                                            <div className={styles.merchantCell}>
+                                                <div className={styles.merchantIconWrapper}>
+                                                    {order.merchantName.charAt(0).toUpperCase()}
                                                 </div>
-                                                <UserRating
-                                                    rating={order.merchantRating}
-                                                    completedTrades={order.merchantCompletedTrades}
-                                                    completionRate={order.merchantCompletionRate}
-                                                    size="small"
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className={styles.tdPrice}>
-                                            <div className={styles.price}>
-                                                {formatAmount(order.price)} {order.fiatCurrency}
-                                            </div>
-                                        </td>
-                                        <td className={styles.tdLimit}>
-                                            <div className={styles.limit}>
-                                                <div className={styles.limitRange}>
-                                                    {formatAmount(order.minLimit)}-{formatAmount(order.maxLimit)} {order.fiatCurrency}
-                                                </div>
-                                                <div className={styles.available}>
-                                                    Khả dụng {formatAmount(order.availableAmount)} {order.currency}
+                                                <div className={styles.merchantDetail}>
+                                                    <div className={styles.merchantMainName}>
+                                                        {order.merchantName}
+                                                        {order.merchantCompletedTrades > 100 && (
+                                                            <CheckOutlined className={styles.verifiedIcon} />
+                                                        )}
+                                                    </div>
+                                                    <div className={styles.merchantStats}>
+                                                        <span>{order.merchantCompletedTrades} lệnh</span>
+                                                        <span className={styles.divider}>|</span>
+                                                        <span>{order.merchantCompletionRate.toFixed(1)}% hoàn tất</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className={styles.tdPayment}>
-                                            <div className={styles.paymentMethods}>
-                                                {order.paymentMethods.slice(0, 2).map(method => (
-                                                    <PaymentMethodBadge
-                                                        key={method.id}
-                                                        method={method}
-                                                        size="small"
-                                                    />
+                                        <td className={styles.tdAdPrice}>
+                                            <div className={styles.priceCell}>
+                                                <span className={styles.priceAmount}>{formatAmount(order.price)}</span>
+                                                <span className={styles.priceUnit}>{order.fiatCurrency}</span>
+                                            </div>
+                                        </td>
+                                        <td className={styles.tdAdLimit}>
+                                            <div className={styles.limitCell}>
+                                                <div className={styles.limitRow}>
+                                                    <span className={styles.limitLabel}>Khả dụng</span>
+                                                    <span className={styles.limitValue}>{formatAmount(order.availableAmount)} {order.currency}</span>
+                                                </div>
+                                                <div className={styles.limitRow}>
+                                                    <span className={styles.limitLabel}>Giới hạn</span>
+                                                    <span className={styles.limitValue}>{formatAmount(order.minLimit)} - {formatAmount(order.maxLimit)} {order.fiatCurrency}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className={styles.tdAdPayment}>
+                                            <div className={styles.paymentCell}>
+                                                {order.paymentMethods.map(method => (
+                                                    <div key={method.id} className={styles.paymentMethodItem}>
+                                                        <span className={styles.paymentIndicator} style={{ backgroundColor: getPaymentColor(method.name || '') }}></span>
+                                                        <span className={styles.paymentName}>{method.name}</span>
+                                                    </div>
                                                 ))}
-                                                {order.paymentMethods.length > 2 && (
-                                                    <span className={styles.morePayments}>
-                                                        +{order.paymentMethods.length - 2}
-                                                    </span>
-                                                )}
                                             </div>
                                         </td>
-                                        <td className={styles.tdVolume}>
-                                            <div className={styles.volume}>
-                                                {formatAmount(order.availableAmount)} {order.currency}
-                                            </div>
-                                        </td>
-                                        <td className={styles.tdAction}>
+                                        <td className={styles.tdAdAction}>
                                             <button
-                                                className={styles.tradeButton}
+                                                className={`${styles.actionBtn} ${orderType === 'buy' ? styles.buyBtn : styles.sellBtn}`}
                                                 onClick={() => handleTrade(order)}
                                                 disabled={user?.uid === order.merchantId}
-                                                style={user?.uid === order.merchantId ? { opacity: 0.5, cursor: 'not-allowed', background: '#ccc' } : {}}
                                             >
                                                 {user?.uid === order.merchantId
-                                                    ? 'Quảng cáo của bạn'
-                                                    : (orderType === 'buy' ? 'Mua' : 'Bán')}
+                                                    ? 'Của bạn'
+                                                    : `${orderType === 'buy' ? 'Mua' : 'Bán'} ${order.currency}`}
                                             </button>
                                         </td>
                                     </tr>
@@ -406,6 +430,42 @@ export default function P2PMarketplace() {
                             )}
                         </tbody>
                     </table>
+                    <div className={styles.paginationSection}>
+                        <span className={styles.paginationInfo}>Hiển thị 1-{orders.length} trên 140 kết quả</span>
+                        <div className={styles.paginationControls}>
+                            <button className={styles.pageBtn} disabled>&lt;</button>
+                            <button className={`${styles.pageBtn} ${styles.pageActive}`}>1</button>
+                            <button className={styles.pageBtn}>2</button>
+                            <button className={styles.pageBtn}>3</button>
+                            <span className={styles.pageDots}>...</span>
+                            <button className={styles.pageBtn}>&gt;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Footer Features */}
+            <div className={styles.footerFeatures}>
+                <div className={styles.featureCard}>
+                    <div className={styles.featureIcon}><SafetyCertificateOutlined /></div>
+                    <div className={styles.featureContent}>
+                        <h3>Giao dịch an toàn</h3>
+                        <p>Tài sản P2P được giữ trong tài khoản ký quỹ của chúng tôi trong quá trình giao dịch để đảm bảo an toàn.</p>
+                    </div>
+                </div>
+                <div className={styles.featureCard}>
+                    <div className={styles.featureIcon}><ThunderboltOutlined /></div>
+                    <div className={styles.featureContent}>
+                        <h3>Thanh toán nhanh chóng</h3>
+                        <h3>Hỗ trợ hơn 100 phương thức thanh toán và chuyển khoản ngân hàng địa phương tức thì.</h3>
+                    </div>
+                </div>
+                <div className={styles.featureCard}>
+                    <div className={styles.featureIcon}><CustomerServiceOutlined /></div>
+                    <div className={styles.featureContent}>
+                        <h3>Hỗ trợ 24/7</h3>
+                        <p>Đội ngũ hỗ trợ khách hàng của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc của bạn bất cứ lúc nào.</p>
+                    </div>
                 </div>
             </div>
 

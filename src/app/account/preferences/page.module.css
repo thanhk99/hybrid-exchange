@@ -1,7 +1,6 @@
 .preferencesPage {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 32px 20px;
+    width: 100%;
+    padding: 32px 40px;
 }
 
 .pageHeader {
@@ -9,7 +8,7 @@
 }
 
 .pageTitle {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0 0 8px 0;
@@ -18,7 +17,7 @@
 
 .pageSubtitle {
     font-size: 16px;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     margin: 0;
 }
 
@@ -26,6 +25,10 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 32px;
+    background: #111318;
+    border-radius: 20px;
+    padding: 32px;
+    border: 1px solid #1e2329;
 }
 
 .settingItem {
@@ -42,15 +45,15 @@
 
 .select {
     padding: 14px 16px;
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    border: 1px solid #2b3139;
     border-radius: 12px;
     font-size: 15px;
     color: var(--text-primary);
-    background: var(--bg-zinc-50);
+    background: #1e2329;
     cursor: pointer;
     transition: all 0.3s;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23848e9c' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     background-position: right 12px center;
     background-repeat: no-repeat;
     background-size: 20px 20px;
@@ -58,39 +61,40 @@
 
 .select:focus {
     outline: none;
-    border-color: var(--blue-500);
-    background-color: white;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    border-color: #2962ff;
+    background-color: #1e2329;
+    box-shadow: 0 0 0 4px rgba(41, 98, 255, 0.1);
 }
 
 .saveButton {
     width: 100%;
     padding: 16px;
-    background: var(--blue-600);
+    background: #2962ff;
     color: white;
     border: none;
     border-radius: 12px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
     margin-top: 32px;
-    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 15px rgba(41, 98, 255, 0.2);
 }
 
 .saveButton:hover {
-    background: var(--blue-500);
+    background: #2555da;
     transform: translateY(-2px);
-    box-shadow: 0 8px 12px -1px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 8px 20px rgba(41, 98, 255, 0.3);
 }
 
 @media (max-width: 768px) {
     .preferencesPage {
-        padding: 20px 16px;
+        padding: 24px 16px;
     }
 
     .settingGroup {
         grid-template-columns: 1fr;
         gap: 24px;
+        padding: 24px;
     }
 }

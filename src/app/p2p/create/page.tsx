@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import P2PHeader from '@/src/components/P2P/P2PHeader/P2PHeader';
+import { ArrowLeftOutlined, DownOutlined } from '@ant-design/icons';
+// import P2PHeader from '@/src/components/P2P/P2PHeader/P2PHeader';
 import OrderTypeSelector from '@/src/components/P2P/OrderForm/OrderTypeSelector';
 import CurrencySection from '@/src/components/P2P/OrderForm/CurrencySection';
 import PriceAmountSection from '@/src/components/P2P/OrderForm/PriceAmountSection';
@@ -175,18 +175,19 @@ export default function CreateP2POrder() {
 
     return (
         <div className={styles.container}>
-            <P2PHeader
-                title="Tạo quảng cáo P2P"
-                subtitle="Đăng quảng cáo mua hoặc bán tiền điện tử"
-                actions={
-                    <button
-                        className={styles.backButton}
-                        onClick={() => router.push('/p2p')}
-                    >
-                        <ArrowLeftOutlined /> Quay lại
-                    </button>
-                }
-            />
+            <div className={styles.header}>
+                <div className={styles.headerTitle}>
+                    <h1 className={styles.title}>Tạo quảng cáo P2P</h1>
+                    <p className={styles.subtitle}>Đăng quảng cáo mua hoặc bán tiền điện tử</p>
+                </div>
+                <button
+                    className={styles.backButton}
+                    onClick={() => router.push('/p2p')}
+                >
+                    <ArrowLeftOutlined /> Quay lại
+                </button>
+            </div>
+            <div className={styles.divider}></div>
 
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.card}>

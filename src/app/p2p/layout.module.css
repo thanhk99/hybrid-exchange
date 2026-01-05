@@ -1,20 +1,29 @@
 .p2pLayout {
     display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 70px);
-    background: #f9fafb;
+    flex-direction: row;
+    min-height: calc(100vh - 64px);
+    background: #0b0e11;
 }
 
 .p2pContent {
     flex: 1;
-    padding: 32px;
-    max-width: 1400px;
-    margin: 0 auto;
+    padding: 24px;
     width: 100%;
+    overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+    .p2pContent {
+        padding: 20px;
+    }
 }
 
 @media (max-width: 768px) {
+    .p2pLayout {
+        flex-direction: column;
+    }
+
     .p2pContent {
-        padding: 20px 16px;
+        padding: 16px;
     }
 }

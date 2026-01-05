@@ -1,37 +1,35 @@
 .depositContainer {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 32px 20px 60px;
-    min-height: calc(100vh - 60px);
+    width: 100%;
+    padding: 32px 40px 60px;
 }
 
 .header {
-    margin-bottom: 40px;
     text-align: center;
+    margin-bottom: 40px;
 }
 
 .title {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
+/* Card Style */
 .content {
-    background: var(--bg-white);
-    border: 1px solid rgba(229, 231, 235, 0.5);
-    border-radius: 24px;
-    padding: 32px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
+    background: #111318;
+    /* Dark card background */
+    border-radius: 20px;
+    padding: 40px;
+    border: 1px solid #1e2329;
+    margin-bottom: 24px;
 }
 
 .stepContainer {
-    position: relative;
-    padding-left: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .stepContainer::before {
@@ -41,7 +39,7 @@
     top: 40px;
     bottom: -32px;
     width: 2px;
-    background-color: var(--bg-zinc-100);
+    background-color: #333;
     z-index: 0;
 }
 
@@ -49,36 +47,32 @@
     display: none;
 }
 
+/* Step Header */
 .stepHeader {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 20px;
-    position: relative;
+    margin-bottom: 12px;
 }
 
 .stepBadge {
-    position: absolute;
-    left: -48px;
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: white;
-    border: 2px solid var(--bg-zinc-200);
-    color: var(--text-tertiary);
+    border: 1px solid #2962ff;
+    color: #2962ff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    font-weight: 700;
-    z-index: 1;
-    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
 }
 
 .stepActive .stepBadge {
     border-color: var(--blue-600);
     color: var(--blue-600);
-    background: white;
+    background: #1a1a1a;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
@@ -90,90 +84,104 @@
 
 .stepTitle {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--text-primary);
-}
-
-.stepContent {
-    background: transparent;
-    border-radius: 16px;
-    padding: 0;
 }
 
 /* Dropdown */
 .dropdownContainer {
     position: relative;
+    margin-top: 16px;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
 }
 
 .dropdownButton {
     width: 100%;
-    padding: 16px;
-    background: white;
-    border: 1px solid rgba(229, 231, 235, 0.8);
-    border-radius: 16px;
+    padding: 12px 16px;
+    background: #1e2329;
+    /* Darker input background */
+    border: 1px solid #2b3139;
+    border-radius: 8px;
+    /* Slightly less rounded */
     display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
     transition: all 0.2s;
     font-size: 15px;
+    color: var(--text-primary);
+    min-height: 48px;
 }
 
 .dropdownButton:hover {
-    border-color: var(--blue-200);
-    background: var(--bg-zinc-50);
+    border-color: #474d57;
+    background: #2b3139;
 }
 
 .selectedItem {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .selectedIcon {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     object-fit: cover;
 }
 
 .selectedText {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-primary);
-    font-size: 16px;
+    font-size: 15px;
 }
 
-.placeholder {
-    color: var(--text-tertiary);
+/* Helper Text */
+.helperText {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
 }
 
 .dropdownMenu {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid rgba(229, 231, 235, 0.8);
-    border-radius: 16px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    background: #1e2329;
+    border: 1px solid #2b3139;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     z-index: 10;
     max-height: 320px;
     overflow-y: auto;
-    padding: 8px;
+    padding: 4px;
 }
 
 .dropdownItem {
-    padding: 12px 16px;
+    padding: 10px 12px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     cursor: pointer;
     transition: background 0.2s;
-    border-radius: 12px;
+    border-radius: 4px;
+    color: var(--text-primary);
 }
 
 .dropdownItem:hover {
-    background: var(--bg-zinc-50);
+    background: #2b3139;
 }
 
 .currencyIcon {
@@ -190,10 +198,10 @@
     font-size: 13px;
     color: var(--text-secondary);
     flex-wrap: wrap;
-    background: var(--bg-zinc-50);
+    background: rgba(255, 255, 255, 0.02);
     padding: 16px;
     border-radius: 16px;
-    border: 1px solid rgba(229, 231, 235, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .stat {
@@ -216,16 +224,16 @@
     flex-direction: column;
     align-items: center;
     padding: 24px;
-    background: var(--bg-zinc-50);
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 16px;
     margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .qrWrapper {
     background: white;
-    padding: 16px;
+    padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .qrLabel {
@@ -254,8 +262,8 @@
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: var(--bg-zinc-50);
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
 }
 
@@ -272,9 +280,9 @@
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    background: var(--blue-600);
-    color: white;
-    border: none;
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--blue-500);
+    border: 1px solid rgba(37, 99, 235, 0.2);
     border-radius: 8px;
     font-size: 13px;
     font-weight: 600;
@@ -284,7 +292,7 @@
 }
 
 .copyBtn:hover {
-    background: var(--blue-500);
+    background: rgba(37, 99, 235, 0.2);
     transform: translateY(-1px);
 }
 
@@ -294,7 +302,7 @@
     gap: 12px;
     padding: 16px;
     background: rgba(251, 191, 36, 0.1);
-    border: 1px solid rgba(251, 191, 36, 0.3);
+    border: 1px solid rgba(251, 191, 36, 0.2);
     border-radius: 16px;
 }
 
@@ -414,10 +422,10 @@
 .balanceContainer {
     margin-top: 24px;
     padding: 24px;
-    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-    border: 1px solid rgba(229, 231, 235, 0.5);
+    background: linear-gradient(135deg, #1a1a1a 0%, #111 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .balanceHeader {
@@ -436,10 +444,10 @@
 
 .refreshBtn {
     padding: 8px 16px;
-    background: white;
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    color: var(--blue-600);
+    color: var(--blue-500);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -450,8 +458,8 @@
 }
 
 .refreshBtn:hover:not(:disabled) {
-    background: var(--blue-50);
-    border-color: var(--blue-200);
+    background: rgba(37, 99, 235, 0.1);
+    border-color: rgba(37, 99, 235, 0.2);
     transform: translateY(-1px);
 }
 
@@ -471,8 +479,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: white;
-    border: 1px solid #f3f4f6;
+    background: #252525;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
 }
 
@@ -507,7 +515,7 @@
     padding: 32px;
     color: var(--text-tertiary);
     font-size: 14px;
-    background: white;
+    background: #252525;
     border-radius: 12px;
-    border: 1px dashed #e5e7eb;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
 }

@@ -1,25 +1,26 @@
 /* Header Main Styles */
 .headerMain {
-  max-height: 70px;
+  height: 64px;
   display: flex;
-  background: var(--bg-zinc-50);
+  background: #0b0e11;
   width: 100%;
   align-items: center;
   justify-content: space-between;
   position: fixed;
   z-index: 1000;
   top: 0;
-  border-bottom: none;
+  border-bottom: 1px solid #1e2329;
 }
 
 .head {
-  width: 90%;
+  width: 95%;
+  max-width: 1440px;
   display: flex;
   margin: 0 auto;
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-  height: 70px;
+  height: 64px;
 }
 
 /* Logo Styles */
@@ -27,12 +28,12 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  height: 40px;
+  height: 32px;
   transition: all 0.3s ease;
 }
 
 .logo:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 .logoImg {
@@ -91,7 +92,7 @@
 
 /* Icon */
 .iconUser .itemIcon {
-  font-size: 20px !important;
+  font-size: 24px !important;
   width: 32px;
   height: 32px;
   display: flex;
@@ -113,17 +114,17 @@
   padding: 16px;
   font-size: 13px;
   color: var(--text-primary);
-  border-bottom: 1px solid var(--bg-zinc-100);
-  background: var(--bg-zinc-50);
+  border-bottom: 1px solid #1e2329;
+  background: #111318;
   min-width: 220px;
 }
 
 .dropdownExtraEmail {
   font-weight: 600;
   margin-bottom: 4px;
-  color: var(--blue-500);
+  color: #2962ff;
   font-size: 14px;
-  word-break: break-word;
+  word-break: break-all;
 }
 
 .dropdownExtraUid {
@@ -133,14 +134,12 @@
 }
 
 .dropdownExtraRole {
-  display: block;
+  display: inline-block;
   font-size: 11px;
   color: var(--text-tertiary);
-  margin-bottom: 8px;
-  padding: 4px 8px;
-  background: var(--bg-zinc-100);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
-  text-align: center;
 }
 
 /* Childrens Container */
@@ -241,56 +240,50 @@
 
 .btnLogin {
   background: transparent;
-  color: var(--blue-500);
-  border: 2px solid var(--blue-500) !important;
+  color: #2962ff;
+  border: 1px solid #2962ff !important;
 }
 
 .btnLogin:hover {
   background: rgba(41, 98, 255, 0.1);
-  border-color: var(--blue-500) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(41, 98, 255, 0.2);
 }
 
 .btnRegister {
-  background: var(--blue-500);
+  background: #2962ff;
   color: white;
-  border: 2px solid var(--blue-500) !important;
+  border: none !important;
 }
 
 .btnRegister:hover {
-  background: var(--blue-600);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(41, 98, 255, 0.3);
+  background: #004dcf;
 }
 
 /* Hamburger Menu */
 .hamburger {
   display: none;
-  background: rgba(102, 126, 234, 0.1) !important;
-  color: #667eea;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary);
   border: none;
   border-radius: 8px;
   padding: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 1001;
-}
-
-.hamburger:hover {
-  background: rgba(102, 126, 234, 0.2) !important;
-  transform: scale(1.1);
-}
-
-.hamburgerOpen {
-  background: rgba(102, 126, 234, 0.3) !important;
-  transform: rotate(90deg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hamburgerInner {
-  font-size: 18px;
-  transition: all 0.3s ease;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hamburgerOpen {
+  background: rgba(41, 98, 255, 0.1) !important;
+  color: #2962ff !important;
+}
+
+.hamburgerOpen .hamburgerInner {
+  transform: rotate(90deg);
 }
 
 /* Mobile Overlay */
@@ -299,18 +292,19 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
-  z-index: 999;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(0px);
+  z-index: 1500;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .overlayActive {
   opacity: 1;
   visibility: visible;
+  backdrop-filter: blur(8px);
 }
 
 /* Mobile Menu */
@@ -318,15 +312,15 @@
   position: fixed;
   top: 0;
   right: -100%;
-  width: 300px;
+  width: 320px;
   height: 100vh;
-  background: white;
-  z-index: 1000;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #0b0e11;
+  z-index: 2000;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-  border-left: 1px solid #e8ecef;
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.5);
+  border-left: 1px solid #1e2329;
 }
 
 .menuActive {
@@ -337,23 +331,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
-  border-bottom: 1px solid #e8ecef;
-  background: rgba(102, 126, 234, 0.05);
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .mobileLogo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: #2c3e50;
+  gap: 12px;
+  color: var(--text-primary);
   font-weight: 600;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 .mobileLogo img {
-  height: 28px;
-  filter: none;
+  height: 30px;
 }
 
 .mobileHeaderRight {
@@ -366,7 +358,7 @@
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(30px);
   }
 
   to {
@@ -375,44 +367,26 @@
   }
 }
 
-@keyframes pulseRed {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-  }
-
-  70% {
-    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
-}
-
 /* Mobile Close Button */
 .mobileClose {
-  background: transparent;
-  border: 1px solid var(--bg-zinc-100);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-secondary);
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .mobileClose:hover {
-  background: var(--bg-zinc-100);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
-  border-color: var(--text-primary);
-  transform: rotate(180deg) scale(1.1);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  transform: rotate(90deg) scale(1.1);
 }
 
 .mobileContent {
@@ -420,7 +394,8 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding: 20px 0;
+  padding: 10px 0 40px;
+  scrollbar-width: thin;
 }
 
 /* Mobile User Info */
@@ -428,24 +403,23 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 0 24px 24px;
-  border-bottom: 1px solid var(--bg-zinc-100);
-  margin-bottom: 20px;
-  animation: slideInRight 0.3s ease-out forwards;
+  padding: 16px 24px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 12px;
+  animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .userAvatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-600) 100%);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2962ff 0%, #0039cb 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 24px;
   color: white;
-  box-shadow: 0 4px 15px rgba(41, 98, 255, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(41, 98, 255, 0.2);
 }
 
 .userDetails {
@@ -454,21 +428,18 @@
 
 .userEmail {
   color: var(--text-primary);
-  font-weight: 700;
-  margin-bottom: 4px;
-  font-size: 15px;
-  word-break: break-word;
+  font-weight: 600;
+  margin-bottom: 2px;
+  font-size: 14px;
+  word-break: break-all;
 }
 
 .userUid {
-  color: var(--text-primary);
   font-size: 11px;
-  background: rgba(41, 98, 255, 0.1);
-  color: var(--blue-500);
-  padding: 4px 10px;
-  border-radius: 20px;
-  display: inline-block;
-  font-weight: 600;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* Mobile Navigation */
@@ -477,13 +448,16 @@
 }
 
 .navSection {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   opacity: 0;
-  animation: slideInRight 0.4s ease-out forwards;
-  animation-delay: 0.1s;
+  animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .navSection:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.navSection:nth-child(3) {
   animation-delay: 0.2s;
 }
 
@@ -491,353 +465,120 @@
   color: var(--text-tertiary);
   font-size: 11px;
   text-transform: uppercase;
-  font-weight: 800;
+  font-weight: 700;
   padding: 0 24px 12px;
-  margin-bottom: 6px;
-  letter-spacing: 1px;
-}
-
-/* Mobile HeaderItem Styles */
-.mobileMenu .headerItem {
-  color: var(--text-primary);
-  padding: 14px 24px;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  align-items: center;
-  gap: 14px;
-  font-size: 15px;
-  font-weight: 500;
-  border-left: 3px solid transparent;
-}
-
-.mobileMenu .headerItem:hover {
-  background: linear-gradient(90deg, var(--bg-zinc-100) 0%, transparent 100%);
-  color: var(--blue-500);
-  border-left-color: var(--blue-500);
-  padding-left: 28px;
-}
-
-.mobileMenu .childrens {
-  background: rgba(41, 98, 255, 0.03);
-  border-radius: 0;
-  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.05);
-  position: static;
-  display: none;
-  animation: none;
-  border: none;
-  border-top: 1px solid var(--bg-zinc-100);
-  border-bottom: 1px solid var(--bg-zinc-100);
-}
-
-.mobileMenu .childrens.active {
-  display: block;
-}
-
-.mobileMenu .childrens .headerItem {
-  padding: 12px 24px 12px 56px;
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.mobileMenu .childrens .headerItem:hover {
-  background: rgba(41, 98, 255, 0.08);
-  color: var(--blue-500);
-  padding-left: 60px;
+  margin-top: 12px;
+  letter-spacing: 1.5px;
 }
 
 /* Mobile Actions */
 .mobileActions {
   padding: 24px;
-  border-top: 1px solid var(--bg-zinc-100);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  background: var(--bg-zinc-50);
-  animation: slideInRight 0.5s ease-out forwards;
+  gap: 12px;
+  margin-top: auto;
+  animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation-delay: 0.3s;
   opacity: 0;
-  align-items: center;
-  /* Center buttons and prevent full width */
 }
 
-.mobileActionBtn {
+.mobileActionBtnPrimary,
+.mobileActionBtnSecondary {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 12px 24px;
+  padding: 12px;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 15px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  position: relative;
-  overflow: hidden;
-  width: auto;
-  /* Allow button to size to content */
-  min-width: 140px;
-  /* Ensure visual consistency */
-  max-width: 100%;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  width: 100%;
 }
 
 .mobileActionBtnPrimary {
-  background: var(--blue-500);
+  background: #2962ff;
   color: white;
-  box-shadow: 0 4px 15px rgba(41, 98, 255, 0.3);
 }
 
 .mobileActionBtnPrimary:hover {
-  transform: translateY(-2px);
-  background: var(--blue-600);
-  box-shadow: 0 8px 25px rgba(41, 98, 255, 0.5);
+  background: #0039cb;
 }
 
 .mobileActionBtnSecondary {
-  background: rgba(41, 98, 255, 0.1);
-  color: var(--blue-500);
-  border: none;
-  /* No border as requested */
-}
-
-.mobileActionBtnSecondary:hover {
-  background: rgba(41, 98, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(41, 98, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .mobileActionBtnLogout {
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+  font-size: 13px;
+  padding: 8px;
   border: none;
-  justify-content: flex-start;
-  /* Align text left for clearer reading on logout? Or keep center? Let's keep center for consistency */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 12px 20px;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.mobileActionBtnLogout::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(239, 68, 68, 0.1);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.4s ease, height 0.4s ease;
-  z-index: 0;
+  gap: 8px;
 }
 
 .mobileActionBtnLogout:hover {
-  background: transparent;
-  color: var(--red-500);
-  transform: scale(1.05);
-  /* Gentle scale instead of border */
-}
-
-.mobileActionBtnLogout:hover::before {
-  width: 200px;
-  height: 200px;
-}
-
-.mobileActionBtnLogout span,
-.mobileActionBtnLogout svg {
-  z-index: 1;
-  position: relative;
+  color: #ff4d4f;
 }
 
 /* ==================== MEDIA QUERIES ==================== */
 
-/* MỐC 1: 1025px - 1200px (Tablet lớn) */
 @media screen and (max-width: 1200px) {
   .head {
     width: 95%;
-    padding: 0 16px;
-  }
-
-  .desktopMenu {
-    display: flex;
-  }
-
-  .desktopUserSection {
-    display: flex;
-  }
-
-  .hamburger {
-    display: none;
-  }
-
-  .mobileMenu {
-    display: none;
-  }
-
-  .mobileOverlay {
-    display: none;
-  }
-
-  .headerLeft .headerItem .label p {
-    font-size: 14px;
-  }
-
-  .headerBtn button {
-    padding: 8px 20px;
-    font-size: 14px;
   }
 }
 
-/* MỐC 2: 769px - 1024px (Tablet nhỏ) */
 @media screen and (max-width: 1024px) {
-  .head {
-    width: 98%;
-    padding: 0 12px;
-  }
 
-  .desktopMenu {
-    display: none !important;
-  }
-
+  .desktopMenu,
   .desktopUserSection {
-    display: flex !important;
-  }
-
-  .headerUser {
-    display: flex !important;
-  }
-
-  .headerBtn {
-    display: flex !important;
-  }
-
-  .hamburger {
-    display: block !important;
-    margin-left: 12px;
-  }
-
-  .mobileMenu {
-    display: flex;
-  }
-
-  .mobileOverlay {
-    display: block;
-  }
-
-  .headerBtn button {
-    padding: 8px 16px;
-    font-size: 13px;
-  }
-
-  .logo {
-    height: 35px;
-  }
-}
-
-/* MỐC 3: 0px - 768px (Mobile) */
-@media screen and (max-width: 768px) {
-  .head {
-    width: 100%;
-    padding: 0 12px;
-    height: 60px;
-  }
-
-  .headerMain {
-    height: 60px;
-  }
-
-  .desktopMenu {
-    display: none !important;
-  }
-
-  .desktopUserSection {
-    display: none !important;
-  }
-
-  .headerUser {
-    display: none !important;
-  }
-
-  .headerBtn {
     display: none !important;
   }
 
   .hamburger {
     display: block !important;
-    margin-left: 0;
-  }
-
-  .mobileMenu {
-    display: flex;
-    width: 280px;
-  }
-
-  .mobileOverlay {
-    display: block;
-  }
-
-  .logo {
-    height: 32px;
-  }
-}
-
-/* Small Mobile: 0px - 480px */
-@media screen and (max-width: 480px) {
-  .head {
-    padding: 0 8px;
-  }
-
-  .mobileMenu {
-    width: 100%;
-  }
-
-  .mobileHeader {
-    padding: 12px;
-  }
-
-  .mobileContent {
-    padding: 12px 0;
   }
 
   .logo {
     height: 30px;
   }
-
-  .hamburger {
-    padding: 8px;
-  }
 }
 
-/* Large Desktop: 1201px+ */
-@media screen and (min-width: 1201px) {
+@media screen and (max-width: 768px) {
+
+  .headerMain,
   .head {
-    width: 85%;
+    height: 60px;
   }
 
-  .headerLeft {
-    gap: 16px;
+  .mobileMenu {
+    width: 100%;
   }
 }
 
-/* Custom scrollbar for mobile menu */
 .mobileContent::-webkit-scrollbar {
   width: 4px;
 }
 
-.mobileContent::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
 .mobileContent::-webkit-scrollbar-thumb {
-  background: #667eea;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
 }
 
-.mobileContent::-webkit-scrollbar-thumb:hover {
-  background: #764ba2;
+@media screen and (min-width: 1201px) {
+  .head {
+    width: 85%;
+  }
 }

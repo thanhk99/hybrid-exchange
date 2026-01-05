@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import TokenService from "../services/token";
 import { store } from "../app/store/store";
-import { logout } from "../app/store/authSlice";
+import { logout, updateTokens } from "../app/store/authSlice";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT) || 30000;
@@ -120,6 +120,12 @@ axiosInstance.interceptors.response.use(
         if (!newToken) {
           throw new Error('No access token returned from refresh');
         }
+
+        // Update Redux state
+        store.dispatch(updateTokens({
+          accessToken: newToken,
+          refreshToken: refreshResponse?.data?.refreshToken || null
+        }));
 
         processQueue(null, newToken);
 

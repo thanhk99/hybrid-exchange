@@ -1,72 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   UserOutlined,
-  ApiOutlined,
-  BankOutlined,
-  ControlOutlined,
   DownOutlined,
-  EuroCircleOutlined,
-  FundOutlined,
-  HomeOutlined,
-  SafetyOutlined,
-  SwapOutlined,
-  SwitcherOutlined,
-  ThunderboltOutlined,
-  TransactionOutlined,
-  CreditCardOutlined,
-  LogoutOutlined,
-  LoginOutlined,
-  PoweroffOutlined,
-  PieChartOutlined,
+  WalletOutlined,
   MenuOutlined,
   CloseOutlined,
-  WalletOutlined,
 } from "@ant-design/icons";
-import HeaderItem, { type IChildrenItem } from "./Item/Item";
+import HeaderItem from "./Item/Item";
 import styles from "./Header.module.css";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/src/app/store/store";
-import { logout } from "@/src/app/store/authSlice";
 import NotificationBell from "@/src/components/Notification/NotificationBell/NotificationBell";
+import { useHeaderMenu } from "./useHeaderMenu";
+import HeaderLogo from "./HeaderLogo";
+import MobileMenu from "./MobileMenu";
+import * as HeaderConfig from "./HeaderConfig";
 
 export default function Header() {
   const router = useRouter();
-  const { email, userId, isAuthenticated } = useSelector(
-    (state: any) => state.auth
-  );
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 1024) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
   const dispatch = useDispatch<AppDispatch>();
+  const { email, userId, isAuthenticated } = useSelector((state: any) => state.auth);
+  const { isMenuOpen, toggleMenu, closeMenu } = useHeaderMenu();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.push("/");
-    closeMenu();
-  };
+  // Menu data from config
+  const buyCrypto = HeaderConfig.getBuyCryptoMenu(router, closeMenu);
+  const explore = HeaderConfig.getExploreMenu(router, closeMenu);
+  const transfer = HeaderConfig.getTransferMenu(router, closeMenu);
+  const growth = HeaderConfig.getGrowthMenu(router, closeMenu);
+  const organize = HeaderConfig.getOrganizeMenu(router, closeMenu);
+  const asset = HeaderConfig.getAssetMenu(router, closeMenu);
+  const userMenu = HeaderConfig.getUserMenu(router, dispatch, closeMenu);
 
   const regisPage = () => {
-    router.push("register");
+    router.push("/register");
     closeMenu();
   };
 
@@ -75,208 +43,36 @@ export default function Header() {
     closeMenu();
   };
 
-  // Menu data
-  const buyCrypto: IChildrenItem[] = [
-    {
-      icon: <SwapOutlined />,
-      label: "Giao dịch P2P",
-      content: "Mua/bán không mất phí giao dịch thông qua hơn 100 phương thức thanh toán",
-      onClick: () => { router.push("/p2p"); closeMenu(); },
-    },
-  ];
-
-  const explore: IChildrenItem[] = [
-    {
-      icon: <FundOutlined />,
-      label: "Thị trường",
-      content: "Xem giá, khối lượng và dữ liệu tiền mã hóa mới nhất",
-      onClick: () => { router.push("/markets"); closeMenu(); },
-    },
-    {
-      icon: <ControlOutlined />,
-      label: "Cơ hội",
-      content: "Khám phá những loại tiền mã hóa mới và thịnh hành",
-      onClick: () => { router.push("/markets"); closeMenu(); },
-    },
-  ];
-
-  const transfer: IChildrenItem[] = [
-    {
-      icon: <ThunderboltOutlined />,
-      label: "Chuyển đổi",
-      content: "Chuyển đổi nhanh, không mất phí giao dịch, không trượt giá",
-      onClick: () => { closeMenu(); },
-    },
-    {
-      icon: <TransactionOutlined />,
-      label: "Spot",
-      content: "Mua và bán Crypto dễ dàng",
-      onClick: () => { closeMenu(); },
-    },
-    {
-      icon: <SwitcherOutlined />,
-      label: "Futures",
-      content: "Giao dịch futures vĩnh cửu và đáo hạn bằng đòn bẩy",
-      onClick: () => { closeMenu(); },
-    },
-  ];
-
-  const growth: IChildrenItem[] = [
-    {
-      icon: <EuroCircleOutlined />,
-      label: "Earn",
-      content: "Đừng chỉ nắm giữ hãy tích luỹ",
-      onClick: () => { closeMenu(); },
-    },
-    {
-      icon: <BankOutlined />,
-      label: "Vay",
-      content: "Vay để kiếm tiền, vay để chi tiêu",
-      onClick: () => { closeMenu(); },
-    },
-  ];
-
-  const organize: IChildrenItem[] = [
-    {
-      icon: <HomeOutlined />,
-      label: "Trang chủ tổ chức",
-      content: "Bộ giải pháp giao dịch mã hoá mạnh mẽ",
-      onClick: () => { closeMenu(); },
-    },
-    {
-      icon: <ApiOutlined />,
-      label: "API",
-      content: "Khả năng kết nối API liền mạch và độ trễ cực thấp",
-      onClick: () => { closeMenu(); },
-    },
-  ];
-
-  const asset: IChildrenItem[] = [
-    {
-      icon: <WalletOutlined />,
-      label: "Tổng quan tài sản",
-      content: "Xem tất cả tài sản của bạn",
-      onClick: () => { router.push("/balance/overview"); closeMenu(); },
-    },
-    {
-      icon: <SwapOutlined />,
-      label: "Chuyển tiền",
-      content: "Chuyển tiền nội bộ miễn phí",
-      onClick: () => { router.push("/assets/transfer"); closeMenu(); },
-    },
-    {
-      icon: <CreditCardOutlined />,
-      label: "Nạp tiền",
-      content: "Nạp tiền vào tài khoản",
-      onClick: () => { router.push("/assets/deposit"); closeMenu(); },
-    },
-    {
-      icon: <TransactionOutlined />,
-      label: "Rút tiền",
-      content: "Rút tiền từ tài khoản",
-      onClick: () => { router.push("/assets/withdraw"); closeMenu(); },
-    },
-    {
-      icon: <PieChartOutlined />,
-      label: "Lịch sử giao dịch",
-      content: "Xem lịch sử giao dịch của bạn",
-      onClick: () => { router.push("/assets/history"); closeMenu(); },
-    },
-  ];
-
-  const user: IChildrenItem[] = [
-    {
-      icon: <ApiOutlined />,
-      label: "Tổng quan",
-      content: "",
-      onClick: () => { router.push("/account/profile"); closeMenu(); },
-    },
-    {
-      icon: <UserOutlined />,
-      label: "Thông tin",
-      content: "",
-      onClick: () => { router.push("/account/profile"); closeMenu(); },
-    },
-    {
-      icon: <SafetyOutlined />,
-      label: "Cài đặt bảo mật",
-      content: "",
-      onClick: () => { router.push("/account/security"); closeMenu(); },
-    },
-    {
-      icon: <PoweroffOutlined />,
-      label: "Đăng xuất",
-      content: "",
-      onClick: handleLogout,
-    },
-  ];
-
   return (
     <>
       <header className={styles.headerMain}>
         <div className={styles.head}>
           <div className={styles.headerLeft}>
-            <div className={styles.logo} onClick={() => router.push("/")}>
-              <img src="/imgs/Logo-VIX.svg" alt="logo" className={styles.logoImg} />
-            </div>
+            <HeaderLogo />
 
             <div className={styles.desktopMenu}>
-              <HeaderItem
-                label="Mua Crypto"
-                onClick={() => { }}
-                icon={<DownOutlined />}
-                childrens={buyCrypto}
-                mobile={false}
-              />
-              <HeaderItem
-                label="Khám phá"
-                onClick={() => { }}
-                icon={<DownOutlined />}
-                childrens={explore}
-                mobile={false}
-              />
-              <HeaderItem
-                label="Giao dịch"
-                onClick={() => { }}
-                icon={<DownOutlined />}
-                childrens={transfer}
-                mobile={false}
-              />
-              <HeaderItem
-                label="Tăng trưởng"
-                onClick={() => { }}
-                icon={<DownOutlined />}
-                childrens={growth}
-                mobile={false}
-              />
-              <HeaderItem
-                label="Tổ chức"
-                onClick={() => { }}
-                icon={<DownOutlined />}
-                childrens={organize}
-                mobile={false}
-              />
+              <HeaderItem label="Mua Crypto" onClick={() => { }} icon={<DownOutlined />} childrens={buyCrypto} />
+              <HeaderItem label="Khám phá" onClick={() => { }} icon={<DownOutlined />} childrens={explore} />
+              <HeaderItem label="Giao dịch" onClick={() => { }} icon={<DownOutlined />} childrens={transfer} />
+              <HeaderItem label="Tăng trưởng" onClick={() => { }} icon={<DownOutlined />} childrens={growth} />
+              <HeaderItem label="Tổ chức" onClick={() => { }} icon={<DownOutlined />} childrens={organize} />
             </div>
           </div>
+
           <div className={styles.headerRight}>
             <div className={styles.desktopUserSection}>
               {isAuthenticated ? (
                 <div className={styles.headerUser}>
                   <NotificationBell />
                   <div className={styles.userAsset}>
-                    <HeaderItem
-                      label="Tài sản"
-                      onClick={() => { }}
-                      icon={<WalletOutlined />}
-                      childrens={asset}
-                      mobile={false}
-                    />
+                    <HeaderItem label="Tài sản" onClick={() => { }} icon={<WalletOutlined />} childrens={asset} align="right" />
                   </div>
                   <div className={styles.iconUser}>
                     <HeaderItem
                       label=""
                       onClick={() => { }}
                       icon={<UserOutlined />}
+                      align="right"
                       headerContent={
                         <div className={styles.dropdownExtra}>
                           <div className={styles.dropdownExtraEmail}>{email}</div>
@@ -284,8 +80,7 @@ export default function Header() {
                           <span className={styles.dropdownExtraRole}>Người dùng thông thường</span>
                         </div>
                       }
-                      childrens={user}
-                      mobile={false}
+                      childrens={userMenu}
                     />
                   </div>
                 </div>
@@ -315,123 +110,23 @@ export default function Header() {
         </div>
       </header>
 
-      <div className={isMenuOpen ? styles.overlayActive : styles.mobileOverlay} onClick={closeMenu}></div>
-
-      <div className={isMenuOpen ? styles.menuActive : styles.mobileMenu}>
-        <div className={styles.mobileHeader}>
-          <div className={styles.mobileLogo}>
-            <img src="/imgs/Logo-VIX.svg" alt="logo" />
-            <span>VIX Trading</span>
-          </div>
-          <div className={styles.mobileHeaderRight}>
-            {isAuthenticated && <NotificationBell />}
-            <button className={styles.mobileClose} onClick={closeMenu}>
-              <CloseOutlined />
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.mobileContent}>
-          {isAuthenticated && (
-            <div className={styles.mobileUserInfo}>
-              <div className={styles.userAvatar}>
-                <UserOutlined />
-              </div>
-              <div className={styles.userDetails}>
-                <div className={styles.userEmail}>{email}</div>
-                <div className={styles.userUid}>UID: {userId}</div>
-              </div>
-            </div>
-          )}
-
-          <nav className={styles.mobileNav}>
-            <div className={styles.navSection}>
-              <HeaderItem
-                label="Mua Crypto"
-                onClick={() => { }}
-                icon={<SwapOutlined />}
-                childrens={buyCrypto}
-                trigger="click"
-                mobile={true}
-              />
-              <HeaderItem
-                label="Khám phá"
-                onClick={() => { }}
-                icon={<FundOutlined />}
-                childrens={explore}
-                trigger="click"
-                mobile={true}
-              />
-              <HeaderItem
-                label="Giao dịch"
-                onClick={() => { }}
-                icon={<TransactionOutlined />}
-                childrens={transfer}
-                trigger="click"
-                mobile={true}
-              />
-              <HeaderItem
-                label="Tăng trưởng"
-                onClick={() => { }}
-                icon={<EuroCircleOutlined />}
-                childrens={growth}
-                trigger="click"
-                mobile={true}
-              />
-              <HeaderItem
-                label="Tổ chức"
-                onClick={() => { }}
-                icon={<HomeOutlined />}
-                childrens={organize}
-                trigger="click"
-                mobile={true}
-              />
-            </div>
-
-            {isAuthenticated && (
-              <div className={styles.navSection}>
-                <div className={styles.navTitle}>Tài khoản</div>
-                <HeaderItem
-                  label="Tài sản"
-                  onClick={() => { }}
-                  icon={<WalletOutlined />}
-                  childrens={asset}
-                  trigger="click"
-                  mobile={true}
-                />
-                <HeaderItem
-                  label="Tài khoản"
-                  onClick={() => { }}
-                  icon={<UserOutlined />}
-                  childrens={user}
-                  trigger="click"
-                  mobile={true}
-                />
-              </div>
-            )}
-          </nav>
-
-          <div className={styles.mobileActions}>
-            {!isAuthenticated ? (
-              <>
-                <button className={styles.mobileActionBtnPrimary} onClick={loginPage}>
-                  <LoginOutlined />
-                  <span>Đăng nhập</span>
-                </button>
-                <button className={styles.mobileActionBtnSecondary} onClick={regisPage}>
-                  <UserOutlined />
-                  <span>Đăng ký</span>
-                </button>
-              </>
-            ) : (
-              <button className={styles.mobileActionBtnLogout} onClick={handleLogout}>
-                <LogoutOutlined />
-                <span>Đăng xuất</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+      <MobileMenu
+        isOpen={isMenuOpen}
+        onClose={closeMenu}
+        isAuthenticated={isAuthenticated}
+        email={email}
+        userId={userId}
+        handleLogout={() => { }} // Logout is handled inside UserConfig callback
+        loginPage={loginPage}
+        regisPage={regisPage}
+        buyCrypto={buyCrypto}
+        explore={explore}
+        transfer={transfer}
+        growth={growth}
+        organize={organize}
+        asset={asset}
+        userMenu={userMenu}
+      />
     </>
   );
 }

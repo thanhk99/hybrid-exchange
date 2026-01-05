@@ -1,7 +1,6 @@
 .pageContainer {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 40px 20px;
+    width: 100%;
+    padding: 32px 40px;
 }
 
 .breadcrumb {
@@ -20,7 +19,7 @@
 }
 
 .breadcrumb span:first-child:hover {
-    color: var(--blue-600);
+    color: var(--blue-500);
 }
 
 .separator {
@@ -28,7 +27,7 @@
 }
 
 .pageTitle {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0 0 12px 0;
@@ -36,7 +35,7 @@
 }
 
 .pageDescription {
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     margin-bottom: 32px;
     font-size: 15px;
     line-height: 1.6;
@@ -45,66 +44,70 @@
 .loading,
 .emptyState {
     text-align: center;
-    padding: 40px;
+    padding: 60px 24px;
     color: var(--text-tertiary);
     font-size: 16px;
-    background: var(--bg-white);
-    border-radius: 16px;
-    border: 1px solid rgba(229, 231, 235, 0.5);
+    background: #111318;
+    border-radius: 20px;
+    border: 1px solid #1e2329;
 }
 
 .errorMessage {
-    background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
-    color: #991B1B;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
     padding: 14px 18px;
     border-radius: 12px;
     margin-bottom: 24px;
     font-size: 14px;
     font-weight: 500;
-    border: 1px solid #FCA5A5;
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .successMessage {
-    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
-    color: #065F46;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
     padding: 14px 18px;
     border-radius: 12px;
     margin-bottom: 24px;
     font-size: 14px;
     font-weight: 500;
-    border: 1px solid #6EE7B7;
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .deviceList {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    background: #111318;
+    border-radius: 20px;
+    padding: 32px;
+    border: 1px solid #1e2329;
 }
 
 .deviceItem {
     display: flex;
     align-items: center;
     padding: 24px;
-    background: var(--bg-white);
-    border: 1px solid rgba(229, 231, 235, 0.6);
+    background: #1e2329;
+    border: 1px solid transparent;
     border-radius: 16px;
     transition: all 0.2s;
 }
 
 .deviceItem:hover {
-    border-color: var(--blue-300);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-color: #2b3139;
+    background: #21262d;
 }
 
 .currentItem {
-    background: linear-gradient(to right, var(--bg-white), var(--blue-50));
-    border-color: var(--blue-200);
+    border-color: rgba(41, 98, 255, 0.3);
+    background: rgba(41, 98, 255, 0.05);
 }
 
 .deviceIcon {
     width: 48px;
     height: 48px;
-    background: var(--bg-zinc-100);
+    background: #2b3139;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -116,8 +119,8 @@
 }
 
 .currentItem .deviceIcon {
-    background: var(--blue-100);
-    color: var(--blue-600);
+    background: rgba(41, 98, 255, 0.1);
+    color: #2962ff;
 }
 
 .deviceInfo {
@@ -136,11 +139,11 @@
 
 .currentBadge {
     font-size: 11px;
-    background: var(--blue-100);
-    color: var(--blue-700);
+    background: rgba(41, 98, 255, 0.1);
+    color: #2962ff;
     padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: 600;
+    border-radius: 4px;
+    font-weight: 700;
     text-transform: uppercase;
 }
 
@@ -149,7 +152,7 @@
     flex-wrap: wrap;
     gap: 16px;
     font-size: 13px;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     margin-bottom: 4px;
 }
 
@@ -162,6 +165,7 @@
 .deviceMeta {
     font-size: 13px;
     color: var(--text-tertiary);
+    opacity: 0.7;
 }
 
 .deviceAction {
@@ -173,8 +177,8 @@
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    background: white;
-    border: 1px solid #fee2e2;
+    background: transparent;
+    border: 1px solid #2b3139;
     color: #ef4444;
     border-radius: 8px;
     font-size: 13px;
@@ -184,8 +188,8 @@
 }
 
 .revokeButton:hover:not(:disabled) {
-    background: #fef2f2;
-    border-color: #fecaca;
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.3);
 }
 
 .revokeButton:disabled {
@@ -193,7 +197,15 @@
     cursor: not-allowed;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+    .pageContainer {
+        padding: 24px 16px;
+    }
+
+    .deviceList {
+        padding: 24px;
+    }
+
     .deviceItem {
         flex-direction: column;
         align-items: flex-start;

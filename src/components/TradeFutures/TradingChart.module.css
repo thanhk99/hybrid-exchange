@@ -155,7 +155,7 @@
 }
 
 .sidebarDropdown :global(.ant-dropdown-menu) {
-    background-color: #1e2329 !important;
+    background-color: #141414 !important;
     border: 1px solid #363c4e;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     min-width: 220px;
@@ -288,7 +288,7 @@
 
 /* Indicators Menu */
 .indicatorMenu {
-    background: #1e2329 !important;
+    background: #141414 !important;
     border: 1px solid #2b2f36 !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }

@@ -1,7 +1,6 @@
 .verificationPage {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 32px 20px;
+    width: 100%;
+    padding: 32px 40px;
 }
 
 .pageHeader {
@@ -9,113 +8,133 @@
 }
 
 .pageTitle {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 8px 0;
+    margin: 0;
     letter-spacing: -0.5px;
 }
 
-.pageSubtitle {
-    font-size: 16px;
-    color: var(--text-secondary);
-    margin: 0;
+.section {
+    margin-bottom: 32px;
+    background: #111318;
+    border-radius: 20px;
+    padding: 40px;
+    border: 1px solid #1e2329;
 }
 
-.levelList {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.levelItem {
-    padding: 24px;
-    background: var(--bg-zinc-50);
-    border-radius: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid transparent;
-    transition: all 0.2s;
-}
-
-.levelItem:hover {
-    border-color: var(--blue-200);
-    background: var(--blue-50);
-}
-
-.levelInfo h4 {
+.sectionTitle {
     font-size: 18px;
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 8px 0;
+    margin: 0 0 24px 0;
 }
 
-.levelInfo p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin: 0 0 16px 0;
+.verificationGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
 }
 
-.levelLimit {
-    text-align: right;
+.levelCard {
+    background: #1e2329;
+    border-radius: 16px;
+    padding: 32px;
+    border: 1px solid transparent;
+    transition: all 0.3s;
 }
 
-.levelLimit span {
-    font-size: 14px;
-    color: var(--text-secondary);
+.levelCardActive {
+    border-color: #2962ff;
+    box-shadow: 0 10px 30px rgba(41, 98, 255, 0.1);
 }
 
-.levelLimit strong {
-    display: block;
+.levelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.levelInfo h3 {
     font-size: 20px;
+    font-weight: 700;
     color: var(--text-primary);
-    margin-top: 4px;
+    margin: 0 0 4px 0;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 700;
 }
 
-.uploadSection {
+.badgeSuccess {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.badgePending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.featureList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px 0;
+}
+
+.featureItem {
     display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.uploadText {
-    font-size: 15px;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
     color: var(--text-secondary);
-    margin: 0;
+    margin-bottom: 12px;
 }
 
-.uploadGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+.checkIcon {
+    color: #10b981;
 }
 
-.uploadBox {
-    padding: 40px;
-    background: var(--bg-zinc-50);
-    border: 2px dashed rgba(229, 231, 235, 0.8);
-    border-radius: 16px;
-    text-align: center;
-    transition: all 0.3s;
+.verifyButton {
+    width: 100%;
+    padding: 14px;
+    background: #2962ff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
-.uploadBox:hover {
-    border-color: var(--blue-500);
-    background: var(--blue-50);
+.verifyButton:hover:not(:disabled) {
+    background: #2555da;
+    transform: translateY(-1px);
 }
 
-.uploadBox svg {
-    font-size: 48px;
+.verifyButton:disabled {
+    background: #2b3139;
     color: var(--text-tertiary);
-    margin-bottom: 16px;
-    transition: all 0.3s;
+    cursor: not-allowed;
 }
 
-.uploadBox:hover svg {
-    color: var(--blue-500);
+@media (max-width: 768px) {
+    .verificationPage {
+        padding: 24px 16px;
+    }
+
+    .verificationGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 32px 20px;
+    }
 }
 
 .uploadBox p {

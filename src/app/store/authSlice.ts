@@ -10,34 +10,34 @@ interface AuthState {
     deviceInfo?: string | null
 }
 
-const initialState : AuthState = {
+const initialState: AuthState = {
     isAuthenticated: false,
-    accessToken:  null,
-    refreshToken:  null,
-    userId:  null,
-    email:  null,
-    deviceInfo:  null,
+    accessToken: null,
+    refreshToken: null,
+    userId: null,
+    email: null,
+    deviceInfo: null,
 }
 
 const authSlice = createSlice({
-    name : "auth",
+    name: "auth",
     initialState,
     reducers: {
-        loginSuccess: (state, action : PayloadAction<{
-            accessToken : string
-            refreshToken : string
-            userId : string
-            email : string
-            deviceInfo : string
+        loginSuccess: (state, action: PayloadAction<{
+            accessToken: string
+            refreshToken: string
+            userId: string
+            email: string
+            deviceInfo: string
         }>) => {
-           state.isAuthenticated = true
-           state.accessToken = action.payload.accessToken
-           state.refreshToken = action.payload.refreshToken
-           state.userId = action.payload.userId
-           state.email = action.payload.email
-           state.deviceInfo = action.payload.deviceInfo
+            state.isAuthenticated = true
+            state.accessToken = action.payload.accessToken
+            state.refreshToken = action.payload.refreshToken
+            state.userId = action.payload.userId
+            state.email = action.payload.email
+            state.deviceInfo = action.payload.deviceInfo
         },
-        logout : (state) =>{
+        logout: (state) => {
             state.isAuthenticated = false
             state.accessToken = null
             state.refreshToken = null
@@ -46,8 +46,15 @@ const authSlice = createSlice({
             state.deviceInfo = null
             localStorage.clear();
         },
+        updateTokens: (state, action: PayloadAction<{ accessToken: string; refreshToken?: string }>) => {
+            state.accessToken = action.payload.accessToken;
+            if (action.payload.refreshToken) {
+                state.refreshToken = action.payload.refreshToken;
+            }
+            state.isAuthenticated = true;
+        },
     },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, updateTokens } = authSlice.actions;
 export default authSlice.reducer;

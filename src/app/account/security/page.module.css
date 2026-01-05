@@ -1,7 +1,6 @@
 .securityPage {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 32px 20px;
+    width: 100%;
+    padding: 32px 40px;
 }
 
 .pageHeader {
@@ -9,7 +8,7 @@
 }
 
 .pageTitle {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0;
@@ -17,12 +16,11 @@
 }
 
 .section {
-    margin-bottom: 48px;
-    background: var(--bg-white);
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(229, 231, 235, 0.5);
+    margin-bottom: 32px;
+    background: #111318;
+    border-radius: 20px;
+    padding: 32px;
+    border: 1px solid #1e2329;
 }
 
 .sectionTitle {
@@ -35,37 +33,36 @@
 .securityList {
     display: flex;
     flex-direction: column;
-    gap: 16px;
 }
 
 .securityItem {
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 20px 0;
-    border-bottom: 1px solid var(--bg-zinc-100);
+    padding: 24px 0;
+    border-bottom: 1px solid #1e2329;
     transition: all 0.2s;
-    cursor: pointer;
 }
 
 .securityItem:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
-.securityItem:hover {
-    background: transparent;
+.securityItem:first-child {
+    padding-top: 0;
 }
 
 .securityItem:hover .itemIcon {
-    background: var(--blue-50);
-    color: var(--blue-600);
+    background: #1e2329;
+    color: var(--blue-500);
 }
 
 .itemIcon {
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: var(--bg-zinc-100);
+    background: #1e2329;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -91,19 +88,19 @@
 
 .itemContent p {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     margin: 0;
     line-height: 1.5;
 }
 
 .badge {
     display: inline-block;
-    padding: 4px 10px;
-    background: #fef3c7;
-    color: #92400e;
+    padding: 2px 8px;
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
     font-size: 11px;
     font-weight: 600;
-    border-radius: 20px;
+    border-radius: 4px;
     text-transform: uppercase;
 }
 
@@ -120,10 +117,10 @@
     gap: 6px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--green-600);
-    background: var(--green-50);
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
     padding: 6px 12px;
-    border-radius: 20px;
+    border-radius: 8px;
 }
 
 .statusInfo {
@@ -133,9 +130,9 @@
 }
 
 .linkButton {
-    background: none;
-    border: none;
-    color: var(--blue-600);
+    background: transparent;
+    border: 1px solid #2b3139;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -148,31 +145,23 @@
 }
 
 .linkButton:hover {
-    background: var(--blue-50);
+    background: #1e2329;
+    border-color: #474d57;
 }
 
 @media (max-width: 768px) {
     .securityPage {
-        padding: 20px 16px;
+        padding: 24px 16px;
     }
 
     .securityItem {
         flex-direction: column;
         align-items: flex-start;
-        padding: 16px 0;
         gap: 16px;
     }
 
     .itemAction {
         width: 100%;
         justify-content: space-between;
-    }
-
-    .itemContent h3 {
-        font-size: 15px;
-    }
-
-    .itemContent p {
-        font-size: 13px;
     }
 }

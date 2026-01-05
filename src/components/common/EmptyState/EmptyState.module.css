@@ -1,24 +1,27 @@
 .emptyState {
     text-align: center;
-    padding: 48px 24px;
-    color: #9ca3af;
+    padding: 60px 24px;
+    color: var(--text-secondary);
 }
 
 .emptyIcon {
     font-size: 48px;
     margin-bottom: 16px;
-    color: #d1d5db;
+    color: #2b3139;
+    /* Darker icon color for subtle look */
 }
 
 .emptyTitle {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-primary);
     margin: 0 0 8px 0;
 }
 
 .emptyMessage {
     margin: 0;
-    font-size: 15px;
-    color: #9ca3af;
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 300px;
+    margin: 0 auto;
 }

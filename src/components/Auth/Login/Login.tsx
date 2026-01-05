@@ -157,7 +157,7 @@ export default function LoginForm() {
 
       <div className={styles.leftSight}>
         <div className={styles.leftContent}>
-          <img src="imgs/LOGO-VIX.svg" alt="Logo" />
+          <img src="/imgs/LOGO-VIX.svg" alt="Logo" />
         </div>
       </div>
 

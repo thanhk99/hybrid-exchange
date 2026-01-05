@@ -16,15 +16,17 @@ interface IProps {
   headerContent?: React.ReactNode;
   trigger?: "hover" | "click";
   mobile?: boolean;
+  align?: "left" | "right";
 }
 
-const HeaderItem = ({ 
-  label, 
-  childrens, 
-  icon, 
-  headerContent, 
+const HeaderItem = ({
+  label,
+  childrens,
+  icon,
+  headerContent,
   trigger = "hover",
-  mobile = false
+  mobile = false,
+  align = "left"
 }: IProps) => {
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -64,9 +66,9 @@ const HeaderItem = ({
       </div>
 
       {showMenu && (
-        <div className={`${styles.childrens} ${showMenu ? styles.active : ''} ${mobile ? styles.mobileChildrens : ''}`}>
-          {headerContent && <div className={styles.dropdownHeader}>{headerContent}</div>} 
-          
+        <div className={`${styles.childrens} ${showMenu ? styles.active : ''} ${mobile ? styles.mobileChildrens : ''} ${styles[align] || ''}`}>
+          {headerContent && <div className={styles.dropdownHeader}>{headerContent}</div>}
+
           {childrens?.map((i, key) => (
             <div className={styles.childrensContainer} key={key} onClick={i.onClick}>
               {i.icon && <div className={styles.childrensContainerLeft}>{i.icon}</div>}

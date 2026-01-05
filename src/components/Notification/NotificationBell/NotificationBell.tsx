@@ -85,7 +85,7 @@ const NotificationBell: React.FC = () => {
             <Badge count={unreadCount} overflowCount={99} offset={[-4, 4]}>
                 <Button
                     type="text"
-                    icon={<BellOutlined style={{ fontSize: '20px' }} />}
+                    icon={<BellOutlined style={{ fontSize: '24px' }} />}
                     className="notification-bell-button"
                 />
             </Badge>

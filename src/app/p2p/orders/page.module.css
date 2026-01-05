@@ -9,7 +9,7 @@
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: #111827;
+    background: #2962ff;
     color: white;
     border: none;
     border-radius: 8px;
@@ -17,10 +17,12 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(41, 98, 255, 0.2);
 }
 
 .createButton:hover {
-    background: #000;
+    background: #1e4bd8;
+    transform: translateY(-1px);
 }
 
 /* Stats Grid */
@@ -32,23 +34,23 @@
 }
 
 .statCard {
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: #1e2329;
+    border: 1px solid #2b3139;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .statLabel {
     font-size: 13px;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin-bottom: 8px;
 }
 
 .statValue {
     font-size: 28px;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 /* Tabs */
@@ -56,7 +58,7 @@
     display: flex;
     gap: 8px;
     margin-bottom: 24px;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 1px solid #2b3139;
 }
 
 .tab {
@@ -65,21 +67,21 @@
     border: none;
     font-size: 15px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
     cursor: pointer;
     position: relative;
     border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
+    margin-bottom: -1px;
     transition: color 0.2s;
 }
 
 .tab:hover {
-    color: #374151;
+    color: var(--text-primary);
 }
 
 .tabActive {
-    color: #111827;
-    border-bottom-color: #111827;
+    color: #2962ff;
+    border-bottom-color: #2962ff;
 }
 
 /* Content */
@@ -94,17 +96,18 @@
 }
 
 .orderCard {
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: #1e2329;
+    border: 1px solid #2b3139;
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.2s;
 }
 
 .orderCard:hover {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-color: #2962ff;
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .orderHeader {
@@ -113,7 +116,7 @@
     align-items: center;
     margin-bottom: 16px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #2b3139;
 }
 
 .orderType {
@@ -130,19 +133,19 @@
 }
 
 .typeBuy {
-    background: #d1fae5;
-    color: #065f46;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
 }
 
 .typeSell {
-    background: #fee2e2;
-    color: #991b1b;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
 }
 
 .currency {
     font-size: 18px;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .orderBody {
@@ -160,14 +163,14 @@
 
 .orderLabel {
     font-size: 13px;
-    color: #6b7280;
+    color: var(--text-tertiary);
     font-weight: 500;
 }
 
 .orderValue {
     font-size: 14px;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .paymentMethods {
@@ -180,11 +183,11 @@
     display: inline-flex;
     align-items: center;
     padding: 4px 8px;
-    background: #f3f4f6;
+    background: #2b3139;
     border-radius: 6px;
     font-size: 11px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 .orderActions {
@@ -192,7 +195,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     padding-top: 16px;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid #2b3139;
 }
 
 .editButton,
@@ -202,7 +205,7 @@
     justify-content: center;
     gap: 6px;
     padding: 10px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #2b3139;
     border-radius: 8px;
     font-size: 13px;
     font-weight: 600;
@@ -211,23 +214,23 @@
 }
 
 .editButton {
-    background: white;
-    color: #111827;
+    background: #2b3139;
+    color: var(--text-primary);
 }
 
 .editButton:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
+    background: #363c46;
+    border-color: #474d57;
 }
 
 .deleteButton {
-    background: white;
+    background: transparent;
     color: #ef4444;
-    border-color: #fecaca;
+    border-color: rgba(239, 68, 68, 0.2);
 }
 
 .deleteButton:hover {
-    background: #fef2f2;
+    background: rgba(239, 68, 68, 0.1);
     border-color: #ef4444;
 }
 
@@ -245,8 +248,8 @@
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid #f3f4f6;
-    border-top-color: #111827;
+    border: 3px solid #2b3139;
+    border-top-color: #2962ff;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -259,7 +262,7 @@
 
 .empty p {
     font-size: 16px;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
 }
 

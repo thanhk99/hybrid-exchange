@@ -1,6 +1,8 @@
 import axiosInstance from '../libs/axios';
 import { LoginData, RegisterData } from '../types/auth';
 import TokenService from './token';
+import { store } from '../app/store/store';
+import { updateTokens } from '../app/store/authSlice';
 
 
 export default class AuthService {
@@ -67,6 +69,12 @@ export default class AuthService {
         if (response.data.refreshToken) {
           TokenService.setRefreshToken(response.data.refreshToken);
         }
+
+        // Update Redux state
+        store.dispatch(updateTokens({
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken || undefined
+        }));
       }
 
       return response;

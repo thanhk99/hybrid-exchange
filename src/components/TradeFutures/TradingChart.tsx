@@ -126,7 +126,7 @@ export default function TradingChart({ symbol, isSpot = false }: TradingChartPro
         // Create chart with OKX dark theme
         const chart = createChart(chartContainerRef.current, {
             layout: {
-                background: { color: '#0b0e11' },
+                background: { color: '#000000' },
                 textColor: '#848e9c',
             },
             localization: {
@@ -1233,7 +1233,7 @@ export default function TradingChart({ symbol, isSpot = false }: TradingChartPro
                                     bottom: '30px',
                                     left: '50%',
                                     transform: 'translateX(-50%)',
-                                    background: '#1e2329',
+                                    background: '#141414',
                                     padding: '12px',
                                     borderRadius: '8px',
                                     border: '1px solid #363c4e',

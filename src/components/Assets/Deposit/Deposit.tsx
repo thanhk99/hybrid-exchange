@@ -209,22 +209,59 @@ export default function Deposit() {
 
             <div className={styles.content}>
                 {/* Step 1: Currency Selection */}
+                {/* Step 1: Currency Selection */}
                 <div className={styles.stepContainer}>
-                    <div className={`${styles.stepHeader} ${selectedCurrency ? styles.stepCompleted : styles.stepActive}`}>
-                        <div className={styles.stepBadge}>
-                            {selectedCurrency ? <CheckCircleOutlined /> : '1'}
-                        </div>
+                    <div className={styles.stepHeader}>
+                        <div className={styles.stepBadge}>1</div>
                         <span className={styles.stepTitle}>Chọn tiền mã hóa</span>
                     </div>
 
-                    <div className={styles.stepContent}>
-                        <CurrencySelector
-                            currencies={currencies}
-                            selectedCurrency={selectedCurrency}
-                            onSelect={handleCurrencySelect}
-                            isOpen={isCurrencyDropdownOpen}
-                            onToggle={() => setIsCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
-                        />
+                    <div className={styles.dropdownContainer}>
+                        <label className={styles.label}>Coin</label>
+                        <div
+                            className={styles.dropdownButton}
+                            onClick={() => setIsCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
+                        >
+                            <div className={styles.selectedItem}>
+                                {selectedCurrency?.icon && (
+                                    <img
+                                        src={selectedCurrency.icon}
+                                        alt={selectedCurrency.symbol}
+                                        className={styles.selectedIcon}
+                                    />
+                                )}
+                                <span className={styles.selectedText}>
+                                    {selectedCurrency?.symbol ? selectedCurrency.symbol : 'Chọn loại tiền...'}
+                                </span>
+                            </div>
+                            <DownOutlined style={{ fontSize: '12px', color: '#848E9C' }} />
+                        </div>
+
+                        {isCurrencyDropdownOpen && (
+                            <div className={styles.dropdownMenu}>
+                                {currencies.map((currency) => (
+                                    <div
+                                        key={currency.symbol}
+                                        className={styles.dropdownItem}
+                                        onClick={() => handleCurrencySelect(currency)}
+                                    >
+                                        <img
+                                            src={currency.icon}
+                                            alt={currency.symbol}
+                                            className={styles.selectedIcon}
+                                        />
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontWeight: 500, fontSize: '14px' }}>{currency.symbol}</span>
+                                            <span style={{ fontSize: '12px', color: '#848E9C' }}>{currency.name}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className={styles.helperText}>
+                            <InfoCircleOutlined />
+                            <span>Đảm bảo chọn đúng mạng lưới nạp tiền để tránh mất tài sản.</span>
+                        </div>
                     </div>
                 </div>
 

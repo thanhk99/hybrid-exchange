@@ -1,8 +1,6 @@
 .transferContainer {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 32px 20px 60px;
-    min-height: calc(100vh - 60px);
+    width: 100%;
+    padding: 32px 40px 60px;
 }
 
 .header {
@@ -19,11 +17,11 @@
 }
 
 .content {
-    background: var(--bg-white);
-    border: 1px solid rgba(229, 231, 235, 0.5);
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 24px;
     padding: 32px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     gap: 32px;
@@ -41,7 +39,7 @@
     top: 40px;
     bottom: -32px;
     width: 2px;
-    background-color: var(--bg-zinc-100);
+    background-color: #333;
     z-index: 0;
 }
 
@@ -63,8 +61,8 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: white;
-    border: 2px solid var(--bg-zinc-200);
+    background: #2a2a2a;
+    border: 2px solid #333;
     color: var(--text-tertiary);
     display: flex;
     align-items: center;
@@ -78,7 +76,7 @@
 .stepActive .stepBadge {
     border-color: var(--blue-600);
     color: var(--blue-600);
-    background: white;
+    background: #1a1a1a;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
@@ -108,8 +106,8 @@
 .dropdownButton {
     width: 100%;
     padding: 16px;
-    background: white;
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -117,11 +115,12 @@
     cursor: pointer;
     transition: all 0.2s;
     font-size: 15px;
+    color: var(--text-primary);
 }
 
 .dropdownButton:hover {
-    border-color: var(--blue-200);
-    background: var(--bg-zinc-50);
+    border-color: var(--blue-500);
+    background: #333;
 }
 
 .selectedItem {
@@ -152,10 +151,10 @@
     top: calc(100% + 8px);
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     z-index: 10;
     max-height: 320px;
     overflow-y: auto;
@@ -170,10 +169,11 @@
     cursor: pointer;
     transition: background 0.2s;
     border-radius: 12px;
+    color: var(--text-primary);
 }
 
 .dropdownItem:hover {
-    background: var(--bg-zinc-50);
+    background: #333;
 }
 
 .currencyIcon {
@@ -214,18 +214,18 @@
 .walletSelect {
     width: 100%;
     padding: 16px;
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     font-size: 15px;
     color: var(--text-primary);
-    background: white;
+    background: #2a2a2a;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .walletSelect:hover {
-    border-color: var(--blue-200);
-    background: var(--bg-zinc-50);
+    border-color: var(--blue-500);
+    background: #333;
 }
 
 .walletSelect:focus {
@@ -238,7 +238,8 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--bg-zinc-100);
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -249,7 +250,7 @@
 }
 
 .swapIcon:hover {
-    background: var(--blue-100);
+    background: rgba(37, 99, 235, 0.1);
     color: var(--blue-600);
     transform: rotate(180deg);
 }
@@ -262,12 +263,12 @@
 .input {
     width: 100%;
     padding: 16px;
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     font-size: 15px;
     color: var(--text-primary);
     transition: all 0.2s;
-    background: white;
+    background: #2a2a2a;
 }
 
 .input:focus {
@@ -281,7 +282,7 @@
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    background: var(--bg-zinc-100);
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     padding: 6px 12px;
     border-radius: 8px;
@@ -295,7 +296,7 @@
 }
 
 .maxButton:hover {
-    background: var(--bg-zinc-200);
+    background: rgba(255, 255, 255, 0.2);
     color: var(--text-primary);
 }
 
@@ -321,7 +322,7 @@
 }
 
 .transferButton:disabled {
-    background: var(--bg-zinc-100);
+    background: #333;
     color: var(--text-tertiary);
     cursor: not-allowed;
     box-shadow: none;
@@ -334,7 +335,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -344,13 +345,14 @@
 }
 
 .modal {
-    background: white;
+    background: #1a1a1a;
     border-radius: 24px;
     padding: 32px;
     width: 100%;
     max-width: 480px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modalTitle {
@@ -367,7 +369,7 @@
     margin-bottom: 16px;
     font-size: 14px;
     padding-bottom: 16px;
-    border-bottom: 1px solid var(--bg-zinc-100);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .confirmRow:last-of-type {
@@ -405,14 +407,14 @@
 }
 
 .cancelButton {
-    background: white;
+    background: #2a2a2a;
     color: var(--text-secondary);
-    border: 1px solid rgba(229, 231, 235, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cancelButton:hover {
-    background: var(--bg-zinc-50);
-    border-color: var(--bg-zinc-200);
+    background: #333;
+    border-color: rgba(255, 255, 255, 0.2);
     color: var(--text-primary);
 }
 

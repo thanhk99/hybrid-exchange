@@ -4,24 +4,24 @@
 }
 
 .filterButton {
-    padding: 8px 16px;
-    border: 2px solid #e5e7eb;
-    background: white;
-    border-radius: 12px;
+    padding: 6px 16px;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
-    color: #6b7280;
+    font-weight: 500;
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
 .filterButton:hover {
-    border-color: #1f2937;
-    color: #1f2937;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .filterActive {
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    color: white;
-    border-color: #1f2937;
+    background: #252a30;
+    color: var(--text-primary);
+    font-weight: 600;
 }

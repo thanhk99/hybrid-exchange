@@ -1,10 +1,9 @@
 .historySection {
-    margin-top: 48px;
-    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-    border: 1px solid #e5e7eb;
-    border-radius: 24px;
+    margin-top: 24px;
+    background: #111318;
+    border: 1px solid #1e2329;
+    border-radius: 20px;
     padding: 32px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
 }
 
 .historyHeader {
@@ -17,7 +16,7 @@
 .historyTitle {
     font-size: 20px;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -30,7 +29,7 @@
 
 .spin {
     animation: spin 1s linear infinite;
-    color: #1f2937;
+    color: var(--text-primary);
     font-size: 32px;
 }
 
@@ -55,15 +54,15 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    background: white;
-    border: 2px solid #f3f4f6;
+    background: var(--bg-zinc-100);
+    border: 1px solid var(--balance-border);
     border-radius: 16px;
     transition: all 0.3s;
 }
 
 .historyRow:hover {
-    border-color: #e5e7eb;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--blue-500);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transform: translateY(-2px);
 }
 
@@ -77,20 +76,55 @@
 .historyType {
     font-size: 15px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--text-primary);
 }
 
 .historyDetails {
     font-size: 13px;
-    color: #6b7280;
+    color: var(--text-secondary);
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
 }
 
+.tableContainer {
+    overflow-x: auto;
+    background: var(--bg-zinc-50);
+    border-radius: 12px;
+    border: 1px solid var(--balance-border);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.table th {
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--balance-border);
+    background: var(--bg-zinc-100);
+}
+
+.table td {
+    padding: 16px 24px;
+    font-size: 14px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--balance-border);
+    transition: background 0.2s;
+}
+
+.table tr:hover td {
+    background: var(--bg-zinc-100);
+}
+
 .historyDate {
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-tertiary);
 }
 
 .historyAmount {
@@ -104,7 +138,7 @@
 .amount {
     font-size: 16px;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--text-primary);
 }
 
 .status {
@@ -115,18 +149,18 @@
 }
 
 .statusCompleted {
-    background: #d1fae5;
-    color: #065f46;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
 }
 
 .statusPending {
-    background: #fef3c7;
-    color: #92400e;
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
 }
 
 .statusFailed {
-    background: #fee2e2;
-    color: #991b1b;
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
 }
 
 @media (max-width: 768px) {
@@ -145,4 +179,23 @@
     .historyAmount {
         align-items: flex-start;
     }
+}
+
+.historyFooter {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #1e2329;
+}
+
+.viewAllLink {
+    color: var(--blue-500);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.viewAllLink:hover {
+    color: var(--blue-600);
 }
