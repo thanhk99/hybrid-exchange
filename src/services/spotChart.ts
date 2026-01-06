@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+import axiosInstance from "../libs/axios";
 
 export interface KlineData {
     time: number;
@@ -24,7 +22,7 @@ export default class SpotChartService {
     // Get Historical Kline Data
     static async getKlineData(params: KlineRequest): Promise<KlineResponse> {
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/v1/public/spot/kline`, params);
+            const response = await axiosInstance.post('/api/v1/public/spot/kline', params);
             return response.data;
         } catch (error) {
             console.error('Error fetching spot kline data:', error);
@@ -35,7 +33,7 @@ export default class SpotChartService {
     // Get Realtime Kline Data (RingBuffer - last 72 candles)
     static async getRealtimeKlineData(symbol: string): Promise<KlineResponse> {
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/v1/public/spot/kline/realtime`, {
+            const response = await axiosInstance.post('/api/v1/public/spot/kline/realtime', {
                 symbol
             });
             return response.data;

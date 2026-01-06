@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import TradingChart from '@/src/components/TradeFutures/TradingChart';
+import TradingView from '@/src/components/TradeFutures/TradingView';
 import OrderBook from '@/src/components/TradeFutures/OrderBook';
 import TradingForm from '@/src/components/TradeFutures/TradingForm';
 import MarketInfo from '@/src/components/TradeFutures/MarketInfo';
@@ -21,7 +21,7 @@ export default function TradeFuturesPage() {
 
                 <div className={styles.mainContent}>
                     <div className={styles.chartSection}>
-                        <TradingChart symbol={symbol} isSpot={false} />
+                        <TradingView symbol={symbol} isSpot={false} />
                     </div>
 
                     <div className={styles.marketDataSection}>

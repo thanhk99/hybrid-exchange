@@ -6,6 +6,7 @@ import { PaymentMethod, PaymentMethodType } from '@/src/types/p2p';
 import PaymentMethodService from '@/src/services/paymentMethod';
 import { Modal } from 'antd';
 import { Notification } from '@/src/components/common/Notification/Notification';
+import ProtectedRoute from '@/src/components/common/ProtectedRoute/ProtectedRoute';
 import styles from './page.module.css';
 
 export default function PaymentMethodsPage() {
@@ -123,105 +124,107 @@ export default function PaymentMethodsPage() {
     };
 
     return (
-        <div className={styles.container}>
-            <Notification
-                type={notification.type}
-                message={notification.message}
-                isVisible={notification.isVisible}
-                onClose={closeNotification}
-            />
+        <ProtectedRoute>
+            <div className={styles.container}>
+                <Notification
+                    type={notification.type}
+                    message={notification.message}
+                    isVisible={notification.isVisible}
+                    onClose={closeNotification}
+                />
 
-            <div className={styles.header}>
-                <div>
-                    <h1 className={styles.title}>Phương thức thanh toán</h1>
-                    <p className={styles.subtitle}>Quản lý tài khoản nhận tiền của bạn</p>
-                </div>
-                <button
-                    className={styles.addButton}
-                    onClick={() => setShowAddModal(true)}
-                >
-                    <PlusOutlined /> Thêm mới
-                </button>
-            </div>
-
-            {loading ? (
-                <div className={styles.loading}>Đang tải...</div>
-            ) : paymentMethods.length === 0 ? (
-                <div className={styles.emptyState}>
-                    <div className={styles.emptyIconWrapper}>
-                        <BankOutlined className={styles.emptyIcon} />
+                <div className={styles.header}>
+                    <div>
+                        <h1 className={styles.title}>Phương thức thanh toán</h1>
+                        <p className={styles.subtitle}>Quản lý tài khoản nhận tiền của bạn</p>
                     </div>
-                    <h3 className={styles.emptyTitle}>Chưa có phương thức thanh toán</h3>
-                    <p className={styles.emptyDesc}>Thêm tài khoản ngân hàng hoặc ví điện tử để bắt đầu giao dịch P2P</p>
                     <button
-                        className={styles.primaryButton}
+                        className={styles.addButton}
                         onClick={() => setShowAddModal(true)}
                     >
-                        <PlusOutlined /> Thêm phương thức ngay
+                        <PlusOutlined /> Thêm mới
                     </button>
                 </div>
-            ) : (
-                <div className={styles.grid}>
-                    {paymentMethods.map(method => (
-                        <div key={method.id} className={styles.card}>
-                            <div className={styles.cardHeader}>
-                                <div
-                                    className={styles.methodIcon}
-                                    style={{ background: `${getMethodColor(method.type)}20`, color: getMethodColor(method.type) }}
-                                >
-                                    {getMethodIcon(method.type)}
-                                </div>
-                                <div className={styles.methodType}>
-                                    {getMethodName(method.type)}
-                                </div>
-                                <div className={styles.cardActions}>
-                                    <button
-                                        className={styles.iconButton}
-                                        onClick={() => setEditingMethod(method)}
-                                    >
-                                        <EditOutlined />
-                                    </button>
-                                    <button
-                                        className={`${styles.iconButton} ${styles.deleteAction}`}
-                                        onClick={() => handleDeleteMethod(method.id)}
-                                    >
-                                        <DeleteOutlined />
-                                    </button>
-                                </div>
-                            </div>
 
-                            <div className={styles.cardBody}>
-                                <div className={styles.infoGroup}>
-                                    <label>Tên chủ tài khoản</label>
-                                    <div className={styles.infoValue}>{method.accountName}</div>
-                                </div>
-                                <div className={styles.infoGroup}>
-                                    <label>{method.type === 'BANK_TRANSFER' ? 'Số tài khoản' : 'Số điện thoại'}</label>
-                                    <div className={styles.infoValue}>{method.accountNumber}</div>
-                                </div>
-                                {method.bankName && (
-                                    <div className={styles.infoGroup}>
-                                        <label>Ngân hàng</label>
-                                        <div className={styles.infoValue}>{method.bankName}</div>
-                                    </div>
-                                )}
-                            </div>
+                {loading ? (
+                    <div className={styles.loading}>Đang tải...</div>
+                ) : paymentMethods.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIconWrapper}>
+                            <BankOutlined className={styles.emptyIcon} />
                         </div>
-                    ))}
-                </div>
-            )}
+                        <h3 className={styles.emptyTitle}>Chưa có phương thức thanh toán</h3>
+                        <p className={styles.emptyDesc}>Thêm tài khoản ngân hàng hoặc ví điện tử để bắt đầu giao dịch P2P</p>
+                        <button
+                            className={styles.primaryButton}
+                            onClick={() => setShowAddModal(true)}
+                        >
+                            <PlusOutlined /> Thêm phương thức ngay
+                        </button>
+                    </div>
+                ) : (
+                    <div className={styles.grid}>
+                        {paymentMethods.map(method => (
+                            <div key={method.id} className={styles.card}>
+                                <div className={styles.cardHeader}>
+                                    <div
+                                        className={styles.methodIcon}
+                                        style={{ background: `${getMethodColor(method.type)}20`, color: getMethodColor(method.type) }}
+                                    >
+                                        {getMethodIcon(method.type)}
+                                    </div>
+                                    <div className={styles.methodType}>
+                                        {getMethodName(method.type)}
+                                    </div>
+                                    <div className={styles.cardActions}>
+                                        <button
+                                            className={styles.iconButton}
+                                            onClick={() => setEditingMethod(method)}
+                                        >
+                                            <EditOutlined />
+                                        </button>
+                                        <button
+                                            className={`${styles.iconButton} ${styles.deleteAction}`}
+                                            onClick={() => handleDeleteMethod(method.id)}
+                                        >
+                                            <DeleteOutlined />
+                                        </button>
+                                    </div>
+                                </div>
 
-            {(showAddModal || editingMethod) && (
-                <PaymentMethodModal
-                    method={editingMethod}
-                    onSave={editingMethod ? handleEditMethod : handleAddMethod}
-                    onClose={() => {
-                        setShowAddModal(false);
-                        setEditingMethod(null);
-                    }}
-                />
-            )}
-        </div>
+                                <div className={styles.cardBody}>
+                                    <div className={styles.infoGroup}>
+                                        <label>Tên chủ tài khoản</label>
+                                        <div className={styles.infoValue}>{method.accountName}</div>
+                                    </div>
+                                    <div className={styles.infoGroup}>
+                                        <label>{method.type === 'BANK_TRANSFER' ? 'Số tài khoản' : 'Số điện thoại'}</label>
+                                        <div className={styles.infoValue}>{method.accountNumber}</div>
+                                    </div>
+                                    {method.bankName && (
+                                        <div className={styles.infoGroup}>
+                                            <label>Ngân hàng</label>
+                                            <div className={styles.infoValue}>{method.bankName}</div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {(showAddModal || editingMethod) && (
+                    <PaymentMethodModal
+                        method={editingMethod}
+                        onSave={editingMethod ? handleEditMethod : handleAddMethod}
+                        onClose={() => {
+                            setShowAddModal(false);
+                            setEditingMethod(null);
+                        }}
+                    />
+                )}
+            </div>
+        </ProtectedRoute>
     );
 }
 

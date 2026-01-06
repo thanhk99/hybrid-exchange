@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlusOutlined, SearchOutlined, CheckOutlined, DownOutlined, ReloadOutlined, SafetyCertificateOutlined, ThunderboltOutlined, CustomerServiceOutlined } from '@ant-design/icons';
-import UserRating from '@/src/components/P2P/UserRating/UserRating';
-import PaymentMethodBadge from '@/src/components/P2P/PaymentMethodBadge/PaymentMethodBadge';
 import TradeModal from '@/src/components/P2P/TradeModal/TradeModal';
 import { P2POrder, OrderType, PaymentMethodType } from '@/src/types/p2p';
 import P2PService from '@/src/services/p2p';
@@ -85,14 +83,16 @@ export default function P2PMarketplace() {
                 paymentMethods: selectedPaymentMethods.length > 0 ? selectedPaymentMethods : undefined
             });
 
-            // Fetch user's own orders if logged in
-            const userOrdersPromise = user ? P2PService.getUserOrders() : Promise.resolve([]);
+            // Fetch user's own orders if logged in, but handle errors gracefully
+            const userOrdersPromise = user
+                ? P2PService.getUserOrders().catch(err => {
+                    console.warn('Failed to fetch user orders (likely session expired), ignoring:', err);
+                    return [];
+                })
+                : Promise.resolve([]);
 
             const [publicOrders, userOrders] = await Promise.all([publicOrdersPromise, userOrdersPromise]);
 
-            // Filter user's orders to match current view
-            // If viewing "Buy" tab, we want to see orders where people are selling (type='sell')
-            // So if I created a 'sell' ad, it should appear in the 'Buy' tab
             const targetType = orderType === 'buy' ? 'sell' : 'buy';
 
             const relevantUserOrders = (userOrders as P2POrder[]).filter(order =>
@@ -103,14 +103,11 @@ export default function P2PMarketplace() {
                     order.paymentMethods.some(pm => selectedPaymentMethods.includes(pm.type)))
             );
 
-            // Merge orders, prioritizing user's own orders at the top or just mixing them
-            // We need to remove duplicates if the public API eventually includes them
             const publicOrderIds = new Set(publicOrders.map(o => o.id));
             const uniqueUserOrders = relevantUserOrders.filter(o => !publicOrderIds.has(o.id));
 
             let data = [...uniqueUserOrders, ...publicOrders];
 
-            // Apply sorting
             if (sortBy === 'price_asc') {
                 data = data.sort((a, b) => a.price - b.price);
             } else if (sortBy === 'price_desc') {

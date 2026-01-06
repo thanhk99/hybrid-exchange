@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftOutlined, DownOutlined } from '@ant-design/icons';
+import ProtectedRoute from '@/src/components/common/ProtectedRoute/ProtectedRoute';
 // import P2PHeader from '@/src/components/P2P/P2PHeader/P2PHeader';
 import OrderTypeSelector from '@/src/components/P2P/OrderForm/OrderTypeSelector';
 import CurrencySection from '@/src/components/P2P/OrderForm/CurrencySection';
@@ -174,85 +175,87 @@ export default function CreateP2POrder() {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <div className={styles.headerTitle}>
-                    <h1 className={styles.title}>Tạo quảng cáo P2P</h1>
-                    <p className={styles.subtitle}>Đăng quảng cáo mua hoặc bán tiền điện tử</p>
-                </div>
-                <button
-                    className={styles.backButton}
-                    onClick={() => router.push('/p2p')}
-                >
-                    <ArrowLeftOutlined /> Quay lại
-                </button>
-            </div>
-            <div className={styles.divider}></div>
-
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.card}>
-                    <OrderTypeSelector value={orderType} onChange={setOrderType} />
-
-                    <CurrencySection
-                        currency={currency}
-                        fiatCurrency={fiatCurrency}
-                        onCurrencyChange={setCurrency}
-                        onFiatCurrencyChange={setFiatCurrency}
-                        currencies={currencies}
-                        fiatCurrencies={fiatCurrencies}
-                    />
-
-                    <PriceAmountSection
-                        price={price}
-                        amount={amount}
-                        currency={currency}
-                        fiatCurrency={fiatCurrency}
-                        onPriceChange={setPrice}
-                        onAmountChange={setAmount}
-                    />
-
-                    <LimitsSection
-                        minLimit={minLimit}
-                        maxLimit={maxLimit}
-                        fiatCurrency={fiatCurrency}
-                        onMinLimitChange={setMinLimit}
-                        onMaxLimitChange={setMaxLimit}
-                    />
-
-                    {orderType === 'sell' && (
-                        <BankAccountSelector
-                            bankAccounts={bankAccounts}
-                            selectedAccount={selectedBankAccount}
-                            onSelect={setSelectedBankAccount}
-                            currency={currency}
-                        />
-                    )}
-
-                    {orderType === 'buy' && (
-                        <PaymentMethodSelector
-                            selectedTypes={selectedPaymentTypes}
-                            onToggle={(type) => {
-                                setSelectedPaymentTypes(prev =>
-                                    prev.includes(type)
-                                        ? prev.filter(t => t !== type)
-                                        : [...prev, type]
-                                );
-                            }}
-                            currency={currency}
-                        />
-                    )}
-
-                    <TermsSection value={terms} onChange={setTerms} />
-
+        <ProtectedRoute>
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <div className={styles.headerTitle}>
+                        <h1 className={styles.title}>Tạo quảng cáo P2P</h1>
+                        <p className={styles.subtitle}>Đăng quảng cáo mua hoặc bán tiền điện tử</p>
+                    </div>
                     <button
-                        type="submit"
-                        className={styles.submitButton}
-                        disabled={isSubmitting}
+                        className={styles.backButton}
+                        onClick={() => router.push('/p2p')}
                     >
-                        {isSubmitting ? 'Đang tạo...' : 'Tạo quảng cáo'}
+                        <ArrowLeftOutlined /> Quay lại
                     </button>
                 </div>
-            </form>
-        </div>
+                <div className={styles.divider}></div>
+
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.card}>
+                        <OrderTypeSelector value={orderType} onChange={setOrderType} />
+
+                        <CurrencySection
+                            currency={currency}
+                            fiatCurrency={fiatCurrency}
+                            onCurrencyChange={setCurrency}
+                            onFiatCurrencyChange={setFiatCurrency}
+                            currencies={currencies}
+                            fiatCurrencies={fiatCurrencies}
+                        />
+
+                        <PriceAmountSection
+                            price={price}
+                            amount={amount}
+                            currency={currency}
+                            fiatCurrency={fiatCurrency}
+                            onPriceChange={setPrice}
+                            onAmountChange={setAmount}
+                        />
+
+                        <LimitsSection
+                            minLimit={minLimit}
+                            maxLimit={maxLimit}
+                            fiatCurrency={fiatCurrency}
+                            onMinLimitChange={setMinLimit}
+                            onMaxLimitChange={setMaxLimit}
+                        />
+
+                        {orderType === 'sell' && (
+                            <BankAccountSelector
+                                bankAccounts={bankAccounts}
+                                selectedAccount={selectedBankAccount}
+                                onSelect={setSelectedBankAccount}
+                                currency={currency}
+                            />
+                        )}
+
+                        {orderType === 'buy' && (
+                            <PaymentMethodSelector
+                                selectedTypes={selectedPaymentTypes}
+                                onToggle={(type) => {
+                                    setSelectedPaymentTypes(prev =>
+                                        prev.includes(type)
+                                            ? prev.filter(t => t !== type)
+                                            : [...prev, type]
+                                    );
+                                }}
+                                currency={currency}
+                            />
+                        )}
+
+                        <TermsSection value={terms} onChange={setTerms} />
+
+                        <button
+                            type="submit"
+                            className={styles.submitButton}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Đang tạo...' : 'Tạo quảng cáo'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </ProtectedRoute>
     );
 }

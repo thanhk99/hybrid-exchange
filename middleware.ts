@@ -4,17 +4,11 @@ import type { NextRequest } from 'next/server';
 // Define protected routes that require authentication
 const protectedRoutes = ['/balance', '/assets', '/account'];
 
-// Define public routes that don't require authentication
-const publicRoutes = ['/', '/login', '/register'];
-
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Check if the current path is a protected route
     const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-
-    // Check if the current path is a public route
-    const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route));
 
     // Get the refresh token from cookies (since access token is now memory-only)
     const refreshToken = request.cookies.get('refreshToken')?.value;
@@ -39,14 +33,6 @@ export function middleware(request: NextRequest) {
 // Configure which routes the middleware should run on
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - api (API routes)
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - public folder files
-         */
         '/((?!api|_next/static|_next/image|favicon.ico|imgs|.*\\..*|public).*)',
     ],
 };
